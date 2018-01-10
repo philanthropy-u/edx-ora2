@@ -18,6 +18,7 @@ OpenAssessment.ResponseView = function(element, server, fileUploader, baseView, 
     this.baseView = baseView;
     this.savedResponse = [];
     this.files = null;
+    this.selectedFiles = [];
     this.fileType = null;
     this.lastChangeTime = Date.now();
     this.errorOnLastSave = false;
@@ -281,6 +282,22 @@ OpenAssessment.ResponseView.prototype = {
         }
     },
 
+    shouldDisableSubmit: function (hasText, files) {
+      if (files === undefined || files === null) {
+          files = [];
+      }
+
+      console.log(hasText);
+      console.log(files);
+
+      var disable = false;
+      if ((!hasText && files.length === 0) || (hasText && files.length > 0)) {
+        disable = true;
+      }
+
+      return disable;
+    },
+
     /**
      Enable/disable the submission and save buttons based on whether
      the user has entered a response.
@@ -290,7 +307,17 @@ OpenAssessment.ResponseView.prototype = {
         var isNotBlank = !this.response().every(function(element) {
             return $.trim(element) === '';
         });
-        this.submitEnabled(isNotBlank);
+
+        var disableSubmit = this.shouldDisableSubmit(isNotBlank, this.selectedFiles);
+        this.submitEnabled(!disableSubmit);
+
+        if (disableSubmit) {
+          $(".file__upload").prop('disabled', true);
+        } else if (!disableSubmit && this.selectedFiles.length > 0) {
+            $(".file__upload").prop('disabled', false);
+        }
+        // end
+
 
         // Update the save button, save status, and "unsaved changes" warning
         // only if the response has changed
@@ -463,9 +490,28 @@ OpenAssessment.ResponseView.prototype = {
 
      **/
     prepareUpload: function(files, uploadType) {
+        this.selectedFiles = files;
+
+        // Logic to disable submit button if both textarea and file input is filled
+        var isNotBlank = !this.response().every(function(element) {
+            return $.trim(element) === '';
+        });
+
+        var disableSubmit = this.shouldDisableSubmit(isNotBlank, this.selectedFiles);
+        this.submitEnabled(!disableSubmit);
+
+        if (disableSubmit) {
+          $(".file__upload").prop('disabled', true);
+          return false;
+        } else if (!disableSubmit && this.selectedFiles.length > 0) {
+            $(".file__upload").prop('disabled', false);
+        }
+        // end
+
         this.files = null;
         this.fileType = files[0].type;
         var ext = files[0].name.split('.').pop().toLowerCase();
+
 
         if (files[0].size > this.MAX_FILE_SIZE) {
             this.baseView.toggleActionError(
