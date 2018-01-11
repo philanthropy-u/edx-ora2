@@ -57,7 +57,13 @@ OpenAssessment.ResponseView.prototype = {
                 if (typeof usageID !== 'undefined' && $(stepID, view.element).hasClass("is--showing")) {
                     $("[id='oa_response_" + usageID + "']", view.element).focus();
                 }
+                var isNotBlank = !view.response().every(function(element) {
+                    return $.trim(element) === '';
+                });
+
+                view.submitEnabled(!view.shouldDisableSubmit(isNotBlank, []));
             }
+
         ).fail(function() {
             view.baseView.showLoadError('response');
         });
@@ -287,11 +293,12 @@ OpenAssessment.ResponseView.prototype = {
           files = [];
       }
 
-      console.log(hasText);
-      console.log(files);
+      var savedFileEl = $('.submission__answer__file');
 
+      var hasSavedFile = savedFileEl.length && savedFileEl.is(":visible");
       var disable = false;
-      if ((!hasText && files.length === 0) || (hasText && files.length > 0)) {
+
+      if ((!hasText && files.length === 0 && !hasSavedFile ) || (hasText && (files.length > 0 || hasSavedFile))) {
         disable = true;
       }
 
@@ -489,60 +496,62 @@ OpenAssessment.ResponseView.prototype = {
      file or custom.
 
      **/
-    prepareUpload: function(files, uploadType) {
-        this.selectedFiles = files;
+    prepareUpload: function (files, uploadType) {
+      this.selectedFiles = files;
 
-        // Logic to disable submit button if both textarea and file input is filled
-        var isNotBlank = !this.response().every(function(element) {
-            return $.trim(element) === '';
-        });
+      // Logic to disable submit button if both textarea and file input is filled
+      var isNotBlank = !this.response().every(function (element) {
+        return $.trim(element) === '';
+      });
 
-        var disableSubmit = this.shouldDisableSubmit(isNotBlank, this.selectedFiles);
-        this.submitEnabled(!disableSubmit);
+      var disableSubmit = this.shouldDisableSubmit(isNotBlank, this.selectedFiles);
+      this.submitEnabled(!disableSubmit);
 
-        if (disableSubmit) {
-          $(".file__upload").prop('disabled', true);
-          return false;
-        } else if (!disableSubmit && this.selectedFiles.length > 0) {
-            $(".file__upload").prop('disabled', false);
-        }
-        // end
+      if (disableSubmit) {
+        $(".file__upload").prop('disabled', true);
+        return false;
+      } else if (!disableSubmit && this.selectedFiles.length > 0) {
+        $(".file__upload").prop('disabled', false);
+      }
+      // end
 
-        this.files = null;
+      this.files = null;
+
+      if (files.length > 0) {
         this.fileType = files[0].type;
         var ext = files[0].name.split('.').pop().toLowerCase();
-
-
         if (files[0].size > this.MAX_FILE_SIZE) {
-            this.baseView.toggleActionError(
-                'upload',
-                gettext("File size must be 5MB or less.")
-            );
+          this.baseView.toggleActionError(
+              'upload',
+              gettext("File size must be 5MB or less.")
+          );
         } else if (uploadType === "image" && this.data.ALLOWED_IMAGE_MIME_TYPES.indexOf(this.fileType) === -1) {
-            this.baseView.toggleActionError(
-                'upload',
-                gettext("You can upload files with these file types: ") + "JPG, PNG or GIF"
-            );
+          this.baseView.toggleActionError(
+              'upload',
+              gettext("You can upload files with these file types: ") + "JPG, PNG or GIF"
+          );
         } else if (uploadType === "pdf-and-image" && this.data.ALLOWED_FILE_MIME_TYPES.indexOf(this.fileType) === -1) {
-            this.baseView.toggleActionError(
-                'upload',
-                gettext("You can upload files with these file types: ") + "JPG, PNG, GIF or PDF"
-            );
+          this.baseView.toggleActionError(
+              'upload',
+              gettext("You can upload files with these file types: ") + "JPG, PNG, GIF or PDF"
+          );
         } else if (uploadType === "custom" && this.data.FILE_TYPE_WHITE_LIST.indexOf(ext) === -1) {
-            this.baseView.toggleActionError(
-                'upload',
-                gettext("You can upload files with these file types: ") + this.data.FILE_TYPE_WHITE_LIST.join(", ")
-            );
+          this.baseView.toggleActionError(
+              'upload',
+              gettext("You can upload files with these file types: ") + this.data.FILE_TYPE_WHITE_LIST.join(", ")
+          );
         } else if (this.data.FILE_EXT_BLACK_LIST.indexOf(ext) !== -1) {
-            this.baseView.toggleActionError(
-                'upload',
-                gettext("File type is not allowed.")
-            );
+          this.baseView.toggleActionError(
+              'upload',
+              gettext("File type is not allowed.")
+          );
         } else {
-            this.baseView.toggleActionError('upload', null);
-            this.files = files;
+          this.baseView.toggleActionError('upload', null);
+          this.files = files;
         }
-        $(".file__upload").prop('disabled', this.files === null);
+      }
+
+      $(".file__upload").prop('disabled', this.files === null);
     },
 
     /**
