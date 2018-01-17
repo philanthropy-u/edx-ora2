@@ -44,6 +44,34 @@ OpenAssessment.ResponseView.prototype = {
     /**
      Load the response (submission) view.
      **/
+    
+    getUserResponse: function () {
+      var isNotBlank = !this.response().every(function(element) {
+          return $.trim(element) === '';
+      });
+
+      var savedFileEl = $('.submission__answer__file');
+      var hasSavedFile = savedFileEl.length && savedFileEl.is(":visible");
+
+      return {
+        'responseText': isNotBlank,
+        'selectedFiles': this.selectedFiles,
+        'fileUploaded': hasSavedFile
+      }
+    },
+
+    verifyFormSubmission: function () {
+      var savedResponse = this.getUserResponse();
+
+      var enableSubmission = true;
+
+      if((savedResponse.responseText && savedResponse.fileUploaded) || (!savedResponse.responseText && !savedResponse.fileUploaded)) {
+        enableSubmission = false;
+      }
+
+      this.submitEnabled(enableSubmission);
+    },
+    
     load: function(usageID) {
         var view = this;
         var stepID = '.step--response';
@@ -57,11 +85,8 @@ OpenAssessment.ResponseView.prototype = {
                 if (typeof usageID !== 'undefined' && $(stepID, view.element).hasClass("is--showing")) {
                     $("[id='oa_response_" + usageID + "']", view.element).focus();
                 }
-                var isNotBlank = !view.response().every(function(element) {
-                    return $.trim(element) === '';
-                });
 
-                view.submitEnabled(!view.shouldDisableSubmit(isNotBlank, []));
+                view.verifyFormSubmission();
             }
 
         ).fail(function() {
@@ -288,23 +313,6 @@ OpenAssessment.ResponseView.prototype = {
         }
     },
 
-    shouldDisableSubmit: function (hasText, files) {
-      if (files === undefined || files === null) {
-          files = [];
-      }
-
-      var savedFileEl = $('.submission__answer__file');
-
-      var hasSavedFile = savedFileEl.length && savedFileEl.is(":visible");
-      var disable = false;
-
-      if ((!hasText && files.length === 0 && !hasSavedFile ) || (hasText && (files.length > 0 || hasSavedFile))) {
-        disable = true;
-      }
-
-      return disable;
-    },
-
     /**
      Enable/disable the submission and save buttons based on whether
      the user has entered a response.
@@ -315,16 +323,7 @@ OpenAssessment.ResponseView.prototype = {
             return $.trim(element) === '';
         });
 
-        var disableSubmit = this.shouldDisableSubmit(isNotBlank, this.selectedFiles);
-        this.submitEnabled(!disableSubmit);
-
-        if (disableSubmit) {
-          $(".file__upload").prop('disabled', true);
-        } else if (!disableSubmit && this.selectedFiles.length > 0) {
-            $(".file__upload").prop('disabled', false);
-        }
-        // end
-
+        this.verifyFormSubmission();
 
         // Update the save button, save status, and "unsaved changes" warning
         // only if the response has changed
@@ -402,19 +401,17 @@ OpenAssessment.ResponseView.prototype = {
         var baseView = this.baseView;
         var fileDefer = $.Deferred();
 
+        var savedResponse = this.getUserResponse();
         // check if there is a file selected but not uploaded yet
-        if (view.files !== null && !view.fileUploaded) {
-            var msg = gettext('Do you want to upload your file before submitting?');
-            if (confirm(msg)) {
-                fileDefer = view.fileUpload();
-            } else {
-                view.submitEnabled(true);
-                return;
-            }
+        if (savedResponse.responseText && savedResponse.selectedFiles.length > 0 && !savedResponse.fileUploaded) {
+            var msg = gettext('You can only submit text or file, please update you response.');
+            alert(msg);
+            view.submitEnabled(false);
+            return;
         } else {
-            fileDefer.resolve();
+           fileDefer.resolve();
         }
-
+        
         fileDefer
             .pipe(function() {
                 return view.confirmSubmission()
@@ -499,21 +496,7 @@ OpenAssessment.ResponseView.prototype = {
     prepareUpload: function (files, uploadType) {
       this.selectedFiles = files;
 
-      // Logic to disable submit button if both textarea and file input is filled
-      var isNotBlank = !this.response().every(function (element) {
-        return $.trim(element) === '';
-      });
-
-      var disableSubmit = this.shouldDisableSubmit(isNotBlank, this.selectedFiles);
-      this.submitEnabled(!disableSubmit);
-
-      if (disableSubmit) {
-        $(".file__upload").prop('disabled', true);
-        return false;
-      } else if (!disableSubmit && this.selectedFiles.length > 0) {
-        $(".file__upload").prop('disabled', false);
-      }
-      // end
+      this.verifyFormSubmission();
 
       this.files = null;
 
@@ -574,6 +557,13 @@ OpenAssessment.ResponseView.prototype = {
         // completed, execute a sequential AJAX call to upload to the returned
         // URL. This request requires appropriate CORS configuration for AJAX
         // PUT requests on the server.
+        if(view.selectedFiles) {
+          view.fileType = view.selectedFiles[0].type;
+          view.files = view.selectedFiles;
+        }
+
+        view.verifyFormSubmission();
+
         return this.server.getUploadUrl(view.fileType, view.files[0].name).done(
             function(url) {
                 var file = view.files[0];
