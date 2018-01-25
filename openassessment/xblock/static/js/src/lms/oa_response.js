@@ -65,7 +65,7 @@ OpenAssessment.ResponseView.prototype = {
 
       var enableSubmission = true;
 
-      if((savedResponse.responseText && savedResponse.fileUploaded) || (!savedResponse.responseText && !savedResponse.fileUploaded)) {
+      if (savedResponse.responseText && (savedResponse.selectedFiles.length > 0 || savedResponse.fileUploaded)) {
         enableSubmission = false;
       }
 
@@ -370,7 +370,6 @@ OpenAssessment.ResponseView.prototype = {
             var currentResponseIsEmpty = currentResponse.every(function(element) {
                 return element === '';
             });
-            view.submitEnabled(!currentResponseIsEmpty);
 
             var currentResponseEqualsSaved = currentResponse.every(function(element, index) {
                 return element === savedResponse[index];
@@ -400,10 +399,9 @@ OpenAssessment.ResponseView.prototype = {
         var view = this;
         var baseView = this.baseView;
         var fileDefer = $.Deferred();
-
         var savedResponse = this.getUserResponse();
-        // check if there is a file selected but not uploaded yet
-        if (savedResponse.responseText && savedResponse.selectedFiles.length > 0 && !savedResponse.fileUploaded) {
+        // check if there is a file selected or already uploaded
+        if (savedResponse.responseText && (savedResponse.selectedFiles.length > 0 || savedResponse.fileUploaded)) {
             var msg = gettext('You can only submit text or file, please update you response.');
             alert(msg);
             view.submitEnabled(false);
