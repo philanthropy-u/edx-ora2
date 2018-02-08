@@ -65,7 +65,7 @@ OpenAssessment.ResponseView.prototype = {
 
       var enableSubmission = true;
 
-      if (savedResponse.responseText && (savedResponse.selectedFiles.length > 0 || savedResponse.fileUploaded)) {
+      if (!savedResponse.responseText && !(savedResponse.selectedFiles.length > 0 || savedResponse.fileUploaded)) {
         enableSubmission = false;
       }
 
