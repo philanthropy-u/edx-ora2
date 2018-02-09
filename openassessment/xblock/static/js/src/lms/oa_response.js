@@ -393,22 +393,36 @@ OpenAssessment.ResponseView.prototype = {
      Send a response submission to the server and update the view.
      **/
     submit: function() {
-        // Immediately disable the submit button to prevent multiple submission
-        this.submitEnabled(false);
-
-        var view = this;
-        var baseView = this.baseView;
-        var fileDefer = $.Deferred();
-        var savedResponse = this.getUserResponse();
-        // check if there is a file selected or already uploaded
-        if (savedResponse.responseText && (savedResponse.selectedFiles.length > 0 || savedResponse.fileUploaded)) {
-            var msg = gettext('You can only submit text or file, please update you response.');
+      // Immediately disable the submit button to prevent multiple submission
+      this.submitEnabled(false);
+      var view = this;
+      var baseView = this.baseView;
+      var fileDefer = $.Deferred();
+      var savedResponse = this.getUserResponse();
+      // check if there is a file selected or already uploaded
+      if (!savedResponse.responseText && !(savedResponse.selectedFiles.length > 0 || savedResponse.fileUploaded)) {
+        var msg = gettext('Please enter text or upload file.');
+        alert(msg);
+        view.submitEnabled(false);
+        return;
+      } else if (savedResponse.selectedFiles.length > 0 && !savedResponse.fileUploaded){
+        var msg = gettext('Do you want to upload your file before submitting?');
+        if (confirm(msg)) {
+          fileDefer = view.fileUpload();
+        } else {
+          if (!savedResponse.responseText) {
+            var msg = gettext('Please enter text.');
             alert(msg);
             view.submitEnabled(false);
             return;
-        } else {
-           fileDefer.resolve();
+          } else {
+            view.submitEnabled(true);
+            return;
+          }
         }
+      } else {
+        fileDefer.resolve();
+      }
         
         fileDefer
             .pipe(function() {
