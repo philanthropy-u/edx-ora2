@@ -35,16 +35,17 @@ class Command(BaseCommand):
                 )
 
                 for sub in submissions:
+                    student_item, submission, score = sub
                     # check if student has yet to complete peer assessments
                     has_completed_peer_assessment = _get_workflow_model(
-                        sub[1]['uuid']).status_details()['peer']['complete']
+                        submission['uuid']).status_details()['peer']['complete']
 
                     # get user from anonymous user id
-                    learner = AnonymousUserId.objects.filter(anonymous_user_id=sub[0]['student_id'])[0].user
+                    learner = AnonymousUserId.objects.get(anonymous_user_id=student_item['student_id']).user
                     full_name = '{} {}'.format(learner.first_name, learner.last_name)
 
                     # get location of ora2 xblock in the course
-                    block_id = sub[0]['item_id']
+                    block_id = student_item['item_id']
                     assignment_block_location = get_lms_link_for_item(
                         UsageKey.from_string(block_id).map_into_course(course_key)
                     )
