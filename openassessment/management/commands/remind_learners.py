@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pytz import utc
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from cms.djangoapps.contentstore.utils import get_lms_link_for_item
@@ -44,12 +45,14 @@ class Command(BaseCommand):
                     learner = AnonymousUserId.objects.get(anonymous_user_id=student_item['student_id']).user
                     full_name = '{} {}'.format(learner.first_name, learner.last_name)
 
-                    # get location of ora2 xblock in the course
-                    block_id = student_item['item_id']
-                    assignment_block_location = get_lms_link_for_item(
-                        UsageKey.from_string(block_id).map_into_course(course_key)
+                    # usage_key to get location of ora2 xblock in the course
+                    usage_key = UsageKey.from_string(student_item['item_id']).map_into_course(course_key)
+
+                    assignment_block_location = "{lms_base}/courses/{course_key}/jump_to/{location}".format(
+                        lms_base=settings.LMS_BASE,
+                        course_key=course_key.to_deprecated_string(),
+                        location=usage_key.to_deprecated_string()
                     )
-                    assignment_block_location = assignment_block_location[2:]
 
                     if not has_completed_peer_assessment:
                         MandrillClient().send_mail(
