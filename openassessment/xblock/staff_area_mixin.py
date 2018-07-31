@@ -123,9 +123,10 @@ class StaffAreaMixin(object):
         context['item_id'] = student_item["item_id"]
 
         # Calculate how many students are in each step of the workflow
-        status_counts, num_submissions = self.get_workflow_status_counts()
+        status_counts, num_submissions, users = self.get_workflow_status_counts()
         context['status_counts'] = status_counts
         context['num_submissions'] = num_submissions
+        context['waiting_users'] = users
 
         # Show the schedule training button if example based assessment is
         # configured, and the current user has admin privileges.

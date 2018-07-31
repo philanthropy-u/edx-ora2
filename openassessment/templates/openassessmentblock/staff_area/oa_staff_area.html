@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load tz %}
+
 <div class="openassessment__staff-area wrapper--staff-area">
 
     <div class="wrapper--staff-toolbar">
@@ -118,7 +119,16 @@
                         {% for item in status_counts %}
                             <tr>
                                 <td class="label">{{ item.status }}</td>
-                                <td class="value">{{ item.count }}</td>
+                                <td class="value">
+                                    {{ item.count }}
+                                    {% if item.status == "waiting" and waiting_users %}
+                                        {% for user in waiting_users %}
+                                            <div>
+                                                {{ user.id }}, {{ user.username }}, {{ user.email }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
