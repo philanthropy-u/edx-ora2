@@ -5,17 +5,21 @@
             <h4 class="step__title">
                 <button class="ui-slidable" aria-expanded="true" id="oa_grade_{{ xblock_id }}" aria-controls="oa_grade_{{ xblock_id }}_content">
                     <span class="wrapper--copy">
-                        {% if score %}
+                        {% if score  %}
                             <span class="step__label">{% trans "Your Grade" %}: </span>
-                            <span class="grade__value">
-                            <span class="grade__value__title">
-                                {% with points_earned_string=score.points_earned|stringformat:"s" points_possible_string=score.points_possible|stringformat:"s" %}
-                                    {% blocktrans with points_earned='<span class="grade__value__earned">'|safe|add:points_earned_string|add:'</span>'|safe points_possible='<span class="grade__value__potential">'|safe|add:points_possible_string|add:'</span>'|safe %}
-                                        {{ points_earned }} out of {{ points_possible }}
-                                    {% endblocktrans %}
-                                {% endwith %}
-                            </span>
-                        </span>
+                            {% if show_grades %}
+                                <span class="grade__value">
+                                    <span class="grade__value__title">
+                                        {% with points_earned_string=score.points_earned|stringformat:"s" points_possible_string=score.points_possible|stringformat:"s" %}
+                                            {% blocktrans with points_earned='<span class="grade__value__earned">'|safe|add:points_earned_string|add:'</span>'|safe points_possible='<span class="grade__value__potential">'|safe|add:points_possible_string|add:'</span>'|safe %}
+                                                {{ points_earned }} out of {{ points_possible }}
+                                            {% endblocktrans %}
+                                        {% endwith %}
+                                    </span>
+                                </span>
+                            {% else %}
+                                <span class="grade__value"><span class="show-grades-msg">{% trans "Score is visible only to course authors" %}</span></span>
+                            {% endif %}
                         {% else %}
                             <span class="step__label">{% trans "Your Grade" %}</span>
                         {% endif %}
@@ -51,12 +55,14 @@
                                             {% if criterion.total_value > 0 %}
                                                 <span class="question__score">
                                                     <span class="label sr">{% trans "Overall Grade" %}</span>
-                                                    <span class="question__score__value">{{ criterion.median_score }}</span>
-                                                    <span class="label label--divider sr">out of</span>
-                                                    <span class="question__score__potential">
-                                                        {{ criterion.total_value }}
-                                                        <span class="unit">{% trans "Points" %}</span>
-                                                    </span>
+                                                    {% if show_grades %}
+                                                        <span class="question__score__value">{{ criterion.median_score }}</span>
+                                                        <span class="label label--divider sr">out of</span>
+                                                        <span class="question__score__potential">
+                                                            {{ criterion.total_value }}
+                                                            <span class="unit">{% trans "Points" %}</span>
+                                                        </span>
+                                                    {% endif %}
                                                 </span>
                                             {% endif %}
                                         </div>
