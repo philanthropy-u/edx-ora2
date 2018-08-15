@@ -822,6 +822,10 @@
       .step__label, .grade__value {
         display: inline-block;
         vertical-align: middle;
+
+        .show-grades-msg {
+          color: #00C5A8;
+        }
       }
 
       .step__label {
