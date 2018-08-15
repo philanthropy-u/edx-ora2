@@ -18,7 +18,7 @@
                                     </span>
                                 </span>
                             {% else %}
-                                <span class="grade__value">{% trans "Score is visible only to authors" %}</span>
+                                <span class="grade__value">{% trans "Score is visible only to course authors" %}</span>
                             {% endif %}
                         {% else %}
                             <span class="step__label">{% trans "Your Grade" %}</span>
@@ -61,12 +61,6 @@
                                                         <span class="question__score__potential">
                                                             {{ criterion.total_value }}
                                                             <span class="unit">{% trans "Points" %}</span>
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="question__score__potential">
-                                                            <span class="unit">
-                                                                {% trans "Score is visible only to authors" %}
-                                                            </span>
                                                         </span>
                                                     {% endif %}
                                                 </span>
