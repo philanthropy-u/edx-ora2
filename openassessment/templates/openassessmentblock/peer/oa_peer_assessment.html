@@ -52,7 +52,17 @@
     <div class="ui-slidable__content" aria-labelledby="oa_peer_{{ xblock_id }}" id="oa_peer{{ xblock_id }}_content">
         <div class="wrapper--step__content">
             <div class="step__instruction">
-                <p>{% trans "Read and assess the following response from one of your peers." %}</p>
+
+                {% for myitem in must_grade_range %}
+                    {% if forloop.counter < review_num %}
+                        <div class="completed">{{forloop.counter}}</div>
+                    {% elif forloop.counter == review_num %}
+                        <div class="active">{{forloop.counter}}</div>
+                    {% else %}
+                        <div class="incompleted">{{forloop.counter}}</div>
+                    {% endif %}
+
+                {% endfor %}
             </div>
 
             <div class="step__content">
