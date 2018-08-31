@@ -49,7 +49,7 @@
                     {% else %}
                     {% trans "You can save your progress and return to complete your response at any time." %}
                     {% endif %}
-                    {% trans "After you submit your response, you cannot edit it" %}
+                    {% trans "After you submit your response, you cannot edit it." %}
                 </p>
             </div>
 
@@ -148,15 +148,6 @@
                     <h5 class="message__title">{% trans "We could not submit your response" %}</h5>
                     <div class="message__content"></div>
                 </div>
-
-                <ul class="list list--actions">
-                    <li class="list--actions__item">
-                        <!--<button type="submit" class="action action&#45;&#45;submit step&#45;&#45;response__submit"
-                                {{submit_enabled|yesno:",disabled" }}>
-                            {% trans "SUBMIT" %}
-                        </button>-->
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
