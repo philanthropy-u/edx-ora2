@@ -341,6 +341,7 @@
 
         .step__counter {
           color: $marine;
+          counter-reset: item;
           font-family: $brand-font;
           @media (max-width: $screen-sm-max) {
             display: inline !important;
@@ -348,6 +349,8 @@
 
           &:before {
             color: $marine;
+            content: counter(item, decimal);
+            counter-increment: item;
           }
 
           &:after {
@@ -389,8 +392,8 @@
         top: -27px;
         @media (max-width: $screen-sm-max) {
           position: absolute;
-          right: 0;
-          top: 0;
+          right: 0 !important;
+          top: -52px;
           margin: 0;
         }
 
