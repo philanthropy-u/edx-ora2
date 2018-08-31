@@ -4,19 +4,20 @@
     <div class="openassessment problem">
         <div class="wrapper--grid">
             {% if title %}
-                <h3 class="openassessment__title problem__header">{% trans title %}</h3>
+                <h3 class="unit-title">{% trans title %}</h3>
             {% endif %}
 
             <div class="wrapper-openassessment__message">
-
                 {% block message %}
                 <div class="openassessment__message message">
                     <div class="message__content">
-                        <p>{% trans "This assignment has several steps. In the first step, you'll provide a response to the question. The other steps appear below the Your Response field." %}</p>
+                        <p>{% trans "Status: This assignment is in progress." %}</p>
                     </div>
                 </div>
                 {% endblock %}
             </div>
+
+            <div class="clearfix"></div>
 
             <ol class="openassessment__steps">
                 {% for assessment in rubric_assessments %}

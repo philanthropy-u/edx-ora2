@@ -51,19 +51,33 @@
     {% block body %}
     <div class="ui-slidable__content" aria-labelledby="oa_peer_{{ xblock_id }}" id="oa_peer{{ xblock_id }}_content">
         <div class="wrapper--step__content">
-            <div class="step__instruction">
-
+            <ul class="in-progress-steps-list">
                 {% for myitem in must_grade_range %}
                     {% if forloop.counter < review_num %}
-                        <div class="completed">{{forloop.counter}}</div>
+                        <li class="in-progress-steps-item completed">
+                            <span class="step-block">
+                                {{forloop.counter}}
+                                <span class="step-copy">Peer {{forloop.counter}}</span>
+                            </span>
+                        </li>
                     {% elif forloop.counter == review_num %}
-                        <div class="active">{{forloop.counter}}</div>
+                        <li class="in-progress-steps-item active">
+                            <span class="step-block">
+                                {{forloop.counter}}
+                                <span class="step-copy">Peer {{forloop.counter}}</span>
+                            </span>
+                        </li>
                     {% else %}
-                        <div class="incompleted">{{forloop.counter}}</div>
+                        <li class="in-progress-steps-item incompleted">
+                            <span class="step-block">
+                                {{forloop.counter}}
+                                <span class="step-copy">Peer {{forloop.counter}}</span>
+                            </span>
+                        </li>
                     {% endif %}
 
                 {% endfor %}
-            </div>
+            </ul>
 
             <div class="step__content">
                 <ul class="list--peer-assessments">
@@ -94,8 +108,8 @@
 
                 <ul class="list list--actions">
                     <li class="list--actions__item">
-                        <button type="submit" class="peer-assessment--001__assessment__submit action action--submit" disabled>
-                            {{ submit_button_text }}
+                        <button type="submit" class="peer-assessment--001__assessment__submit action action--submit button" disabled>
+                            {% trans "SUBMIT" %}
                         </button>
                     </li>
                 </ul>
