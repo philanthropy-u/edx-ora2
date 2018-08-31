@@ -36,15 +36,15 @@
                         {% with start_strong='<strong>'|safe end_strong='</strong>'|safe end_link='</a>'|safe %}
                             {% if peer_approaching and peer_not_available %}
                                 {% blocktrans %}
-                                    This assignment is in progress.{{ start_strong }}The peer assessment step will close soon.{{ end_strong }} All submitted peer responses have been assessed. Check back later to see if more learners have submitted responses. You still need to complete the {{ start_link }}peer assessment{{ end_link }} step.
+                                    This assignment is in progress. You still need to complete the {{ start_link }}peer assessment{{ end_link }} step.
                                 {% endblocktrans %}
                             {% elif not peer_approaching and peer_not_available %}
                                 {% blocktrans %}
-                                    This assignment is in progress. All submitted peer responses have been assessed. Check back later to see if more learners have submitted responses. You still need to complete the {{ start_link }}peer assessment{{ end_link }} step.
+                                    This assignment is in progress. You still need to complete the {{ start_link }}peer assessment{{ end_link }} step.
                                 {% endblocktrans %}
                             {% elif peer_approaching and not peer_not_available %}
                                 {% blocktrans %}
-                                    This assignment is in progress. {{ start_strong }}The peer assessment step will close soon.{{ end_strong }} You still need to complete the {{ start_link }}peer assessment{{ end_link }} step.
+                                    This assignment is in progress. You still need to complete the {{ start_link }}peer assessment{{ end_link }} step.
                                 {% endblocktrans %}
                             {% else %}
                                 {% blocktrans %}

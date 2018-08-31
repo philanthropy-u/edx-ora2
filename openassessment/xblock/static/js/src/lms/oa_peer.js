@@ -63,6 +63,7 @@ OpenAssessment.PeerView.prototype = {
                 if (typeof usageID !== 'undefined') {
                     $("[id='oa_peer_" + usageID + "']", view.element).focus();
                 }
+                $( "input[type='radio']" ).checkboxradio();
             }
         ).fail(function() {
             view.baseView.showLoadError('peer-assessment');
