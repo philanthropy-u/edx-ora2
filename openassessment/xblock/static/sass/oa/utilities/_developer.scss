@@ -634,7 +634,7 @@
       border: 1px solid #b2b2b2;
       border-radius: 4px;
       padding: 10px;
-      font-family: $f-sans-serif;
+      font-family: $brand-font;
       font-size: 14px;
       overflow: auto;
       -webkit-box-shadow: none;
@@ -845,7 +845,6 @@
       background-image: -moz-linear-gradient(#F2F2F2,#FFF);
       background-image: linear-gradient(#F2F2F2,#FFF);
       @include single-box-shadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.1), inset);
-      font-family: 'Open Sans', sans-serif;
       font-size: 11px;
       color: #4c4c4c;
     }
@@ -974,7 +973,6 @@
           @include padding(6px, 8px, 8px, 8px);
           background-color: white;
           @include single-box-shadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.1), inset);
-          font-family: 'Open Sans', sans-serif;
           font-size: 11px;
           color: #4c4c4c;
           @include margin(5px, 15px, 0, 10px);
@@ -1091,7 +1089,6 @@
 
 .openassessment {
   .step--leaderboard {
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
     .step__title {
       .step__counter, .step__counter:before {

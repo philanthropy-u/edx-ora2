@@ -1,6 +1,92 @@
 //
 // Skin styling
 //
+
+// Form elements
+.button {
+    background: $strong-blue !important;
+    border-color: $strong-blue !important;
+    color: $white !important;
+    padding: 11px 20px;
+    text-shadow: none;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+    border: none;
+    line-height: normal;
+    letter-spacing: normal;
+    border-radius: $base-border-radius;
+    font-family: $brand-font;
+    font-weight: 500 !important;
+    font-size: 14px;
+    @media (min-width: $screen-sm-min) {
+        min-width: 200px;
+        padding: 16px 24px;
+    }
+
+    &.button-block {
+        width: 100%;
+    }
+
+    &.button-bordered {
+        background: $white !important;
+        color: $strong-blue !important;
+        border: 1px solid $strong-blue;
+
+        &:hover {
+            background: $lighter-blue !important;
+        }
+
+        &:focus,
+        &:active {
+            background: rgba(0, 105, 163, 0.08) !important;
+        }
+    }
+
+    &.orange {
+        background: $pastel-orange !important;
+        border-color: $pastel-orange !important;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background: $bright-orange !important;
+            border-color: $bright-orange !important;
+        }
+    }
+
+    &:disabled {
+        background: #f5f5f5 !important;
+        color: darken($greyish, 10%) !important;
+        border: 1px solid darken($greyish, 5%) !important;
+    }
+
+    .fa {
+
+        &.icon {
+            margin: 0 0 0 5px;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+    }
+
+    &:hover {
+        background: $normal-blue !important;
+        cursor: pointer !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+        box-shadow: none !important;
+    }
+
+    &:focus,
+    &:active {
+        background: $dark-blue !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none  !important;
+        box-shadow: none  !important;
+    }
+}
+
 .openassessment {
   font-family: $brand-font;
 
@@ -8,15 +94,21 @@
     overflow: inherit;
   }
 
+  p {
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 0;
+  }
+
   .wrapper--grid {
 
     > .unit-title {
-      @media (min-width: $screen-sm-min) {
+      @media (min-width: $screen-md-min) {
         float: left;
       }
 
       + .wrapper-openassessment__message {
-        @media (min-width: $screen-sm-min) {
+        @media (min-width: $screen-md-min) {
           width: auto;
           padding: 1px 0 0 30px;
           overflow: hidden;
@@ -25,20 +117,25 @@
 
         p {
           font-size: 14px;
-          text-align: right;
+          @media (min-width: $screen-md-min) {
+            text-align: right;
+          }
         }
 
         .openassessment__message {
 
           .message__title,
           .message__content {
-            display: inline-block;
-            margin-left: 5px;
+            @media (min-width: $screen-md-min) {
+              display: inline-block;
+              margin-left: 5px;
+            }
           }
 
           .message__title {
             padding: 0;
             color: $base;
+            border: none;
             font-weight: normal;
 
             &:after {
@@ -71,16 +168,18 @@
 
         ul.in-progress-steps-list {
           margin: 0 0 20px;
-          padding: 0 0 20px;
+          padding: 0;
           @media (min-width: $screen-md-min) {
             display: table;
             table-layout: fixed;
             margin: 0 0 50px;
+            padding: 0 0 20px;
           }
 
           li.in-progress-steps-item {
             margin-bottom: 50px;
             min-width: 130px;
+            display: inline-block;
             position: relative;
             @media (min-width: $screen-md-min) {
               vertical-align: top;
@@ -235,41 +334,53 @@
         margin-top: 20px;
       }
 
-      .step__counter {
-        color: $marine;
-        font-family: $brand-font;
+      .ui-slidable {
+        @media (max-width: $screen-sm-max) {
+          text-align: left;
+        }
 
-        &:before {
+        .step__counter {
           color: $marine;
+          font-family: $brand-font;
+          @media (max-width: $screen-sm-max) {
+            display: inline !important;
+          }
+
+          &:before {
+            color: $marine;
+          }
+
+          &:after {
+            content: '.';
+            position: relative;
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 5px;
+          }
         }
 
-        &:after {
-          content: '.';
-          position: relative;
-          font-size: 16px;
-          font-weight: bold;
-          margin-right: 5px;
-        }
-      }
+        .wrapper--copy {
+          width: auto;
+          padding: 0;
+          margin: 0;
+          border: none;
+          @media (max-width: $screen-sm-max) {
+            display: inline !important;
+          }
 
-      .wrapper--copy {
-        width: auto;
-        padding: 0;
-        margin: 0;
-        border: none;
+          .step__label,
+          .step__deadline {
+            display: inline-block;
+          }
 
-        .step__label,
-        .step__deadline {
-          display: inline-block;
-        }
+          .step__label {
+            color: $marine;
+          }
 
-        .step__label {
-          color: $marine;
-        }
-
-        .step__deadline {
-          color: darken($greyish, 10%);
-          margin-left: 15px;
+          .step__deadline {
+            color: darken($greyish, 10%);
+            margin-left: 15px;
+          }
         }
       }
 
@@ -312,25 +423,25 @@
 
           .peer-assessment__display {
             margin-bottom: 30px;
+          }
+        }
+      }
 
-            .submission__answer__display__content {
-              padding: 15px;
-              margin: 0;
+      .submission__answer__display__content {
+        padding: 15px;
+        margin: 0;
 
-              .submission__answer__part {
+        .submission__answer__part {
 
-                .submission__answer__part__text__title {
-                  font-weight: 500;
-                }
+          .submission__answer__part__text__title {
+            font-weight: 500;
+          }
 
-                .step__content {
+          .step__content {
 
-                  .submission__answer__part__text__title {
-                    font-weight: 500;
-                    font-size: 16px;
-                  }
-                }
-              }
+            .submission__answer__part__text__title {
+              font-weight: 500;
+              font-size: 16px;
             }
           }
         }
