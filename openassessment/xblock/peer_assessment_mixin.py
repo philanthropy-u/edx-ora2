@@ -191,6 +191,7 @@ class PeerAssessmentMixin(object):
         assessment = self.get_assessment_module('peer-assessment')
         if assessment:
             context_dict["must_grade"] = assessment["must_grade"]
+            context_dict["must_grade_range"] = range(assessment.get("must_grade", 0))
             finished, count = peer_api.has_finished_required_evaluating(
                 self.submission_uuid,
                 assessment["must_grade"]
@@ -200,7 +201,7 @@ class PeerAssessmentMixin(object):
 
             if continue_grading:
                 context_dict["submit_button_text"] = self._(
-                    "Submit your assessment and review another response"
+                    "Submit"
                 )
             elif assessment["must_grade"] - count == 1:
                 context_dict["submit_button_text"] = self._(

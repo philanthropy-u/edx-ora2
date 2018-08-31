@@ -220,7 +220,7 @@ class SubmissionRenderTest(XBlockHandlerTestCase):
                         ("", "")
                     )
                 }, xblock.prompts),
-                'save_status': 'This response has not been saved.',
+                'save_status': 'Response not saved.',
                 'submit_enabled': False,
                 'submission_due': dt.datetime(2999, 5, 6).replace(tzinfo=pytz.utc),
                 'allow_latex': False,
@@ -239,7 +239,7 @@ class SubmissionRenderTest(XBlockHandlerTestCase):
                         ("", "")
                     )
                 }, xblock.prompts),
-                'save_status': 'This response has not been saved.',
+                'save_status': 'Response not saved.',
                 'submit_enabled': False,
                 'allow_latex': False,
                 'time_zone': pytz.utc,
