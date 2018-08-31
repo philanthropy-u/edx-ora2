@@ -102,9 +102,15 @@
 
   .wrapper--grid {
 
-    > .unit-title {
+    > .openassessment__title {
+      font-size: 16px;
+      color: $marine;
+      font-weight: 500;
+      margin-bottom: 10px;
+      font-family: $brand-font;
       @media (min-width: $screen-md-min) {
         float: left;
+        font-size: 18px;
       }
 
       + .wrapper-openassessment__message {
@@ -341,16 +347,12 @@
 
         .step__counter {
           color: $marine;
-          counter-reset: item;
-          font-family: $brand-font;
           @media (max-width: $screen-sm-max) {
             display: inline !important;
           }
 
           &:before {
             color: $marine;
-            content: counter(item, decimal);
-            counter-increment: item;
           }
 
           &:after {
