@@ -1,0 +1,104 @@
+//
+// Skin : elements - controls
+// ====================
+//
+
+%btn-skin-blue,
+.btn-skin-blue {
+  @extend %t-strong;
+  background: $strong-blue !important;
+  border: 1px solid $strong-blue !important;
+  color: white;
+  padding: 12px 15px;
+  text-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  line-height: normal !important;
+  letter-spacing: normal;
+  font-size: 14px;
+  font-family: $brand-font !important;
+  border-radius: $base-border-radius;
+  @media (min-width: $screen-sm-min) {
+    min-width: 200px;
+    padding: 16px 24px;
+  }
+
+  &[disabled] {
+    background: $grey-f5 !important;
+    color: darken($greyish, 6%);
+    border: 1px solid darken($greyish, 4%) !important;
+  }
+
+  &:hover {
+    background: $normal-blue !important;
+    cursor: pointer;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+
+  &:focus,
+  &:active {
+    background: $dark-blue !important;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+}
+
+.btn--bordered {
+  background: $white !important;
+  color: $strong-blue;
+  border: 1px solid $strong-blue !important;
+
+  &[disabled] {
+    background: $grey-f5 !important;
+    color: darken($greyish, 6%);
+    border: 1px solid darken($greyish, 4%) !important;
+  }
+
+  &:hover {
+    background: $lighter-blue !important;
+  }
+
+  &:focus,
+  &:active {
+    background: rgba(0, 105, 163, 0.08) !important;
+  }
+}
+
+.btn--small {
+  @extend %btn-skin-blue;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 8px 10px !important;
+  @media (min-width: $screen-sm-min) {
+    padding: 8px 15px !important;
+  }
+}
+
+.wrapper--xblock {
+
+  .problem {
+
+    form {
+      overflow: inherit;
+    }
+
+    textarea {
+      max-width: 100%;
+
+      @include placeholder {
+        color: #999ba8;
+        font-family: $brand-font;
+      }
+    }
+
+    p {
+      font-size: 16px;
+      @extend %t-light;
+      letter-spacing: 0;
+    }
+  }
+}
