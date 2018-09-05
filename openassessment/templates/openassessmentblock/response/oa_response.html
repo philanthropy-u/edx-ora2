@@ -74,7 +74,7 @@
                             </li>
                         {% endfor %}
                         {% if file_upload_type %}
-                        <li class="field">
+                        <li class="field clearfix">
                             <div class="upload__error">
                                 <div class="message message--inline message--error message--error-server" tabindex="-1">
                                     <h5 class="message__title">{% trans "We could not upload this file" %}</h5>
@@ -100,7 +100,7 @@
                             <li class="list--actions__item save-submit-response">
                                 <div class="tbl-view">
                                     <div class="tbl-col">
-                                        <button type="submit" class="action action--save submission__save button-small button-bordered" aria-describedby="response__save_status__{{ xblock_id }}" disabled>
+                                        <button type="submit" class="action action--save submission__save btn--small btn--bordered" aria-describedby="response__save_status__{{ xblock_id }}" disabled>
                                             {% trans "SAVE PROGRESS" %}
                                         </button>
                                     </div>
@@ -108,7 +108,7 @@
                                         OR
                                     </div>
                                     <div class="tbl-col">
-                                        <button type="submit" class="action action&#45;&#45;submit step&#45;&#45;response__submit button-small"
+                                        <button type="submit" class="action action&#45;&#45;submit step&#45;&#45;response__submit btn--small"
                                             {{submit_enabled|yesno:",disabled" }}>
                                             {% trans "SUBMIT" %}
                                         </button>
