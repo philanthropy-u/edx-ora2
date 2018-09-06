@@ -12,11 +12,10 @@
 {% block title %}
 <span class="step__status">
   <span class="step__status__value">
-    <span class="icon fa fa-check" aria-hidden="true"></span>
     <span class="copy">
       {% with graded_string=graded|stringformat:"s" %}
       {% blocktrans with num_graded='<span class="step__status__value--completed">'|safe|add:graded_string|add:'</span>'|safe %}
-        Complete ({{ num_graded }})
+        Completed ({{ num_graded }})
       {% endblocktrans %}
       {% endwith %}
     </span>
