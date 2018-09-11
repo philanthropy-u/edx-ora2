@@ -297,6 +297,14 @@
 
           .step__header {
 
+            .step__counter {
+              color: #414141;
+
+              &:before {
+                color: #414141;
+              }
+            }
+
             .wrapper--copy {
 
               .step__label {
@@ -411,6 +419,8 @@
 
             .submission__answer__part__text__title {
               font-weight: 500;
+              font-size: 16px;
+              font-family: $brand-font;
             }
 
             .step__content {
@@ -418,7 +428,59 @@
               .submission__answer__part__text__title {
                 font-weight: 500;
                 font-size: 16px;
+                font-family: $brand-font;
               }
+            }
+          }
+        }
+
+        .submission__peer-evaluations {
+
+          .submission__peer-evaluations__title {
+            font-size: 18px;
+            font-weight: 500;
+            font-family: $brand-font;
+          }
+
+          .submission__peer-evaluations__questions {
+
+            .question {
+
+              .question__score {
+                font-family: $brand-font;
+              }
+
+              .question__answers {
+
+                .answer {
+
+                  .answer__source__value,
+                  .answer__value__value {
+                    font-family: $brand-font;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .question,
+        .field {
+
+          .question__title {
+            border: none;
+
+            .ui-slidable {
+
+              .icon {
+                color: $marine;
+              }
+            }
+
+            .question__title__copy {
+              font-size: 17px;
+              color: $marine;
+              font-weight: normal;
             }
           }
         }
@@ -433,6 +495,8 @@
         }
 
         .peer-assessment,
+        .self-assessment__assessment,
+        .student-training__assessment,
         .peer-assessment__assessment {
 
           .assessment__fields {
@@ -444,23 +508,6 @@
 
               .field {
                 font-family: $brand-font;
-
-                .question__title {
-                  border: none;
-
-                  .ui-slidable {
-
-                    .icon {
-                      color: $marine;
-                    }
-                  }
-
-                  .question__title__copy {
-                    font-size: 16px;
-                    color: $marine;
-                    font-weight: normal;
-                  }
-                }
 
                 .question__answers {
                   margin-left: 0;
@@ -584,7 +631,7 @@
           font-weight: normal;
           -moz-box-shadow: none;
           font-family: $brand-font;
-          background: $grey-f1;
+          background: $grey-f5;
           border: 1px solid $greyish;
           @include transition(0.3s);
           border-radius: $base-border-radius;
