@@ -418,6 +418,7 @@
         .submission__answer__display__content {
           padding: 20px;
           margin: 0;
+          counter-reset: prompt_counter;
 
           p {
             font-size: 14px;
@@ -425,7 +426,7 @@
 
           .submission__answer__part {
             @media (min-width: $screen-sm-min) {
-              margin-top: 40px;
+              margin-top: 50px;
             }
 
             &:first-child {
@@ -438,6 +439,15 @@
               font-weight: 500;
               font-size: 16px;
               font-family: $brand-font;
+
+              &.your-answer {
+                margin-top: 15px;
+              }
+
+              &:not(.your-answer):before {
+                content: counter(prompt_counter, upper-latin) ". ";
+                counter-increment: prompt_counter;
+              }
             }
 
             .step__content {
@@ -591,7 +601,7 @@
               li {
 
                 &.submission__answer__part {
-                  margin-bottom: 25px;
+                  margin: 40px 0;
 
                   .submission__answer__part__text__title {
                     font-family: $brand-font;
