@@ -440,11 +440,11 @@
               font-size: 16px;
               font-family: $brand-font;
 
-              &.your-answer {
+              &.lbl-answer-text {
                 margin-top: 15px;
               }
 
-              &:not(.your-answer):before {
+              &:not(.lbl-answer-text):before {
                 content: counter(prompt_counter, upper-latin) ". ";
                 counter-increment: prompt_counter;
               }
