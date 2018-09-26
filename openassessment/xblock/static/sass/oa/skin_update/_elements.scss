@@ -373,14 +373,10 @@
         }
 
         .step__status {
-          right: -30px;
-          top: -27px;
-          @media (max-width: $screen-sm-max) {
-            position: absolute;
-            right: 0 !important;
-            top: -52px;
-            margin: 0;
-          }
+          right: 0;
+          top: -1px;
+          margin: 0;
+          position: absolute;
 
           .copy {
             font-family: $brand-font;
@@ -411,11 +407,32 @@
           }
         }
 
+        .self-assessment__display {
+          margin-bottom: 30px;
+
+          .submission__answer__part__prompt {
+            padding-left: 20px;
+          }
+        }
+
         .submission__answer__display__content {
-          padding: 15px;
+          padding: 20px;
           margin: 0;
 
+          p {
+            font-size: 14px;
+          }
+
           .submission__answer__part {
+            @media (min-width: $screen-sm-min) {
+              margin-top: 40px;
+            }
+
+            &:first-child {
+              @media (min-width: $screen-sm-min) {
+                margin-top: 10px;
+              }
+            }
 
             .submission__answer__part__text__title {
               font-weight: 500;
@@ -567,6 +584,34 @@
             padding: 0;
             margin: 0;
             list-style: none;
+
+            &.list--fields {
+              counter-reset: prompt_counter;
+
+              li {
+
+                &.submission__answer__part {
+                  margin-bottom: 25px;
+
+                  .submission__answer__part__text__title {
+                    font-family: $brand-font;
+                    font-weight: 600;
+                    font-size: 15px;
+
+                    &:before {
+                      content: counter(prompt_counter, upper-latin) ". ";
+                      counter-increment: prompt_counter;
+                    }
+                  }
+
+                  .submission__answer__part__prompt {
+                    padding: 0;
+                    border: none;
+                    box-shadow: none;
+                  }
+                }
+              }
+            }
 
             &.list--actions {
 
