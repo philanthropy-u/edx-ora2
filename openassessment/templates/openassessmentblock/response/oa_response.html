@@ -58,10 +58,13 @@
                     <ul class="list list--fields response__submission__content">
                         {% for part in saved_response.answer.parts %}
                             <li class="submission__answer__part">
-
-                                <div class="field field--textarea submission__answer__part__text">
-                                    <div class="submission__answer__part__text">
+                                <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
+                                <article class="submission__answer__part__prompt">
+                                    <div class="submission__answer__part__prompt__copy">
+                                        {{ part.prompt.description|linebreaks }}
                                     </div>
+                                </article>
+                                <div class="field field--textarea submission__answer__part__text">
                                     <textarea
                                         id="submission__answer__part__text__{{ forloop.counter }}__{{ xblock_id }}"
                                         class="submission__answer__part__text__value"
