@@ -85,8 +85,10 @@
                                 </div>
                             </div>
                             <label class="sr" for="submission_answer_upload_{{ xblock_id }}">{% trans "Select a file to upload for this submission." %}</label>
-                            <input type="file" class="submission__answer__upload file--upload" id="submission_answer_upload_{{ xblock_id }}">
-                            <button type="submit" class="file__upload action action--upload" disabled>{% trans "Upload your file" %}</button>
+                            <h3>OR</h3>
+                            <div class="file--upload--container">
+                                <input type="file" class="submission__answer__upload file--upload" id="submission_answer_upload_{{ xblock_id }}">
+                            </div>
                         </li>
                         {% endif %}
 
@@ -99,7 +101,8 @@
                             <div class="message__content"></div>
                         </div>
 
-                        <ul class="list list--actions">
+                        <ul class="list list--actions hide">
+                            <hr />
                             <li class="list--actions__item save-submit-response">
                                 <div class="tbl-view">
                                     <div class="tbl-col">
