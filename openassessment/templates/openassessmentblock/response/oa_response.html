@@ -40,19 +40,6 @@
     {% block body %}
     <div class="ui-slidable__content" aria-labelledby="oa_response_{{ xblock_id }}" id="oa_response_{{ xblock_id }}_content">
         <div class="wrapper--step__content">
-            <div class="step__instruction">
-                <p>
-                    {% trans "Enter your response to the question." %}
-                    {% trans "If you navigate away from this page your work will not automatically save." %}
-                    {% if submission_due %}
-                    {% trans "You can save your progress and return to complete your response at any time before the due date" %} (<span class="step__deadline"><span class="date">{{ submission_due|timezone:time_zone|date:"l, N j, Y H:i e" }}</span></span>).
-                    {% else %}
-                    {% trans "You can save your progress and return to complete your response at any time." %}
-                    {% endif %}
-                    {% trans "After you submit your response, you cannot edit it." %}
-                </p>
-            </div>
-
             <div class="step__content">
                 <form class="response__submission">
                     <ul class="list list--fields response__submission__content">

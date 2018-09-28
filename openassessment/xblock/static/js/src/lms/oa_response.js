@@ -447,16 +447,19 @@ OpenAssessment.ResponseView.prototype = {
         
         fileDefer
             .pipe(function() {
-                // On confirmation, send the submission to the server
-                // The callback returns a promise so we can attach
-                // additional callbacks after the confirmation.
-                // NOTE: in JQuery >=1.8, `pipe()` is deprecated in favor of `then()`,
-                // but we're using JQuery 1.7 in the LMS, so for now we're stuck with `pipe()`.
-                var submission = view.response();
-                baseView.toggleActionError('response', null);
+                return view.confirmSubmission()
+                    // On confirmation, send the submission to the server
+                    // The callback returns a promise so we can attach
+                    // additional callbacks after the confirmation.
+                    // NOTE: in JQuery >=1.8, `pipe()` is deprecated in favor of `then()`,
+                    // but we're using JQuery 1.7 in the LMS, so for now we're stuck with `pipe()`.
+                    .pipe(function() {
+                        var submission = view.response();
+                        baseView.toggleActionError('response', null);
 
-                // Send the submission to the server, returning the promise.
-                return view.server.submit(submission);
+                        // Send the submission to the server, returning the promise.
+                        return view.server.submit(submission);
+                    });
             })
 
             // If the submission was submitted successfully, move to the next step
@@ -490,6 +493,24 @@ OpenAssessment.ResponseView.prototype = {
         // Disable the "unsaved changes" warning if the user
         // tries to navigate to another page.
         baseView.unsavedWarningEnabled(false, this.UNSAVED_WARNING_KEY);
+    },
+
+    /**
+     Make the user confirm before submitting a response.
+
+     Returns:
+     JQuery deferred object, which is:
+     * resolved if the user confirms the submission
+     * rejected if the user cancels the submission
+     **/
+    confirmSubmission: function() {
+        // Keep this on one big line to avoid gettext bug: http://stackoverflow.com/a/24579117
+        var msg = gettext("You're about to submit your response for this assignment. After you submit this response, you can't change it or submit a new response.");  // jscs:ignore maximumLineLength
+        // TODO -- UI for confirmation dialog instead of JS confirm
+        return $.Deferred(function(defer) {
+            if (confirm(msg)) { defer.resolve(); }
+            else { defer.reject(); }
+        });
     },
 
     /**
