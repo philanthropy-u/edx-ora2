@@ -80,7 +80,7 @@
 
 .file--upload--container {
   position: relative;
-  margin: 15px 0;
+  margin: 0 0 15px !important;
   display: inline-block;
 
   input[type=file] {
@@ -148,6 +148,20 @@
       border-color: #ccc;
       background: #f2f2f2;
     }
+  }
+}
+
+.uploaded-file {
+  margin-top: 15px !important;
+
+  .uploaded-title {
+    display: block;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 300px;
   }
 }
 
