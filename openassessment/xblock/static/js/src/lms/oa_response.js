@@ -70,6 +70,8 @@ OpenAssessment.ResponseView.prototype = {
       }
 
       this.submitEnabled(enableSubmission);
+      this.listActionsDisplayed(enableSubmission);
+
     },
     
     load: function(usageID) {
@@ -150,6 +152,17 @@ OpenAssessment.ResponseView.prototype = {
             }
         );
 
+        // Install file change handler for the file input
+
+        sel.find('.submission__answer__upload.file--upload').change(
+            function(eventObject) {
+                // Override default form submission
+                eventObject.preventDefault();
+                $('.submission__answer__display__file', view.element).removeClass('is--hidden');
+                view.fileUpload();
+            }
+        );
+
         // Install a click handler for the save button
         sel.find('.file__upload').click(
             function(eventObject) {
@@ -223,6 +236,13 @@ OpenAssessment.ResponseView.prototype = {
      **/
     saveEnabled: function(enabled) {
         return this.baseView.buttonEnabled('.submission__save', enabled);
+    },
+
+    /**
+     * Hide/Display list
+     */
+    listActionsDisplayed: function (displayed) {
+        this.baseView.elementDisplayed('.list--actions', displayed);
     },
 
     /**
@@ -328,6 +348,7 @@ OpenAssessment.ResponseView.prototype = {
         // Update the save button, save status, and "unsaved changes" warning
         // only if the response has changed
         if (this.responseChanged()) {
+            this.listActionsDisplayed(isNotBlank)
             this.saveEnabled(isNotBlank);
             this.previewEnabled(isNotBlank);
             this.saveStatus(gettext('This response has not been saved.'));
@@ -545,8 +566,6 @@ OpenAssessment.ResponseView.prototype = {
           this.files = files;
         }
       }
-
-      $(".file__upload").prop('disabled', this.files === null);
     },
 
     /**
@@ -557,12 +576,12 @@ OpenAssessment.ResponseView.prototype = {
      **/
     fileUpload: function() {
         var view = this;
-        var fileUpload = $(".file__upload");
-        fileUpload.prop('disabled', true);
+        var fileUpload = $(".file--upload--container");
+        fileUpload.addClass('disabled-input');
 
         var handleError = function(errMsg) {
             view.baseView.toggleActionError('upload', errMsg);
-            fileUpload.prop('disabled', false);
+            fileUpload.removeClass('disabled-input');
         };
 
         // Call getUploadUrl to get the one-time upload URL for this file. Once
@@ -584,6 +603,7 @@ OpenAssessment.ResponseView.prototype = {
                         view.fileUrl();
                         view.baseView.toggleActionError('upload', null);
                         view.fileUploaded = true;
+                        fileUpload.removeClass('disabled-input');
                     })
                     .fail(handleError);
             }

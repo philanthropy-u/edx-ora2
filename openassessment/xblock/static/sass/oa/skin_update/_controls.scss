@@ -78,6 +78,93 @@
   }
 }
 
+.file--upload--container {
+  position: relative;
+  margin: 0 0 15px !important;
+  display: inline-block;
+
+  input[type=file] {
+    cursor: pointer;
+    background: transparent !important;
+    width: 160px !important;
+    height: 34px !important;
+    min-width: 0 !important;
+    border: none !important;
+    font-size: 0 !important;
+    padding: 0 !important;
+    position: absolute;
+    overflow: hidden;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &::-webkit-file-upload-button {
+      visibility: hidden;
+    }
+  }
+
+  &:before {
+    width: 160px;
+    height: 34px;
+    color: $dark-blue;
+    font-size: 13px;
+    line-height: 32px;
+    content: 'UPLOAD FILE';
+    display: inline-block;
+    background: white;
+    border: 1px solid $strong-blue;
+    border-radius: 4px;
+    padding: 0 10px;
+    text-align: center;
+    font-family: $brand-font;
+  }
+
+  &:hover {
+
+    &:before {
+      background: $sky-lighter;
+    }
+  }
+
+  &.disabled-input {
+
+    input[type=file] {
+      pointer-events: none;
+
+      &:hover {
+        cursor: default;
+      }
+    }
+
+    &:before {
+      color: #333;
+      border-color: #ccc;
+      background: #f2f2f2;
+    }
+  }
+}
+
+.uploaded-file {
+  margin-top: 15px !important;
+
+  .uploaded-title {
+    display: block;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 300px;
+  }
+}
+
 .wrapper--xblock {
 
   .problem {
