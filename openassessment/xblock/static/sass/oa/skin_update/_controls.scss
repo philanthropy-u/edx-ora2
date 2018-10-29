@@ -79,15 +79,20 @@
 }
 
 .file--upload--container {
+
+	$file-input-width: 160px;
+	$file-input-height: 34px;
+
   position: relative;
   margin: 0 0 15px !important;
   display: inline-block;
 
   input[type=file] {
+    opacity: 0;
     cursor: pointer;
     background: transparent !important;
-    width: 160px !important;
-    height: 34px !important;
+    width: $file-input-width !important;
+    height: $file-input-height !important;
     min-width: 0 !important;
     border: none !important;
     font-size: 0 !important;
@@ -111,8 +116,8 @@
   }
 
   &:before {
-    width: 160px;
-    height: 34px;
+    width: $file-input-width;
+    height: $file-input-height;
     color: $strong-blue;
     font-size: 13px;
     line-height: 32px;
