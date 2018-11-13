@@ -38,8 +38,12 @@ class Command(BaseCommand):
                 for sub in submissions:
                     student_item, submission, score = sub
                     # check if student has yet to complete peer assessments
-                    has_completed_peer_assessment = _get_workflow_model(
-                        submission['uuid']).status_details()['peer']['complete']
+                    workflow_model = _get_workflow_model(submission['uuid']).status_details()
+
+                    if 'peer' not in workflow_model:
+                        continue
+
+                    has_completed_peer_assessment = workflow_model['peer']['complete']
 
                     # get user from anonymous user id
                     learner = AnonymousUserId.objects.get(anonymous_user_id=student_item['student_id']).user
