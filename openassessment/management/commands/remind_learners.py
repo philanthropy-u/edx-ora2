@@ -1,8 +1,11 @@
+import logging
+
 from datetime import datetime, timedelta
 from pytz import utc
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ObjectDoesNotExist
 
 from cms.djangoapps.contentstore.utils import get_lms_link_for_item
 from common.lib.mandrill_client.client import MandrillClient
@@ -12,6 +15,8 @@ from openassessment.workflow.api import _get_workflow_model
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student.models import AnonymousUserId
 from submissions import api as sub_api
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -46,7 +51,15 @@ class Command(BaseCommand):
                     has_completed_peer_assessment = workflow_model['peer']['complete']
 
                     # get user from anonymous user id
-                    learner = AnonymousUserId.objects.get(anonymous_user_id=student_item['student_id']).user
+                    try:
+                        learner = AnonymousUserId.objects.get(anonymous_user_id=student_item['student_id']).user
+                    except ObjectDoesNotExist:
+                        logger.exception('Anonymous User ID not found for Course ID: {} and User ID: {}'.format(
+                            course_key,
+                            student_item['student_id']
+                        ))
+                        continue
+
                     full_name = '{} {}'.format(learner.first_name, learner.last_name)
 
                     # usage_key to get location of ora2 xblock in the course
