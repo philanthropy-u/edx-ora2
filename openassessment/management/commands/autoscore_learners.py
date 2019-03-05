@@ -1,6 +1,6 @@
 import hashlib
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -33,16 +33,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         bot_user_id = self._get_philu_bot()
 
-        course_overviews = CourseOverview.objects.all()
+        # filter all courses which end date lies in last 24 hours
+        en_date = datetime.now(utc)
+        st_date = en_date - timedelta(days=1)
+        course_overviews = CourseOverview.objects.filter(end__range=(st_date, en_date))
+
         for overview in course_overviews:
             course_id = overview.id
             course_end_date = overview.end
             course_name = overview.display_name
 
-            date_now = datetime.now(utc).date()
-
             # If course end date has met
-            if course_end_date and course_end_date.date() <= date_now:
+            if course_end_date and course_end_date <= en_date:
                 try:
                     course_struct = CourseStructure.objects.get(
                         course_id=course_id
@@ -81,7 +83,7 @@ class Command(BaseCommand):
                         student['anonymous_user_id'] = anonymous_user.anonymous_user_id
 
                         # Find the associated rubric for that course_id & item_id
-                        rubric_dict = self._get_rubric_for_course(user, course_id, usage_key)
+                        rubric_dict = self._get_rubric_for_course(course_id, usage_key)
 
                         rubric = rubric_from_dict(rubric_dict)
                         options_selected, earned, possible = self._select_options(rubric_dict)
@@ -141,7 +143,7 @@ class Command(BaseCommand):
             defaults={
                 'first_name': 'PhilU',
                 'last_name': 'Bot',
-                'email': 'bot@philanthropyu.org',   # TODO: change this accordingly.
+                'email': 'bot@philanthropyu.org',
                 'is_active': True
             }
         )
@@ -164,10 +166,10 @@ class Command(BaseCommand):
             options = crit['options']
             points = list(set([o['points'] for o in options]))
 
-            if len(points) == 3:
+            if len(points) > 2:
                 # 3 pt rubric
                 pt = points[-2]
-            elif len(points) == 2:
+            else:
                 # 2 pt rubric
                 pt = points[-1]
 
@@ -180,7 +182,7 @@ class Command(BaseCommand):
 
         return options_selected, points_earned, points_possible
 
-    def _get_rubric_for_course(self, user, course_id, usage_key):
+    def _get_rubric_for_course(self, course_id, usage_key):
         course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id.to_deprecated_string())
         usage_key = course_id.make_usage_key_from_deprecated_string(unquote_slashes(usage_key))
 
