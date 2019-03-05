@@ -5,13 +5,15 @@ import json
 
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.utils import html
-
 from openassessment.assessment.models import (
     Assessment, AssessmentFeedback, PeerWorkflow, PeerWorkflowItem, Rubric,
     AIGradingWorkflow, AITrainingWorkflow, AIClassifierSet, AIClassifier
 )
 from openassessment.assessment.serializers import RubricSerializer
+from student.models import AnonymousUserId
+from submissions.models import Submission
 
 
 class RubricAdmin(admin.ModelAdmin):
@@ -42,6 +44,7 @@ class RubricAdmin(admin.ModelAdmin):
         return u"<pre>\n{}\n</pre>".format(
             html.escape(json.dumps(rubric_data, sort_keys=True, indent=4))
         )
+
     data.allow_tags = True
 
 
@@ -74,8 +77,8 @@ class AssessmentAdmin(admin.ModelAdmin):
     Django admin model for Assessments.
     """
     list_display = (
-        'id', 'submission_uuid', 'score_type', 'scorer_id', 'scored_at',
-        'rubric_link',
+        'id', 'submission_uuid', 'score_type',
+        'rubric_link', 'submission_of', 'course_id'
     )
     search_fields = (
         'id', 'submission_uuid', 'score_type', 'scorer_id', 'scored_at',
@@ -84,9 +87,42 @@ class AssessmentAdmin(admin.ModelAdmin):
     readonly_fields = (
         'submission_uuid', 'rubric_link', 'scored_at', 'scorer_id',
         'score_type', 'points_earned', 'points_possible', 'feedback',
-        'parts_summary',
+        'parts_summary', 'submission_of', 'course_id'
     )
     exclude = ('rubric', 'submission_uuid')
+    list_filter = ('score_type',)
+
+    def get_search_results(self, request, queryset, search_term):
+        # First check if user searched with user email or course_id
+        user = AnonymousUserId.objects.filter(user__email=search_term)
+
+        # If user exist add that to query
+        if user:
+            anonymous_user_ids = user.values_list('anonymous_user_id', flat=True)
+            lookup = models.Q(student_item__student_id__in=anonymous_user_ids)
+        else:
+            # Check if user searched with course_id
+            lookup = models.Q(student_item__course_id=search_term)
+
+        submissions = Submission.objects.filter(lookup)
+
+        # If user searched with either course_id or user email update and return queryset
+        if submissions:
+            submission_uuids = submissions.values_list('uuid', flat=True)
+            queryset = queryset.filter(submission_uuid__in=submission_uuids)
+            return queryset, False
+
+        queryset, use_distinct = super(AssessmentAdmin, self).get_search_results(request, queryset, search_term)
+        return queryset, use_distinct
+
+    def submission_of(self, assessment_obj):
+        submission = Submission.objects.get(uuid=assessment_obj.submission_uuid)
+        user = AnonymousUserId.objects.get(anonymous_user_id=submission.student_item.student_id).user
+        return user.email
+
+    def course_id(self, assessment_obj):
+        submission = Submission.objects.get(uuid=assessment_obj.submission_uuid)
+        return submission.student_item.course_id
 
     def rubric_link(self, assessment_obj):
         """
@@ -99,6 +135,7 @@ class AssessmentAdmin(admin.ModelAdmin):
         return u'<a href="{}">{}</a>'.format(
             url, assessment_obj.rubric.content_hash
         )
+
     rubric_link.allow_tags = True
     rubric_link.admin_order_field = 'rubric__content_hash'
     rubric_link.short_description = 'Rubric'
@@ -121,6 +158,7 @@ class AssessmentAdmin(admin.ModelAdmin):
             )
             for part in assessment_obj.parts.all()
         )
+
     parts_summary.allow_tags = True
 
 
@@ -147,6 +185,7 @@ class AssessmentFeedbackAdmin(admin.ModelAdmin):
             for asmt in assessment_feedback.assessments.all()
         ]
         return ", ".join(links)
+
     assessments_by.allow_tags = True
 
 
