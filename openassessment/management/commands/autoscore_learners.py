@@ -2,22 +2,15 @@ import hashlib
 import logging
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
-from openassessment.assessment.models import Assessment, AssessmentPart
-from openassessment.assessment.serializers import rubric_from_dict
 from openassessment.workflow.api import get_users_who_not_assessed
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.content.course_structures.models import CourseStructure
-from openedx.core.lib.url_utils import unquote_slashes
-from pytz import utc
-from submissions.api import reset_score, set_score
-from submissions.models import Submission
-from xmodule.modulestore.django import modulestore
+from pytz import utc\
 from openedx.features.assessment.helpers import autoscore_ora
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,10 +24,6 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-
-        print('Hello')
-
-        # bot_user_id = get_philu_bot()
 
         # filter all courses which end date lies in last 24 hours
         en_date = datetime.now(utc)
