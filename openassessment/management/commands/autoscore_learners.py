@@ -8,7 +8,7 @@ from django.db import transaction
 from openassessment.workflow.api import get_users_who_not_assessed
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.content.course_structures.models import CourseStructure
-from pytz import utc\
+from pytz import utc
 from openedx.features.assessment.helpers import autoscore_ora
 
 logger = logging.getLogger(__name__)
