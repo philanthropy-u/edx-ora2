@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-import sys
+from __future__ import absolute_import
+
 import os
+import sys
 
 if __name__ == "__main__":
 

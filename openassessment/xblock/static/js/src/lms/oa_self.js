@@ -14,11 +14,14 @@ OpenAssessment.SelfView = function(element, server, baseView) {
     this.server = server;
     this.baseView = baseView;
     this.rubric = null;
+    this.isRendering = false;
+    this.announceStatus = false;
+    this.dateFactory = new OpenAssessment.DateTimeFactory(this.element);
 };
 
 OpenAssessment.SelfView.prototype = {
 
-    UNSAVED_WARNING_KEY: "self-assessment",
+    UNSAVED_WARNING_KEY: 'self-assessment',
 
     /**
     Load the self assessment view.
@@ -26,15 +29,18 @@ OpenAssessment.SelfView.prototype = {
     load: function(usageID) {
         var view = this;
         var stepID = '.step--self-assessment';
+        var focusID = '[id=\'oa_self_' + usageID + '\']';
+        view.isRendering = true;
         this.server.render('self_assessment').done(
             function(html) {
                 // Load the HTML and install event handlers
                 $(stepID, view.element).replaceWith(html);
+                view.isRendering = false;
+
                 view.server.renderLatex($(stepID, view.element));
                 view.installHandlers();
-                if (typeof usageID !== 'undefined' && $(stepID, view.element).hasClass("is--showing")) {
-                    $("[id='oa_self_" + usageID + "']", view.element).focus();
-                }
+                view.baseView.announceStatusChangeToSRandFocus(stepID, usageID, false, view, focusID);
+                view.dateFactory.apply();
             }
         ).fail(function() {
             view.showLoadError('self-assessment');
@@ -51,13 +57,15 @@ OpenAssessment.SelfView.prototype = {
         // Install a click handler for collapse/expand
         this.baseView.setUpCollapseExpand(sel);
 
+        // Install click handler for the preview button
+        this.baseView.bindLatexPreview(sel);
+
         // Initialize the rubric
-        var rubricSelector = $(".self-assessment--001__assessment", this.element);
+        var rubricSelector = $('.self-assessment--001__assessment', this.element);
         if (rubricSelector.size() > 0) {
             var rubricElement = rubricSelector.get(0);
             this.rubric = new OpenAssessment.Rubric(rubricElement);
-        }
-        else {
+        } else {
             // If there was previously a rubric visible, clear the reference to it.
             this.rubric = null;
         }
@@ -111,7 +119,8 @@ OpenAssessment.SelfView.prototype = {
             this.baseView.unsavedWarningEnabled(
                 true,
                 this.UNSAVED_WARNING_KEY,
-                gettext("If you leave this page without submitting your self assessment, you will lose any work you have done.") // jscs:ignore maximumLineLength
+                // eslint-disable-next-line max-len
+                gettext('If you leave this page without submitting your self assessment, you will lose any work you have done.')
             );
         }
     },
@@ -134,13 +143,12 @@ OpenAssessment.SelfView.prototype = {
         ).done(
             function() {
                 baseView.unsavedWarningEnabled(false, view.UNSAVED_WARNING_KEY);
+                view.announceStatus = true;
                 baseView.loadAssessmentModules(usageID);
-                view.load(usageID);
-                baseView.scrollToTop(".step--self-assessment");
             }
         ).fail(function(errMsg) {
             baseView.toggleActionError('self', errMsg);
             view.selfSubmitEnabled(true);
         });
-    }
+    },
 };

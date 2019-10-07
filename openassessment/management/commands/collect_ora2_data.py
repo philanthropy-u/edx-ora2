@@ -6,9 +6,12 @@ This command differs from upload_oa_data in that it places all the data into one
 
 Generates the same format as the instructor dashboard downloads.
 """
+from __future__ import absolute_import
+
 import csv
-from optparse import make_option
 import os
+
+import six
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -21,25 +24,34 @@ class Command(BaseCommand):
     """
 
     help = ("Usage: collect_ora2_data <course_id> --output-dir=<output_dir>")
-    args = "<course_id>"
 
-    option_list = BaseCommand.option_list + (
-        make_option('-o', '--output-dir',
-                    action='store', dest='output_dir', default=None,
-                    help="Write output to a directory rather than stdout"),
-        make_option('-n', '--file-name',
-                    action='store', dest='file_name', default=None,
-                    help="Write CSV file to the given name"),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('course_id', nargs='+', type=six.text_type)
+        parser.add_argument(
+            '-o',
+            '--output-dir',
+            action='store',
+            dest='output_dir',
+            default=None,
+            help="Write output to a directory rather than stdout"
+        )
+        parser.add_argument(
+            '-n',
+            '--file-name',
+            action='store',
+            dest='file_name',
+            default=None,
+            help="Write CSV file to the given name"
+        )
 
     def handle(self, *args, **options):
         """
         Run the command.
         """
-        if not args:
+        if not options['course_id']:
             raise CommandError("Course ID must be specified to fetch data")
 
-        course_id = args[0]
+        course_id = options['course_id']
 
         if options['file_name']:
             file_name = options['file_name']
@@ -67,7 +79,7 @@ def _encode_row(data_list):
     processed_row = []
 
     for item in data_list:
-        new_item = unicode(item).encode('utf-8')
+        new_item = six.text_type(item).encode('utf-8')
         processed_row.append(new_item)
 
     return processed_row

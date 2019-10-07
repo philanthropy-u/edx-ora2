@@ -1,13 +1,22 @@
 """
 Serialize and deserialize OpenAssessment XBlock content to/from XML.
 """
+from __future__ import absolute_import
+
+import json
+import logging
 from uuid import uuid4 as uuid
-import lxml.etree as etree
-import pytz
+
 import dateutil.parser
 import defusedxml.ElementTree as safe_etree
-from data_conversion import update_assessments_format
-from defaults import DEFAULT_RUBRIC_FEEDBACK_TEXT
+import pytz
+import six
+
+import lxml.etree as etree
+from openassessment.xblock.data_conversion import update_assessments_format
+from openassessment.xblock.lms_mixin import GroupAccessDict
+
+log = logging.getLogger(__name__)
 
 
 class UpdateFromXmlError(Exception):
@@ -53,7 +62,7 @@ def _safe_get_text(element):
     Returns:
         unicode
     """
-    return unicode(element.text) if element.text is not None else u""
+    return six.text_type(element.text) if element.text is not None else u""
 
 
 def _serialize_prompts(prompts_root, prompts_list):
@@ -76,7 +85,7 @@ def _serialize_prompts(prompts_root, prompts_list):
 
         # Prompt description
         prompt_description = etree.SubElement(prompt_el, 'description')
-        prompt_description.text = unicode(prompt.get('description', u''))
+        prompt_description.text = six.text_type(prompt.get('description', u''))
 
 
 def _serialize_options(options_root, options_list):
@@ -99,22 +108,22 @@ def _serialize_options(options_root, options_list):
         option_el = etree.SubElement(options_root, 'option')
 
         # Points (default to 0)
-        option_el.set('points', unicode(option.get('points', 0)))
+        option_el.set('points', six.text_type(option.get('points', 0)))
 
         # Name (default to a UUID)
         option_name = etree.SubElement(option_el, 'name')
         if 'name' in option:
-            option_name.text = unicode(option['name'])
+            option_name.text = six.text_type(option['name'])
         else:
-            option_name.text = unicode(uuid().hex)
+            option_name.text = six.text_type(uuid().hex)
 
         # Label (default to the option name, then an empty string)
         option_label = etree.SubElement(option_el, 'label')
-        option_label.text = unicode(option.get('label', option.get('name', u'')))
+        option_label.text = six.text_type(option.get('label', option.get('name', u'')))
 
         # Explanation (default to empty str)
         option_explanation = etree.SubElement(option_el, 'explanation')
-        option_explanation.text = unicode(option.get('explanation', u''))
+        option_explanation.text = six.text_type(option.get('explanation', u''))
 
 
 def _serialize_criteria(criteria_root, criteria_list):
@@ -140,17 +149,17 @@ def _serialize_criteria(criteria_root, criteria_list):
         # Criterion name (default to a UUID)
         criterion_name = etree.SubElement(criterion_el, u'name')
         if 'name' in criterion:
-            criterion_name.text = unicode(criterion['name'])
+            criterion_name.text = six.text_type(criterion['name'])
         else:
-            criterion_name.text = unicode(uuid().hex)
+            criterion_name.text = six.text_type(uuid().hex)
 
         # Criterion label (default to the name, then an empty string)
         criterion_label = etree.SubElement(criterion_el, 'label')
-        criterion_label.text = unicode(criterion.get('label', criterion.get('name', u'')))
+        criterion_label.text = six.text_type(criterion.get('label', criterion.get('name', u'')))
 
         # Criterion prompt (default to empty string)
         criterion_prompt = etree.SubElement(criterion_el, 'prompt')
-        criterion_prompt.text = unicode(criterion.get('prompt', u''))
+        criterion_prompt.text = six.text_type(criterion.get('prompt', u''))
 
         # Criterion feedback disabled, optional, or required
         # If disabled, do not set the attribute.
@@ -188,11 +197,11 @@ def serialize_rubric(rubric_root, oa_block):
 
     if oa_block.rubric_feedback_prompt is not None:
         feedback_prompt = etree.SubElement(rubric_root, 'feedbackprompt')
-        feedback_prompt.text = unicode(oa_block.rubric_feedback_prompt)
+        feedback_prompt.text = six.text_type(oa_block.rubric_feedback_prompt)
 
     if oa_block.rubric_feedback_default_text is not None:
         feedback_text = etree.SubElement(rubric_root, 'feedback_default_text')
-        feedback_text.text = unicode(oa_block.rubric_feedback_default_text)
+        feedback_text.text = six.text_type(oa_block.rubric_feedback_default_text)
 
 
 def parse_date(date_str, name=""):
@@ -217,9 +226,9 @@ def parse_date(date_str, name=""):
         return None
     try:
         # Get the date into ISO format
-        parsed_date = dateutil.parser.parse(unicode(date_str)).replace(tzinfo=pytz.utc)
+        parsed_date = dateutil.parser.parse(six.text_type(date_str)).replace(tzinfo=pytz.utc)
         formatted_date = parsed_date.strftime("%Y-%m-%dT%H:%M:%S")
-        return unicode(formatted_date)
+        return six.text_type(formatted_date)
     except (ValueError, TypeError):
         msg = (
             'The format of the given date ({date}) for the {name} is invalid. '
@@ -493,8 +502,8 @@ def parse_examples_xml(examples):
                 raise UpdateFromXmlError(u'Each "select" element must have an "option" attribute')
 
             example_dict['options_selected'].append({
-                'criterion': unicode(select_el.get('criterion')),
-                'option': unicode(select_el.get('option'))
+                'criterion': six.text_type(select_el.get('criterion')),
+                'option': six.text_type(select_el.get('option'))
             })
 
         examples_list.append(example_dict)
@@ -524,16 +533,12 @@ def parse_assessments_xml(assessments_root):
 
         # Assessment name
         if 'name' in assessment.attrib:
-            assessment_dict['name'] = unicode(assessment.get('name'))
+            assessment_dict['name'] = six.text_type(assessment.get('name'))
         else:
             raise UpdateFromXmlError('All "assessment" elements must contain a "name" element.')
 
         # Assessment start
         if 'start' in assessment.attrib:
-
-            # Example-based assessment is NOT allowed to have a start date
-            if assessment_dict['name'] == 'example-based-assessment':
-                raise UpdateFromXmlError('Example-based assessment cannot have a start date')
 
             # Other assessment types CAN have a start date
             parsed_start = parse_date(assessment.get('start'), name="{} start date".format(assessment_dict['name']))
@@ -545,10 +550,6 @@ def parse_assessments_xml(assessments_root):
 
         # Assessment due
         if 'due' in assessment.attrib:
-
-            # Example-based assessment is NOT allowed to have a due date
-            if assessment_dict['name'] == 'example-based-assessment':
-                raise UpdateFromXmlError('Example-based assessment cannot have a due date')
 
             # Other assessment types CAN have a due date
             parsed_due = parse_date(assessment.get('due'), name="{} due date".format(assessment_dict['name']))
@@ -578,7 +579,7 @@ def parse_assessments_xml(assessments_root):
             # Staff assessment is the only type to use an explicit required marker
             if assessment_dict['name'] != 'staff-assessment':
                 raise UpdateFromXmlError('The "required" field is only allowed for staff assessment.')
-            assessment_dict['required'] = _parse_boolean(unicode(assessment.get('required')))
+            assessment_dict['required'] = _parse_boolean(six.text_type(assessment.get('required')))
 
         # Training examples
         examples = assessment.findall('example')
@@ -586,13 +587,9 @@ def parse_assessments_xml(assessments_root):
         # Student training and AI Grading should always have examples set, even if it's an empty list.
         # (Validation rules, applied later, are responsible for
         # ensuring that users specify at least one example).
-        # All assessments except for Student Training and AI (example-based-assessment) types ignore examples.
+        # All assessments except for Student Training ignore examples.
         if assessment_dict['name'] == 'student-training':
             assessment_dict['examples'] = parse_examples_xml(examples)
-
-        if assessment_dict['name'] == 'example-based-assessment':
-            assessment_dict['examples'] = parse_examples_xml(examples)
-            assessment_dict['algorithm_id'] = unicode(assessment.get('algorithm_id', 'ease'))
 
         # Update the list of assessments
         assessments_list.append(assessment_dict)
@@ -617,16 +614,28 @@ def serialize_training_examples(examples, assessment_el):
 
         # Answer provided in the example (default to empty string)
         answer_el = etree.SubElement(example_el, 'answer')
-        for part in example_dict.get('answer', {}).get('parts', []):
-            part_el = etree.SubElement(answer_el, 'part')
-            part_el.text = unicode(part.get('text', u''))
+        try:
+            answer = example_dict.get('answer')
+            if answer is None:
+                parts = []
+            elif isinstance(answer, dict):
+                parts = answer.get('parts', [])
+            elif isinstance(answer, list):
+                parts = answer
+
+            for part in parts:
+                part_el = etree.SubElement(answer_el, 'part')
+                part_el.text = six.text_type(part.get('text', u''))
+        except: # excuse the bare-except, looking for more information on EDUCATOR-1817
+            log.exception('Error parsing training example: %s', example_dict)
+            raise
 
         # Options selected from the rubric
         options_selected = example_dict.get('options_selected', [])
         for selected_dict in options_selected:
             select_el = etree.SubElement(example_el, 'select')
-            select_el.set('criterion', unicode(selected_dict.get('criterion', '')))
-            select_el.set('option', unicode(selected_dict.get('option', '')))
+            select_el.set('criterion', six.text_type(selected_dict.get('criterion', '')))
+            select_el.set('option', six.text_type(selected_dict.get('option', '')))
 
 
 def serialize_assessments(assessments_root, oa_block):
@@ -647,25 +656,22 @@ def serialize_assessments(assessments_root, oa_block):
         assessment = etree.SubElement(assessments_root, 'assessment')
 
         # Set assessment attributes, defaulting to empty values
-        assessment.set('name', unicode(assessment_dict.get('name', '')))
+        assessment.set('name', six.text_type(assessment_dict.get('name', '')))
 
         if 'must_grade' in assessment_dict:
-            assessment.set('must_grade', unicode(assessment_dict['must_grade']))
+            assessment.set('must_grade', six.text_type(assessment_dict['must_grade']))
 
         if 'must_be_graded_by' in assessment_dict:
-            assessment.set('must_be_graded_by', unicode(assessment_dict['must_be_graded_by']))
+            assessment.set('must_be_graded_by', six.text_type(assessment_dict['must_be_graded_by']))
 
         if assessment_dict.get('start') is not None:
-            assessment.set('start', unicode(assessment_dict['start']))
+            assessment.set('start', six.text_type(assessment_dict['start']))
 
         if assessment_dict.get('due') is not None:
-            assessment.set('due', unicode(assessment_dict['due']))
-
-        if assessment_dict.get('algorithm_id') is not None:
-            assessment.set('algorithm_id', unicode(assessment_dict['algorithm_id']))
+            assessment.set('due', six.text_type(assessment_dict['due']))
 
         if assessment_dict.get('required') is not None:
-            assessment.set('required', unicode(assessment_dict['required']))
+            assessment.set('required', six.text_type(assessment_dict['required']))
 
         # Training examples
         examples = assessment_dict.get('examples', [])
@@ -690,30 +696,42 @@ def serialize_content_to_xml(oa_block, root):
 
     # Set the submission start date
     if oa_block.submission_start is not None:
-        root.set('submission_start', unicode(oa_block.submission_start))
+        root.set('submission_start', six.text_type(oa_block.submission_start))
 
     # Set submission due date
     if oa_block.submission_due is not None:
-        root.set('submission_due', unicode(oa_block.submission_due))
+        root.set('submission_due', six.text_type(oa_block.submission_due))
 
     # Set leaderboard show
     if oa_block.leaderboard_show:
-        root.set('leaderboard_show', unicode(oa_block.leaderboard_show))
+        root.set('leaderboard_show', six.text_type(oa_block.leaderboard_show))
+
+    # Set text response
+    if oa_block.text_response:
+        root.set('text_response', six.text_type(oa_block.text_response))
+
+    # Set file upload response
+    if oa_block.file_upload_response:
+        root.set('file_upload_response', six.text_type(oa_block.file_upload_response))
 
     # Set File upload settings
     if oa_block.file_upload_type:
-        root.set('file_upload_type', unicode(oa_block.file_upload_type))
+        root.set('file_upload_type', six.text_type(oa_block.file_upload_type))
 
     # Set File type white listing
     if oa_block.white_listed_file_types:
-        root.set('white_listed_file_types', unicode(oa_block.white_listed_file_types_string))
+        root.set('white_listed_file_types', six.text_type(oa_block.white_listed_file_types_string))
 
     if oa_block.allow_latex is not None:
-        root.set('allow_latex', unicode(oa_block.allow_latex))
+        root.set('allow_latex', six.text_type(oa_block.allow_latex))
+
+    # Set group access setting if not empty
+    if oa_block.group_access:
+        root.set('group_access', json.dumps(GroupAccessDict().to_json(oa_block.group_access)))
 
     # Open assessment displayed title
     title = etree.SubElement(root, 'title')
-    title.text = unicode(oa_block.title)
+    title.text = six.text_type(oa_block.title)
 
     # Assessment list
     assessments_root = etree.SubElement(root, 'assessments')
@@ -722,6 +740,8 @@ def serialize_content_to_xml(oa_block, root):
     # Prompts
     prompts_root = etree.SubElement(root, 'prompts')
     _serialize_prompts(prompts_root, oa_block.prompts)
+
+    root.set('prompts_type', six.text_type(oa_block.prompts_type))
 
     # Rubric
     rubric_root = etree.SubElement(root, 'rubric')
@@ -825,29 +845,41 @@ def parse_from_xml(root):
     # Set it to None by default; we will update it to the latest start date later on
     submission_start = None
     if 'submission_start' in root.attrib:
-        submission_start = parse_date(unicode(root.attrib['submission_start']), name="submission start date")
+        submission_start = parse_date(six.text_type(root.attrib['submission_start']), name="submission start date")
 
     # Retrieve the due date for the submission
     # Set it to None by default; we will update it to the earliest deadline later on
     submission_due = None
     if 'submission_due' in root.attrib:
-        submission_due = parse_date(unicode(root.attrib['submission_due']), name="submission due date")
+        submission_due = parse_date(six.text_type(root.attrib['submission_due']), name="submission due date")
+
+    text_response = None
+    if 'text_response' in root.attrib:
+        text_response = six.text_type(root.attrib['text_response'])
+
+    file_upload_response = None
+    if 'file_upload_response' in root.attrib:
+        file_upload_response = six.text_type(root.attrib['file_upload_response'])
 
     allow_file_upload = None
     if 'allow_file_upload' in root.attrib:
-        allow_file_upload = _parse_boolean(unicode(root.attrib['allow_file_upload']))
+        allow_file_upload = _parse_boolean(six.text_type(root.attrib['allow_file_upload']))
 
     file_upload_type = None
     if 'file_upload_type' in root.attrib:
-        file_upload_type = unicode(root.attrib['file_upload_type'])
+        file_upload_type = six.text_type(root.attrib['file_upload_type'])
 
     white_listed_file_types = None
     if 'white_listed_file_types' in root.attrib:
-        white_listed_file_types = unicode(root.attrib['white_listed_file_types'])
+        white_listed_file_types = six.text_type(root.attrib['white_listed_file_types'])
 
     allow_latex = False
     if 'allow_latex' in root.attrib:
-        allow_latex = _parse_boolean(unicode(root.attrib['allow_latex']))
+        allow_latex = _parse_boolean(six.text_type(root.attrib['allow_latex']))
+
+    group_access = {}
+    if 'group_access' in root.attrib:
+        group_access = GroupAccessDict().from_json(json.loads(root.attrib['group_access']))
 
     # Retrieve the title
     title_el = root.find('title')
@@ -865,6 +897,10 @@ def parse_from_xml(root):
 
     # Retrieve the prompts
     prompts = _parse_prompts_xml(root)
+
+    prompts_type = 'text'
+    if 'prompts_type' in root.attrib:
+        prompts_type = six.text_type(root.attrib['prompts_type'])
 
     # Retrieve the leaderboard if it exists, otherwise set it to 0
     leaderboard_show = 0
@@ -884,16 +920,20 @@ def parse_from_xml(root):
     return {
         'title': title,
         'prompts': prompts,
+        'prompts_type': prompts_type,
         'rubric_criteria': rubric['criteria'],
         'rubric_assessments': assessments,
         'rubric_feedback_prompt': rubric['feedbackprompt'],
         'rubric_feedback_default_text': rubric['feedback_default_text'],
         'submission_start': submission_start,
         'submission_due': submission_due,
+        'text_response': text_response,
+        'file_upload_response': file_upload_response,
         'allow_file_upload': allow_file_upload,
         'file_upload_type': file_upload_type,
         'white_listed_file_types': white_listed_file_types,
         'allow_latex': allow_latex,
+        'group_access': group_access,
         'leaderboard_show': leaderboard_show
     }
 

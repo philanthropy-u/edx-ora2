@@ -3,12 +3,15 @@
 Tests for assessment models.
 """
 
+from __future__ import absolute_import
+
 import copy
-from openassessment.test_utils import CacheResetTest
-from openassessment.assessment.models import (
-    Rubric, Criterion, CriterionOption, InvalidRubricSelection
-)
+
+from six.moves import range
+
+from openassessment.assessment.models import Criterion, CriterionOption, InvalidRubricSelection, Rubric
 from openassessment.assessment.test.constants import RUBRIC
+from openassessment.test_utils import CacheResetTest
 
 
 class RubricIndexTest(CacheResetTest):

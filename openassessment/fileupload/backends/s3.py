@@ -1,11 +1,15 @@
-import boto
+from __future__ import absolute_import
+
 import logging
+
 from django.conf import settings
 
-logger = logging.getLogger("openassessment.fileupload.api")
+import boto
 
-from .base import BaseBackend
 from ..exceptions import FileUploadInternalError
+from .base import BaseBackend
+
+logger = logging.getLogger("openassessment.fileupload.api")
 
 
 class Backend(BaseBackend):
@@ -28,7 +32,6 @@ class Backend(BaseBackend):
             )
             raise FileUploadInternalError(ex)
 
-
     def get_download_url(self, key):
         bucket_name, key_name = self._retrieve_parameters(key)
         try:
@@ -41,6 +44,17 @@ class Backend(BaseBackend):
                 u"An internal exception occurred while generating a download URL."
             )
             raise FileUploadInternalError(ex)
+
+    def remove_file(self, key):
+        bucket_name, key_name = self._retrieve_parameters(key)
+        conn = _connect_to_s3()
+        bucket = conn.get_bucket(bucket_name)
+        s3_key = bucket.get_key(key_name)
+        if s3_key:
+            bucket.delete_key(s3_key)
+            return True
+        else:
+            return False
 
 
 def _connect_to_s3():
@@ -59,5 +73,3 @@ def _connect_to_s3():
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key
     )
-
-

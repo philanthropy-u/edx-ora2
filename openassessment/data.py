@@ -1,13 +1,19 @@
 """
 Aggregate data for openassessment.
 """
+from __future__ import absolute_import
+
+from collections import defaultdict
 import csv
 import json
 
+import six
+
 from django.conf import settings
-from submissions import api as sub_api
+
+from openassessment.assessment.models import Assessment, AssessmentFeedback, AssessmentPart
 from openassessment.workflow.models import AssessmentWorkflow
-from openassessment.assessment.models import Assessment, AssessmentPart, AssessmentFeedback
+from submissions import api as sub_api
 
 
 class CsvWriter(object):
@@ -83,7 +89,7 @@ class CsvWriter(object):
         """
         self.writers = {
             key: csv.writer(file_handle)
-            for key, file_handle in output_streams.iteritems()
+            for key, file_handle in six.iteritems(output_streams)
             if key in self.MODELS
         }
         self._progress_callback = progress_callback
@@ -179,7 +185,7 @@ class CsvWriter(object):
         """
         Write the headers (first row) for each output stream.
         """
-        for name, writer in self.writers.iteritems():
+        for name, writer in six.iteritems(self.writers):
             writer.writerow(self.HEADERS[name])
 
     def _write_submission_to_csv(self, submission_uuid):
@@ -275,7 +281,7 @@ class CsvWriter(object):
 
         """
         options_string = ",".join([
-            unicode(option.id) for option in assessment_feedback.options.all()
+            six.text_type(option.id) for option in assessment_feedback.options.all()
         ])
 
         self._write_unicode('assessment_feedback', [
@@ -316,7 +322,7 @@ class CsvWriter(object):
         """
         writer = self.writers.get(output_name)
         if writer is not None:
-            encoded_row = [unicode(field).encode('utf-8') for field in row]
+            encoded_row = [six.text_type(field).encode('utf-8') for field in row]
             writer.writerow(encoded_row)
 
     def _use_read_replica(self, queryset):
@@ -495,3 +501,41 @@ class OraAggregateData(object):
             'Feedback on Peer Assessments'
         ]
         return header, rows
+
+    @classmethod
+    def collect_ora2_responses(cls, course_id, desired_statuses=None):
+        """
+        Get information about all ora2 blocks in the course with response count for each step
+
+        Args:
+            course_id (string) - the course id of the course whose data we would like to return
+            desired_statuses (list) - statuses to return in the result dict for each ora item
+
+        Returns:
+            A dict in the format:
+
+            {
+             'block-v1:test-org+cs101+2017_TEST+type@openassessment+block@fb668396b505470e914bad8b3178e9e7:
+                 {'training': 0, 'self': 0, 'done': 2, 'peer': 1, 'staff': 0, 'total': 3},
+             'block-v1:test-org+cs101+2017_TEST+type@openassessment+block@90b4edff50bc47d9ba037a3180c44e97:
+                 {'training': 0, 'self': 2, 'done': 0, 'peer': 0, 'staff': 2, 'total': 4},
+             ...
+            }
+
+        """
+        if desired_statuses:
+            statuses = [st for st in AssessmentWorkflow().STATUS_VALUES if st in desired_statuses]
+        else:
+            statuses = AssessmentWorkflow().STATUS_VALUES
+
+        items = AssessmentWorkflow.objects.filter(course_id=course_id, status__in=statuses).values('item_id', 'status')
+
+        result = defaultdict(lambda: {status: 0 for status in statuses})
+        for item in items:
+            item_id = item['item_id']
+            status = item['status']
+            result[item_id]['total'] = result[item_id].get('total', 0) + 1
+            if status in statuses:
+                result[item_id][status] += 1
+
+        return result

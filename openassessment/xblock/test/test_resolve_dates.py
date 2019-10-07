@@ -2,14 +2,20 @@
 Test resolving unspecified dates and date strings to datetimes.
 """
 
-import datetime
-from django.test import TestCase
-import ddt
-from mock import MagicMock
-from openassessment.xblock.resolve_dates import resolve_dates, DISTANT_PAST, DISTANT_FUTURE, get_current_time_zone
-import pytz
-from workbench.runtime import WorkBenchUserService
+from __future__ import absolute_import
 
+import datetime
+
+import ddt
+import pytz
+import six
+from six.moves import range
+
+from django.test import TestCase
+
+from openassessment.xblock.resolve_dates import DISTANT_FUTURE, DISTANT_PAST, resolve_dates
+from openassessment.xblock.user_data import get_user_preferences
+from workbench.runtime import WorkBenchUserService
 
 STUB_I18N = lambda x: x
 
@@ -27,7 +33,7 @@ class ResolveDatesTest(TestCase):
         self.DATES[99] = DISTANT_FUTURE
 
         # Construct a dictionary of ISO-formatted date strings for our test data to index
-        self.DATE_STRINGS = {key: val.isoformat() for key, val in self.DATES.iteritems()}
+        self.DATE_STRINGS = {key: val.isoformat() for key, val in six.iteritems(self.DATES)}
         self.DATE_STRINGS[None] = None
 
     @ddt.file_data('data/resolve_dates.json')
@@ -131,13 +137,14 @@ class ResolveDatesTest(TestCase):
             STUB_I18N
         )
 
-    @ddt.data(({}, pytz.utc),
-              ({'pref-lang': 'en', 'time_zone': 'America/Los_Angeles'}, pytz.timezone('America/Los_Angeles')))
+    @ddt.data(({}, None, None),
+              ({'pref-lang': 'en', 'time_zone': 'America/Los_Angeles'}, 'America/Los_Angeles', 'en'))
     @ddt.unpack
-    def test_get_current_time_zone(self, user_preferences, expected_time_zone):
-        """Verify get_current_time_zone returns correct time zone or UTC"""
+    def test_get_user_preferences(self, user_preferences, expected_timezone, expected_language):
+        """Verify get_user_preferences returns correct time zone and language"""
         user_service = WorkBenchUserService(3)
         user_service.get_current_user().opt_attrs['edx-platform.user_preferences'] = user_preferences
 
-        time_zone = get_current_time_zone(user_service)
-        self.assertEqual(expected_time_zone, time_zone)
+        user_preferences = get_user_preferences(user_service)
+        self.assertEqual(expected_timezone, user_preferences['user_timezone'])
+        self.assertEqual(expected_language, user_preferences['user_language'])

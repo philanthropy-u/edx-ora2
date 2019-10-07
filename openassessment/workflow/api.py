@@ -2,19 +2,23 @@
 Public interface for the Assessment Workflow.
 
 """
+from __future__ import absolute_import
+
 import logging
-from django.contrib.auth.models import User
+
+import six
+
 from django.db import DatabaseError
+from django.contrib.auth.models import User
 
 from openassessment.assessment.errors import PeerAssessmentError, PeerAssessmentInternalError
 from submissions import api as sub_api
 from submissions.models import StudentItem, Submission
+from .errors import (AssessmentWorkflowError, AssessmentWorkflowInternalError, AssessmentWorkflowNotFoundError,
+                     AssessmentWorkflowRequestError)
 from .models import AssessmentWorkflow, AssessmentWorkflowCancellation
-from .serializers import AssessmentWorkflowSerializer, AssessmentWorkflowCancellationSerializer
-from .errors import (
-    AssessmentWorkflowError, AssessmentWorkflowInternalError,
-    AssessmentWorkflowRequestError, AssessmentWorkflowNotFoundError
-)
+from .serializers import AssessmentWorkflowCancellationSerializer, AssessmentWorkflowSerializer
+
 
 logger = logging.getLogger(__name__)
 
@@ -373,7 +377,7 @@ def _get_workflow_model(submission_uuid):
             problem.
 
     """
-    if not isinstance(submission_uuid, basestring):
+    if not isinstance(submission_uuid, six.string_types):
         raise AssessmentWorkflowRequestError("submission_uuid must be a string type")
 
     try:
@@ -440,7 +444,8 @@ def get_assessment_workflow_cancellation(submission_uuid):
         workflow_cancellation = AssessmentWorkflowCancellation.get_latest_workflow_cancellation(submission_uuid)
         return AssessmentWorkflowCancellationSerializer(workflow_cancellation).data if workflow_cancellation else None
     except DatabaseError:
-        error_message = u"Error finding assessment workflow cancellation for submission UUID {}.".format(submission_uuid)
+        error_message = u"Error finding assessment workflow cancellation for submission UUID {}."\
+            .format(submission_uuid)
         logger.exception(error_message)
         raise PeerAssessmentInternalError(error_message)
 

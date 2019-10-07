@@ -2,10 +2,14 @@
 """
 Test that the student can save a response.
 """
+from __future__ import absolute_import
+
 import json
+
 import ddt
 
 from openassessment.xblock.data_conversion import prepare_submission_for_serialization
+
 from .base import XBlockHandlerTestCase, scenario
 
 

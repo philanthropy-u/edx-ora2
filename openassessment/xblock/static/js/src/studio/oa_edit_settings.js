@@ -11,6 +11,7 @@ Returns:
 
 **/
 OpenAssessment.EditSettingsView = function(element, assessmentViews, data) {
+    var self = this;
     this.settingsElement = element;
     this.assessmentsElement = $(element).siblings('#openassessment_assessment_module_settings_editors').get(0);
     this.assessmentViews = assessmentViews;
@@ -18,31 +19,46 @@ OpenAssessment.EditSettingsView = function(element, assessmentViews, data) {
     // Configure the date and time fields
     this.startDatetimeControl = new OpenAssessment.DatetimeControl(
         this.element,
-        "#openassessment_submission_start_date",
-        "#openassessment_submission_start_time"
+        '#openassessment_submission_start_date',
+        '#openassessment_submission_start_time'
     ).install();
 
     this.dueDatetimeControl = new OpenAssessment.DatetimeControl(
         this.element,
-        "#openassessment_submission_due_date",
-        "#openassessment_submission_due_time"
+        '#openassessment_submission_due_date',
+        '#openassessment_submission_due_time'
     ).install();
 
     new OpenAssessment.SelectControl(
-        $("#openassessment_submission_upload_selector", this.element),
-        {'custom': $("#openassessment_submission_white_listed_file_types_wrapper", this.element)},
+        $('#openassessment_submission_file_upload_response', this.element),
+        function(selectedValue) {
+            var el = $('#openassessment_submission_file_upload_type_wrapper', self.element);
+            if (!selectedValue) {
+                el.addClass('is--hidden');
+            } else {
+                el.removeClass('is--hidden');
+            }
+        },
         new OpenAssessment.Notifier([
-            new OpenAssessment.AssessmentToggleListener()
+            new OpenAssessment.AssessmentToggleListener(),
+        ])
+    ).install();
+
+    new OpenAssessment.SelectControl(
+        $('#openassessment_submission_upload_selector', this.element),
+        {'custom': $('#openassessment_submission_white_listed_file_types_wrapper', this.element)},
+        new OpenAssessment.Notifier([
+            new OpenAssessment.AssessmentToggleListener(),
         ])
     ).install();
 
     this.leaderboardIntField = new OpenAssessment.IntField(
-        $("#openassessment_leaderboard_editor", this.element),
+        $('#openassessment_leaderboard_editor', this.element),
         {min: 0, max: 100}
     );
 
     this.fileTypeWhiteListInputField = new OpenAssessment.InputControl(
-        $("#openassessment_submission_white_listed_file_types", this.element),
+        $('#openassessment_submission_white_listed_file_types', this.element),
         function(value) {
             var badExts = [];
             var errors = [];
@@ -100,9 +116,9 @@ OpenAssessment.EditSettingsView.prototype = {
                 $('.openassessment_assessment_module_editor', view.element).show();
             },
             snap: true,
-            axis: "y",
-            handle: ".drag-handle",
-            cursorAt: {top: 20}
+            axis: 'y',
+            handle: '.drag-handle',
+            cursorAt: {top: 20},
         });
         $('#openassessment_assessment_module_settings_editors .drag-handle', view.element).disableSelection();
     },
@@ -118,7 +134,7 @@ OpenAssessment.EditSettingsView.prototype = {
 
     **/
     displayName: function(name) {
-        var sel = $("#openassessment_title_editor", this.settingsElement);
+        var sel = $('#openassessment_title_editor', this.settingsElement);
         return OpenAssessment.Fields.stringField(sel, name);
     },
 
@@ -153,6 +169,44 @@ OpenAssessment.EditSettingsView.prototype = {
     },
 
     /**
+     Get or set text response necessity.
+
+    Args:
+        value (string, optional): If provided, set text response necessity.
+
+    Returns:
+        string ('required', 'optional' or '')
+     */
+    textResponseNecessity: function(value) {
+        var sel = $('#openassessment_submission_text_response', this.settingsElement);
+        if (value !== undefined) {
+            sel.val(value);
+        }
+        return sel.val();
+    },
+
+    /**
+     Get or set file upload necessity.
+
+    Args:
+        value (string, optional): If provided, set file upload necessity.
+
+    Returns:
+        string ('required', 'optional' or '')
+     */
+    fileUploadResponseNecessity: function(value, triggerChange) {
+        var sel = $('#openassessment_submission_file_upload_response', this.settingsElement);
+        if (value !== undefined) {
+            triggerChange = triggerChange || false;
+            sel.val(value);
+            if (triggerChange) {
+                $(sel).trigger('change');
+            }
+        }
+        return sel.val();
+    },
+
+    /**
     Get or set upload file type.
 
     Args:
@@ -163,11 +217,17 @@ OpenAssessment.EditSettingsView.prototype = {
 
     **/
     fileUploadType: function(uploadType) {
-        var sel = $("#openassessment_submission_upload_selector", this.settingsElement);
-        if (uploadType !== undefined) {
-            sel.val(uploadType);
+        var fileUploadTypeWrapper = $('#openassessment_submission_file_upload_type_wrapper', this.settingsElement);
+        var fileUploadAllowed = !$(fileUploadTypeWrapper).hasClass('is--hidden');
+        if (fileUploadAllowed) {
+            var sel = $('#openassessment_submission_upload_selector', this.settingsElement);
+            if (uploadType !== undefined) {
+                sel.val(uploadType);
+            }
+            return sel.val();
         }
-        return sel.val();
+
+        return '';
     },
 
     /**
@@ -203,7 +263,7 @@ OpenAssessment.EditSettingsView.prototype = {
                 sel.val(0);
             }
         }
-        return sel.val() === 1;
+        return sel.val() === '1';
     },
     /**
     Get or set the number of scores to show in the leaderboard.
@@ -333,13 +393,13 @@ OpenAssessment.EditSettingsView.prototype = {
         var errors = [];
 
         if (this.startDatetimeControl.validationErrors().length > 0) {
-            errors.push("Submission start is invalid");
+            errors.push('Submission start is invalid');
         }
         if (this.dueDatetimeControl.validationErrors().length > 0) {
-            errors.push("Submission due is invalid");
+            errors.push('Submission due is invalid');
         }
         if (this.leaderboardIntField.validationErrors().length > 0) {
-            errors.push("Leaderboard number is invalid");
+            errors.push('Leaderboard number is invalid');
         }
         if (this.fileTypeWhiteListInputField.validationErrors().length > 0) {
             errors = errors.concat(this.fileTypeWhiteListInputField.validationErrors());

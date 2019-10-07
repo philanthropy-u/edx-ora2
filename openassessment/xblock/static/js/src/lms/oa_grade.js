@@ -10,6 +10,9 @@ OpenAssessment.GradeView = function(element, server, baseView) {
     this.element = element;
     this.server = server;
     this.baseView = baseView;
+    this.announceStatus = false;
+    this.isRendering = false;
+    this.dateFactory = new OpenAssessment.DateTimeFactory(this.element);
 };
 
 OpenAssessment.GradeView.prototype = {
@@ -19,19 +22,19 @@ OpenAssessment.GradeView.prototype = {
     load: function(usageID) {
         var view = this;
         var baseView = this.baseView;
-        var stepID = ".step--grade";
+        var stepID = '.step--grade';
+        var focusID = '[id=\'oa_grade_' + usageID + '\']';
+        view.isRendering = true;
         this.server.render('grade').done(
             function(html) {
                 // Load the HTML and install event handlers
                 $(stepID, view.element).replaceWith(html);
                 view.server.renderLatex($(stepID, view.element));
+                view.isRendering = false;
                 view.installHandlers();
-                if (typeof usageID !== 'undefined' &&
-                    !$(stepID, view.element).hasClass("is--unfinished") &&
-                    !$(stepID, view.element).hasClass("is--unstarted") &&
-                    !$(stepID, view.element).hasClass("is--waiting--staff")) {
-                    $("[id='oa_grade_" + usageID + "']", view.element).focus();
-                }
+
+                view.baseView.announceStatusChangeToSRandFocus(stepID, usageID, true, view, focusID);
+                view.dateFactory.apply();
             }
         ).fail(function(errMsg) {
             baseView.showLoadError('grade', errMsg);
@@ -58,14 +61,14 @@ OpenAssessment.GradeView.prototype = {
      * Get or set the text for feedback on assessments.
      *
      * @param {string} text - The text of the assessment to set (optional).
-     * @returns {string} The text of the feedback
+     * @return {string} The text of the feedback
      */
     feedbackText: function(text) {
-        var usageID = this.baseView.getUsageID() || "";
+        var usageID = this.baseView.getUsageID() || '';
         if (typeof text === 'undefined') {
-            return $("[id='feedback__remarks__value__" + usageID + "']", this.element).val();
+            return $('[id=\'feedback__remarks__value__' + usageID + '\']', this.element).val();
         } else {
-            $("[id='feedback__remarks__value__" + usageID + "']", this.element).val(text);
+            $('[id=\'feedback__remarks__value__' + usageID + '\']', this.element).val(text);
         }
     },
 
@@ -73,15 +76,15 @@ OpenAssessment.GradeView.prototype = {
      * Get or set the options for feedback on assessments.
      *
      * @param {dict} options - List of options to check (optional).
-     * @returns {list} - The values of the options the user selected.
+     * @return {list} - The values of the options the user selected.
      */
     feedbackOptions: function(options) {
         var view = this;
-        var usageID = this.baseView.getUsageID() || "";
+        var usageID = this.baseView.getUsageID() || '';
         if (typeof options === 'undefined') {
             return $.map(
                 $('.feedback__overall__value:checked', view.element),
-                function(element) { return $(element).val(); }
+                function(element) {return $(element).val();}
             );
         } else {
             // Uncheck all the options
@@ -89,7 +92,8 @@ OpenAssessment.GradeView.prototype = {
 
             // Check the selected options
             $.each(options, function(index, opt) {
-                $("[id='feedback__overall__value--" + opt + "__" + usageID + "']", view.element).prop('checked', true);
+                $('[id=\'feedback__overall__value--' + opt + '__' + usageID + '\']', view.element)
+                    .prop('checked', true);
             });
         }
     },
@@ -109,7 +113,7 @@ OpenAssessment.GradeView.prototype = {
      * Check whether elements are hidden.
      *
      * @param {JQuery.selector} selector - The selector matching the elements to check.
-     * @returns {boolean} - True if all the elements are hidden, else false.
+     * @return {boolean} - True if all the elements are hidden, else false.
      */
     isHidden: function(selector) {
         return selector.hasClass('is--hidden') && selector.attr('aria-hidden') === 'true';
@@ -127,7 +131,7 @@ OpenAssessment.GradeView.prototype = {
      *     'submitted': The feedback was successfully submitted.
      *
      * @param {string} newState - the new state to set for the feedback (optional).
-     * @returns {*} The current state.
+     * @return {*} The current state.
      */
     feedbackState: function(newState) {
         var containerSel = $('.submission__feedback__content', this.element);
@@ -155,13 +159,16 @@ OpenAssessment.GradeView.prototype = {
                 !this.isHidden(instructionsSel) && !this.isHidden(fieldsSel) && !this.isHidden(actionsSel)
             );
 
-            if (isOpen) { return 'open'; }
-            else if (isSubmitting) { return 'submitting'; }
-            else if (hasSubmitted) { return 'submitted'; }
-            else { throw 'Invalid feedback state'; }
-        }
-
-        else {
+            if (isOpen) {
+                return 'open';
+            } else if (isSubmitting) {
+                return 'submitting';
+            } else if (hasSubmitted) {
+                return 'submitted';
+            } else {
+                throw new Error('Invalid feedback state');
+            }
+        } else {
             if (newState === 'open') {
                 containerSel.toggleClass('is--transitioning', false);
                 containerSel.toggleClass('is--submitting', false);
@@ -171,9 +178,7 @@ OpenAssessment.GradeView.prototype = {
                 this.setHidden(actionsSel, false);
                 this.setHidden(transitionSel, true);
                 this.setHidden(messageSel, true);
-            }
-
-            else if (newState === 'submitting') {
+            } else if (newState === 'submitting') {
                 containerSel.toggleClass('is--transitioning', true);
                 containerSel.toggleClass('is--submitting', true);
                 containerSel.toggleClass('is--submitted', false);
@@ -182,9 +187,7 @@ OpenAssessment.GradeView.prototype = {
                 this.setHidden(actionsSel, true);
                 this.setHidden(transitionSel, false);
                 this.setHidden(messageSel, true);
-            }
-
-            else if (newState === 'submitted') {
+            } else if (newState === 'submitted') {
                 containerSel.toggleClass('is--transitioning', false);
                 containerSel.toggleClass('is--submitting', false);
                 containerSel.toggleClass('is--submitted', true);
@@ -206,7 +209,7 @@ OpenAssessment.GradeView.prototype = {
         var baseView = this.baseView;
 
         // Disable the submission button to prevent duplicate submissions
-        $(".feedback__submit", this.element).prop('disabled', true);
+        $('.feedback__submit', this.element).prop('disabled', true);
 
         // Indicate to the user that we're starting to submit
         view.feedbackState('submitting');
@@ -216,9 +219,9 @@ OpenAssessment.GradeView.prototype = {
         this.server.submitFeedbackOnAssessment(
             this.feedbackText(), this.feedbackOptions()
         ).done(
-            function() { view.feedbackState('submitted'); }
+            function() {view.feedbackState('submitted');}
         ).fail(function(errMsg) {
             baseView.toggleActionError('feedback_assess', errMsg);
         });
-    }
+    },
 };

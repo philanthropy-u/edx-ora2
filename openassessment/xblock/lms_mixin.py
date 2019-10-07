@@ -2,7 +2,22 @@
 Fields and methods used by the LMS and Studio.
 """
 
-from xblock.fields import String, Float, Scope, DateTime
+from __future__ import absolute_import
+
+import six
+
+from xblock.fields import DateTime, Dict, Float, Scope, String
+
+
+class GroupAccessDict(Dict):
+    """Special Dict class for serializing the group_access field"""
+    def from_json(self, access_dict):
+        if access_dict is not None:
+            return {int(k): access_dict[k] for k in access_dict}
+
+    def to_json(self, access_dict):
+        if access_dict is not None:
+            return {six.text_type(k): access_dict[k] for k in access_dict}
 
 
 class LmsCompatibilityMixin(object):
@@ -12,7 +27,7 @@ class LmsCompatibilityMixin(object):
     # Studio the default value for this field to show this XBlock
     # in the list of "Advanced Components"
     display_name = String(
-        default="Peer Assessment", scope=Scope.settings,
+        default="Open Response Assessment", scope=Scope.settings,
         help="Display name"
     )
 
@@ -33,6 +48,18 @@ class LmsCompatibilityMixin(object):
               "option point values."),
         values={"min": 0, "step": .1},
         scope=Scope.settings
+    )
+
+    group_access = GroupAccessDict(
+        help=(
+            "A dictionary that maps which groups can be shown this block. The keys "
+            "are group configuration ids and the values are a list of group IDs. "
+            "If there is no key for a group configuration or if the set of group IDs "
+            "is empty then the block is considered visible to all. Note that this "
+            "field is ignored if the block is visible_to_staff_only."
+        ),
+        default={},
+        scope=Scope.settings,
     )
 
     icon_class = "problem"

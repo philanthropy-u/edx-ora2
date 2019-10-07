@@ -8,12 +8,14 @@
 {% endblock %}
 
 {% block button %}
-    <button class="ui-slidable" aria-expanded="false" id="oa_response_{{ xblock_id }}" aria-controls="oa_response_{{ xblock_id }}_content">
+    <button class="ui-slidable" aria-expanded="true" id="oa_response_{{ xblock_id }}" aria-controls="oa_response_{{ xblock_id }}_content" aria-labeledby="oa_step_title_response">
+        <span class="icon fa fa-caret-right" aria-hidden="false"/>
+    </button>
 {% endblock %}
 
 {% block title %}
 <span class="step__status">
-  <span class="step__status__value">
+  <span id="oa_step_status_response" class="step__status__value">
     <span class="copy">{% trans "Completed" %}</span>
   </span>
 </span>
@@ -27,8 +29,8 @@
                 {% trans "Your response" as translated_label %}
                 {% include "openassessmentblock/oa_submission_answer.html" with answer=student_submission.answer answer_text_label=translated_label %}
 
-                {% trans "Your Uploaded File"  as translated_header %}
-                {% include "openassessmentblock/oa_uploaded_file.html" with file_upload_type=file_upload_type file_url=file_url header=translated_header class_prefix="submission__answer" %}
+                {% trans "Your Uploaded Files"  as translated_header %}
+                {% include "openassessmentblock/oa_uploaded_file.html" with file_upload_type=file_upload_type file_urls=file_urls header=translated_header class_prefix="submission__answer" including_template="response_graded" xblock_id=xblock_id %}
             </article>
         </div>
     </div>

@@ -1,18 +1,15 @@
 """
 Test utilities
 """
+from __future__ import absolute_import
+
 from django.core.cache import cache
 from django.test import TestCase, TransactionTestCase
-from openassessment.assessment.models.ai import (
-    CLASSIFIERS_CACHE_IN_MEM, CLASSIFIERS_CACHE_IN_FILE
-)
 
 
 def _clear_all_caches():
     """Clear the default cache and any custom caches."""
     cache.clear()
-    CLASSIFIERS_CACHE_IN_MEM.clear()
-    CLASSIFIERS_CACHE_IN_FILE.clear()
 
 
 class CacheResetTest(TestCase):

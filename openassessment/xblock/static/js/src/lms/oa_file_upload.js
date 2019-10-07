@@ -16,6 +16,7 @@ Returns:
 */
 OpenAssessment.FileUploader = function() {
     this.upload = function(url, file) {
+        // eslint-disable-next-line new-cap
         return $.Deferred(
             function(defer) {
                 $.ajax({
@@ -29,11 +30,11 @@ OpenAssessment.FileUploader = function() {
                     function() {
                         // Log an analytics event
                         Logger.log(
-                            "openassessment.upload_file",
+                            'openassessment.upload_file',
                             {
                                 fileName: file.name,
                                 fileSize: file.size,
-                                fileType: file.type
+                                fileType: file.type,
                             }
                         );
 

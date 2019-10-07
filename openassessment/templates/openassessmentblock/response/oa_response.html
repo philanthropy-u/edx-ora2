@@ -7,39 +7,51 @@
 {% endblock %}
 
     <header class="step__header ui-slidable__control">
-        <h4 class="step__title">
+        <span>
             {% block button %}
-            <button class="ui-slidable" aria-expanded="true" id="oa_response_{{ xblock_id }}" aria-controls="oa_response_{{ xblock_id }}_content">
+                <button class="ui-slidable" aria-expanded="true" id="oa_response_{{ xblock_id }}" aria-controls="oa_response_{{ xblock_id }}_content" aria-labeledby="oa_step_title_response">
+                    <span class="icon fa fa-caret-right" aria-hidden="false"/>
+                </button>
             {% endblock %}
+        </span>
+
+        <span>
+            <h4 class="step__title">
                 <span class="step__counter"></span>
                 <span class="wrapper--copy">
-                    <span class="step__label">{% trans "Your Response" %}</span>
-                    {% if submission_start %}
-                    <span class="step__deadline">
-                        {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "available August 13th, 2014 (in 5 days and 45 minutes)" #}
-                        {% blocktrans with start_date=submission_start|timezone:time_zone|date:"N j, Y H:i e" time_until=submission_start|timeuntil %}available <span class="date">{{ start_date }} (in {{ time_until }})</span>{% endblocktrans %}
-                    </span>
-                    {% elif submission_due %}
-                    <span class="step__deadline">
-                        {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "due August 13th, 2014 (in 5 days and 45 minutes)" #}
-                        {% blocktrans with due_date=submission_due|timezone:time_zone|date:"N j, Y H:i e" time_until=submission_due|timeuntil %}due <span class="date">{{ due_date }} (in {{ time_until }})</span>{% endblocktrans %}
-                    {% endif %}
+                    <span id="oa_step_title_response" class="step__label" aria-describedby="oa_step_status_response oa_step_deadline_response">{% trans "Your Response" %}</span>
                 </span>
-            </button>
+            </h4>
+        </span>
 
-            {%  block title %}
-            <span class="step__status">
-                <span class="step__status__value">
-                    <span class="copy">{% trans "In Progress" %}</span>
-                </span>
+        {% if submission_start %}
+        <span class="step__deadline">
+            {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "available August 13th, 2014 (in 5 days and 45 minutes)" #}
+            {% blocktrans with start_date=submission_start|timezone:"UTC"|date:"c" time_until=submission_start|timeuntil %}
+            <span id="oa_step_deadline_response" class="date ora-datetime" data-datetime="{{ start_date }}" data-string="available {date} (in {{ time_until }})" data-timezone="{{ user_timezone }}" data-language="{{ user_language }}"></span>
+            {% endblocktrans %}
+        </span>
+        {% elif submission_due %}
+        <span class="step__deadline">
+            {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "due August 13th, 2014 (in 5 days and 45 minutes)" #}
+            {% blocktrans with due_date=submission_due|timezone:"UTC"|date:"c" time_until=submission_due|timeuntil %}
+            <span id="oa_step_deadline_response" class="date ora-datetime" data-datetime="{{ due_date }}" data-string="due {date} (in {{ time_until }})" data-timezone="{{ user_timezone }}" data-language="{{ user_language }}"></span>
+            {% endblocktrans %}
+        </span>
+        {% endif %}
+        {%  block title %}
+        <span class="step__status">
+            <span id="oa_step_status_response" class="step__status__value">
+                <span class="copy">{% trans "In Progress" %}</span>
             </span>
-            {% endblock %}
-        </h4>
+        </span>
+        {% endblock %}
     </header>
 
     {% block body %}
     <div class="ui-slidable__content" aria-labelledby="oa_response_{{ xblock_id }}" id="oa_response_{{ xblock_id }}_content">
         <div class="wrapper--step__content">
+
             <div class="step__content">
                 <form class="response__submission">
                     <ul class="list list--fields response__submission__content">
@@ -48,26 +60,75 @@
                                 <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
                                 <article class="submission__answer__part__prompt">
                                     <div class="submission__answer__part__prompt__copy">
-                                        {{ part.prompt.description|linebreaks }}
+                                        {% if prompts_type == 'html' %}
+                                            {{ part.prompt.description|safe }}
+                                        {% else %}
+                                            {{ part.prompt.description|linebreaks }}
+                                        {% endif %}
                                     </div>
                                 </article>
+
+
+                                {% if text_response %}
                                 <div class="field field--textarea submission__answer__part__text">
                                     <textarea
                                         id="submission__answer__part__text__{{ forloop.counter }}__{{ xblock_id }}"
                                         class="submission__answer__part__text__value"
+                                        data-preview="submission__{{ forloop.counter }}"
                                         aria-labelledby="submission__answer__part__text__title__{{ forloop.counter }}__{{ xblock_id }}"
                                         aria-describedby="submission__answer__tip__{{ xblock_id }}"
                                         placeholder="{% trans "Enter your answer here" %}"
                                         maxlength="100000"
                                     >{{ part.text }}</textarea>
                                 </div>
+                                {% with forloop.counter|stringformat:"s" as submission_num %}
+                                    {% include "openassessmentblock/oa_latex_preview.html" with id="submission__"|add:xblock_id|add:submission_num elem="div" preview_name="submission__"|add:submission_num %}
+                                {% endwith %}
+                                {% endif %}
                             </li>
                         {% endfor %}
-                        {% if file_upload_type %}
+                        {% if text_response %}
                         <li class="field clearfix">
+                            <div class="response__submission__actions">
+                                <div class="message message--inline message--error message--error-server" tabindex="-1">
+                                    <h5 class="message__title">{% trans "We could not save your progress" %}</h5>
+                                    <div class="message__content"></div>
+                                </div>
+
+                                <ul class="list list--actions hide">
+                                    <hr />
+                                    <li class="list--actions__item save-submit-response">
+                                        <div class="tbl-view">
+                                            <div class="tbl-col">
+                                                <button type="submit" class="action action--save submission__save btn--small btn--bordered" aria-describedby="response__save_status__{{ xblock_id }}" disabled>
+                                                    {% trans "SAVE PROGRESS" %}
+                                                </button>
+                                            </div>
+                                            <div class="tbl-col">
+                                                OR
+                                            </div>
+                                            <div class="tbl-col">
+                                                <button type="submit" class="action action&#45;&#45;submit step&#45;&#45;response__submit btn--small"
+                                                    {{submit_enabled|yesno:",disabled" }}>
+                                                    {% trans "SUBMIT" %}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div id="response__save_status__{{ xblock_id }}" class="save__submission__label response__submission__label">
+                                            <span class="sr">{% trans "Your Submission Status" %}:</span>
+                                            {{ save_status }}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if file_upload_type %}
+                        <li class="field">
                             <div class="upload__error">
                                 <div class="message message--inline message--error message--error-server" tabindex="-1">
-                                    <h5 class="message__title">{% trans "We could not upload this file" %}</h5>
+                                    <h5 class="message__title">{% trans "We could not upload files" %}</h5>
                                     <div class="message__content"></div>
                                 </div>
                             </div>
@@ -76,63 +137,14 @@
                             <div class="file--upload--container">
                                 <input type="file" class="submission__answer__upload file--upload" id="submission_answer_upload_{{ xblock_id }}">
                             </div>
+                            <div class="files__descriptions"></div>
                         </li>
                         {% endif %}
-
-                        {% include "openassessmentblock/oa_uploaded_file.html" with file_upload_type=file_upload_type file_url=file_url class_prefix="submission__answer"%}
+                        <li class="field">
+                        {% include "openassessmentblock/oa_uploaded_file.html" with file_upload_type=file_upload_type file_urls=file_urls class_prefix="submission__answer" including_template="response" xblock_id=xblock_id %}
+                        </li>
                     </ul>
 
-                    <div class="response__submission__actions">
-                        <div class="message message--inline message--error message--error-server" tabindex="-1">
-                            <h5 class="message__title">{% trans "We could not save your progress" %}</h5>
-                            <div class="message__content"></div>
-                        </div>
-
-                        <ul class="list list--actions hide">
-                            <hr />
-                            <li class="list--actions__item save-submit-response">
-                                <div class="tbl-view">
-                                    <div class="tbl-col">
-                                        <button type="submit" class="action action--save submission__save btn--small btn--bordered" aria-describedby="response__save_status__{{ xblock_id }}" disabled>
-                                            {% trans "SAVE PROGRESS" %}
-                                        </button>
-                                    </div>
-                                    <div class="tbl-col">
-                                        OR
-                                    </div>
-                                    <div class="tbl-col">
-                                        <button type="submit" class="action action&#45;&#45;submit step&#45;&#45;response__submit btn--small"
-                                            {{submit_enabled|yesno:",disabled" }}>
-                                            {% trans "SUBMIT" %}
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="response__save_status__{{ xblock_id }}" class="save__submission__label response__submission__label">
-                                    <span class="sr">{% trans "Your Submission Status" %}:</span>
-                                    {{ save_status }}
-                                </div>
-                            </li>
-                            {% if allow_latex %}
-                                <li class="list--actions__item">
-                                    <button type="submit" class="submission__preview  action action--save" aria-describedby="response__preview_explanation__{{ xblock_id }}"
-                                        {{submit_enabled|yesno:",disabled" }}>
-                                        {% trans "Preview in LaTeX"%}
-                                    </button>
-                                    <div id="response__preview_explanation__{{ xblock_id }}" class="response__submission__label">
-                                        {% trans "Click to preview your submission in LaTeX."%}
-                                    </div>
-                                </li>
-                                <li class="submission__preview__item list--actions__item">
-                                    <article class="submission__answer__display">
-                                        <h5 class="submission__answer__display__title">{% trans "Preview Response"%}</h5>
-                                        <div class="submission__answer__display__content">
-                                            <p class="preview_content"></p>
-                                        </div>
-                                    </article>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </div>
                 </form>
             </div>
 

@@ -2,23 +2,27 @@
 """
 Tests for serializing to/from XML.
 """
-import copy
-import datetime as dt
-import mock
-import lxml.etree as etree
-import pytz
-import dateutil.parser
-from django.test import TestCase
-import ddt
+from __future__ import absolute_import, print_function
 
-from openassessment.xblock.data_conversion import create_prompts_list, update_assessments_format
+import copy
+import json
+
+import dateutil.parser
+import ddt
+import mock
+import pytz
+import six
+from six.moves import zip
+
+from django.test import TestCase
+
+import lxml.etree as etree
+from openassessment.xblock.data_conversion import create_prompts_list
 from openassessment.xblock.openassessmentblock import OpenAssessmentBlock
-from openassessment.xblock.xml import (
-    serialize_content, parse_from_xml_str, _parse_prompts_xml, parse_rubric_xml,
-    parse_examples_xml, parse_assessments_xml,
-    serialize_rubric_to_xml_str, serialize_examples_to_xml_str,
-    serialize_assessments_to_xml_str, UpdateFromXmlError
-)
+from openassessment.xblock.xml import (UpdateFromXmlError, _parse_prompts_xml, parse_assessments_xml,
+                                       parse_examples_xml, parse_from_xml_str, parse_rubric_xml,
+                                       serialize_assessments_to_xml_str, serialize_content,
+                                       serialize_examples_to_xml_str, serialize_rubric_to_xml_str)
 
 
 def _parse_date(value):
@@ -115,8 +119,11 @@ class TestSerializeContent(TestCase):
 
     def _configure_xblock(self, data):
         self.oa_block.title = data.get('title', '')
+        self.oa_block.text_response = data.get('text_response', '')
+        self.oa_block.file_upload_response = data.get('file_upload_response', None)
         self.oa_block.prompt = data.get('prompt')
         self.oa_block.prompts = create_prompts_list(data.get('prompt'))
+        self.oa_block.prompts_type = data.get('prompts_type', 'text')
         self.oa_block.rubric_feedback_prompt = data.get('rubric_feedback_prompt')
         self.oa_block.rubric_feedback_default_text = data.get('rubric_feedback_default_text')
         self.oa_block.start = _parse_date(data.get('start'))
@@ -130,6 +137,7 @@ class TestSerializeContent(TestCase):
         self.oa_block.white_listed_file_types = data.get('white_listed_file_types')
         self.oa_block.allow_latex = data.get('allow_latex')
         self.oa_block.leaderboard_show = data.get('leaderboard_show', 0)
+        self.oa_block.group_access = json.loads(data.get('group_access', "{}"))
 
     @ddt.file_data('data/serialize.json')
     def test_serialize(self, data):
@@ -169,9 +177,9 @@ class TestSerializeContent(TestCase):
                 )
             )
             self.assertItemsEqual(
-                actual.items(), expected.items(),
+                list(actual.items()), list(expected.items()),
                 msg=u"Incorrect attributes for {tag}.  Expected {expected} but found {actual}".format(
-                    tag=actual.tag, expected=expected.items(), actual=actual.items()
+                    tag=actual.tag, expected=list(expected.items()), actual=list(actual.items())
                 )
             )
 
@@ -314,16 +322,16 @@ class TestSerializeContent(TestCase):
         Yields:
             dict
         """
-        for key, val in input_dict.iteritems():
+        for key, val in six.iteritems(input_dict):
 
             # Mutation #1: Remove the key
-            print "== Removing key {}".format(key)
-            yield {k: v for k, v in input_dict.iteritems() if k != key}
+            print("== Removing key {}".format(key))
+            yield {k: v for k, v in six.iteritems(input_dict) if k != key}
 
             if isinstance(val, dict):
 
                 # Mutation #2: Empty dict
-                print "== Emptying dict {}".format(key)
+                print("== Emptying dict {}".format(key))
                 yield self._mutate_dict(input_dict, key, dict())
 
                 # Mutation #3-5: value mutations
@@ -336,7 +344,7 @@ class TestSerializeContent(TestCase):
 
             elif isinstance(val, list):
                 # Mutation #2: Empty list
-                print "== Emptying list {}".format(key)
+                print("== Emptying list {}".format(key))
                 yield self._mutate_dict(input_dict, key, list())
 
                 # Mutation #3-5: value mutations
@@ -368,7 +376,7 @@ class TestSerializeContent(TestCase):
         Yields:
             list
         """
-        print "== Emptying list"
+        print("== Emptying list")
         yield list()
 
         # Mutation #3-5: value mutations
@@ -392,13 +400,13 @@ class TestSerializeContent(TestCase):
         Yields:
             dict
         """
-        print "== None value {}".format(key)
+        print("== None value {}".format(key))
         yield self._mutate_dict(input_dict, key, None)
 
-        print "== Unicode value {}".format(key)
+        print("== Unicode value {}".format(key))
         yield self._mutate_dict(input_dict, key, u"\u9731")
 
-        print "== int value {}".format(key)
+        print("== int value {}".format(key))
         yield self._mutate_dict(input_dict, key, 0)
 
     @staticmethod

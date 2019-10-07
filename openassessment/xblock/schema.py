@@ -2,9 +2,13 @@
 Schema for validating and sanitizing data received from the JavaScript client.
 """
 
+from __future__ import absolute_import
+
 import dateutil
 from pytz import utc
-from voluptuous import Schema, Required, All, Any, Range, In, Invalid
+import six
+
+from voluptuous import All, Any, In, Invalid, Range, Required, Schema
 
 
 def utf8_validator(value):
@@ -25,7 +29,7 @@ def utf8_validator(value):
         if isinstance(value, str):
             return value.decode('utf-8')
         else:
-            return unicode(value)
+            return six.text_type(value)
     except (ValueError, TypeError):
         raise Invalid(u"Could not load unicode from value \"{val}\"".format(val=value))
 
@@ -51,21 +55,32 @@ def datetime_validator(value):
 
         # Parse the date and interpret it as UTC
         value = dateutil.parser.parse(value).replace(tzinfo=utc)
-        return unicode(value.isoformat())
+        return six.text_type(value.isoformat())
     except (ValueError, TypeError):
         raise Invalid(u"Could not parse datetime from value \"{val}\"".format(val=value))
+
+
+PROMPTS_TYPES = [
+    u'text',
+    u'html',
+]
+
+
+NECESSITY_OPTIONS = [
+    u'required',
+    u'optional',
+    u''
+]
 
 
 VALID_ASSESSMENT_TYPES = [
     u'peer-assessment',
     u'self-assessment',
-    u'example-based-assessment',
     u'student-training',
     u'staff-assessment',
 ]
 
 VALID_UPLOAD_FILE_TYPES = [
-    u'',
     u'image',
     u'pdf-and-image',
     u'custom'
@@ -78,16 +93,16 @@ EDITOR_UPDATE_SCHEMA = Schema({
             Required('description'): utf8_validator,
         })
     ],
+    Required('prompts_type', default='text'): Any(All(utf8_validator, In(PROMPTS_TYPES)), None),
     Required('title'): utf8_validator,
     Required('feedback_prompt'): utf8_validator,
     Required('feedback_default_text'): utf8_validator,
     Required('submission_start'): Any(datetime_validator, None),
     Required('submission_due'): Any(datetime_validator, None),
+    Required('text_response', default='required'): Any(All(utf8_validator, In(NECESSITY_OPTIONS)), None),
+    Required('file_upload_response', default=None): Any(All(utf8_validator, In(NECESSITY_OPTIONS)), None),
     'allow_file_upload': bool,  # Backwards compatibility.
-    Required('file_upload_type', default=None): Any(
-        All(utf8_validator, In(VALID_UPLOAD_FILE_TYPES)),
-        None
-    ),
+    Required('file_upload_type', default=None): Any(All(utf8_validator, In(VALID_UPLOAD_FILE_TYPES)), None),
     'white_listed_file_types': utf8_validator,
     Required('allow_latex'): bool,
     Required('leaderboard_show'): int,

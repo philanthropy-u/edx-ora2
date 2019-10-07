@@ -1,9 +1,12 @@
+from __future__ import absolute_import
+
 import abc
+
+import six
 
 from django.conf import settings
 
-from ..exceptions import FileUploadInternalError
-from ..exceptions import FileUploadRequestError
+from ..exceptions import FileUploadInternalError, FileUploadRequestError
 
 
 class Settings(object):
@@ -37,11 +40,8 @@ class Settings(object):
         return getattr(settings, "FILE_UPLOAD_STORAGE_PREFIX", cls.DEFAULT_FILE_UPLOAD_STORAGE_PREFIX)
 
 
-class BaseBackend(object):
+class BaseBackend(six.with_metaclass(abc.ABCMeta, object)):
 
-    __metaclass__ = abc.ABCMeta
-
-    # Time (in seconds) before an upload url expires
     UPLOAD_URL_TIMEOUT = 3600
 
     # Time (in seconds) before a download url expires
@@ -90,6 +90,19 @@ class BaseBackend(object):
         """
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def remove_file(self, key):
+        """
+        Remove file from the storage
+
+        Args:
+            key (str): A unique identifier used to identify the data requested for remove.
+
+        Returns:
+            True if file was successfully removed or False is file was not removed or was not was not found.
+        """
+        raise NotImplementedError
+
     def _retrieve_parameters(self, key):
         """
         Simple utility function to validate settings and arguments before compiling
@@ -110,7 +123,6 @@ class BaseBackend(object):
             raise FileUploadRequestError("Key required for URL request")
         return Settings.get_bucket_name(), self._get_key_name(key)
 
-
     def _get_key_name(self, key):
         """Construct a key name with the given string and configured prefix.
 
@@ -127,4 +139,3 @@ class BaseBackend(object):
             prefix=Settings.get_prefix(),
             key=key
         )
-

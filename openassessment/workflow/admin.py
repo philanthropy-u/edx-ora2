@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from django.contrib import admin
 
 from .models import AssessmentWorkflow, AssessmentWorkflowStep
@@ -16,10 +18,10 @@ class AssessmentWorkflowAdmin(admin.ModelAdmin):
     there is no expectation of immutability for `AssessmentWorkflow`.
     """
     list_display = (
-        'uuid', 'status', 'submission_uuid', 'course_id', 'item_id', 'status_changed'
+        'status', 'submission_uuid', 'course_id', 'item_id', 'status_changed'
     )
     list_filter = ('status',)
-    search_fields = ('uuid', 'submission_uuid', 'course_id', 'item_id')
+    search_fields = ('submission_uuid', 'course_id', 'item_id')
     inlines = (AssessmentWorkflowStepInline,)
 
 admin.site.register(AssessmentWorkflow, AssessmentWorkflowAdmin)

@@ -27,6 +27,7 @@ OpenAssessment.BaseView = function(runtime, element, server, data) {
     // Staff-only area with information and tools for managing student submissions
     this.staffAreaView = new OpenAssessment.StaffAreaView(this.element, this.server, this);
     this.usageID = '';
+    this.srStatusUpdates = [];
 };
 
 if (typeof OpenAssessment.unsavedChanges === 'undefined' || !OpenAssessment.unsavedChanges) {
@@ -41,11 +42,12 @@ OpenAssessment.clearUnsavedChanges = function() {
 
 OpenAssessment.BaseView.prototype = {
 
-    IS_SHOWING_CLASS: "is--showing",
-    SLIDABLE_CLASS: "ui-slidable",
-    SLIDABLE_CONTENT_CLASS: "ui-slidable__content",
-    SLIDABLE_CONTROLS_CLASS: "ui-slidable__control",
-    SLIDABLE_CONTAINER_CLASS: "ui-slidable__container",
+    IS_SHOWING_CLASS: 'is--showing',
+    SLIDABLE_CLASS: 'ui-slidable',
+    SLIDABLE_CONTENT_CLASS: 'ui-slidable__content',
+    SLIDABLE_CONTROLS_CLASS: 'ui-slidable__control',
+    SLIDABLE_CONTAINER_CLASS: 'ui-slidable__container',
+    READER_FEEDBACK_CLASS: '.sr.reader-feedback',
 
     /**
      * Checks to see if the scrollTo function is available, then scrolls to the
@@ -59,12 +61,100 @@ OpenAssessment.BaseView.prototype = {
      */
     scrollToTop: function(selector) {
         if (!selector) {
-            selector = ".openassessment__steps";
+            selector = '.openassessment__steps';
         }
         if ($.scrollTo instanceof Function) {
             $(window).scrollTo($(selector, this.element), 800, {offset: -50});
-            $(selector + " > header ." + this.SLIDABLE_CLASS, this.element).focus();
+            $(selector + ' > header .' + this.SLIDABLE_CLASS, this.element).focus();
         }
+    },
+
+    /**
+     * Clear the text in the Aria live region.
+     */
+    srClear: function() {
+        $(this.READER_FEEDBACK_CLASS).html('');
+    },
+
+    /**
+     * Add the text messages to the Aria live region.
+     *
+     * @param {string[]} texts
+     */
+    srReadTexts: function(texts) {
+        var $readerFeedbackSelector = $(this.READER_FEEDBACK_CLASS),
+            htmlFeedback = '';
+        this.srClear();
+        $.each(texts, function(ids, value) {
+            htmlFeedback = htmlFeedback + '<p>' + value + '</p>\n';
+        });
+        $readerFeedbackSelector.html(htmlFeedback);
+    },
+
+    /**
+     * Checks the rendering status of the views that may require Screen Reader Status updates.
+     *
+     * The only views that should be added here are those that require Screen Reader updates when moving from one
+     * step to another.
+     *
+     * @return {boolean} true if any step's view is still loading.
+     */
+    areSRStepsLoading: function() {
+        return this.responseView.isRendering ||
+            this.peerView.isRendering ||
+            this.selfView.isRendering ||
+            this.gradeView.isRendering ||
+            this.trainingView.isRendering ||
+            this.staffView.isRendering;
+    },
+
+    /**
+     * Updates text in the Aria live region if all sections are rendered and focuses on the specified ID.
+     *
+     * @param {String} stepID - The id of the Step being worked on.
+     * @param {String} usageID  - The Usage id of the xBlock.
+     * @param {boolean} gradeStatus - true if this is a Grade status, false if it is an assessment status.
+     * @param {Object} currentView - Current active view.
+     * @param {String} focusID - The ID of the region to focus on.
+     */
+    announceStatusChangeToSRandFocus: function(stepID, usageID, gradeStatus, currentView, focusID) {
+        var text = this.getStatus(stepID, currentView, gradeStatus);
+
+        if (typeof usageID !== 'undefined' &&
+            $(stepID, currentView.element).hasClass('is--showing') &&
+            typeof focusID !== 'undefined') {
+            $(focusID, currentView.element).focus();
+            this.srStatusUpdates.push(text);
+        } else if (currentView.announceStatus) {
+            this.srStatusUpdates.push(text);
+        }
+        if (!this.areSRStepsLoading() && this.srStatusUpdates.length > 0) {
+            this.srReadTexts(this.srStatusUpdates);
+            this.srStatusUpdates = [];
+        }
+        currentView.announceStatus = false;
+    },
+
+    /**
+     * Retrieves and returns the current status of a given step.
+     *
+     * @param {String} stepID - The id of the Step to retrieve status for.
+     * @param {Object} currentView - The current view.
+     * @param {boolean} gradeStatus - true if the status to be retrieved is the grade status,
+     *      false if it is the assessment status
+     * @return {String} - the current status.
+     */
+    getStatus: function(stepID, currentView, gradeStatus) {
+        var cssBase = stepID + ' .step__header .step__title ';
+        var cssStringTitle = cssBase + '.step__label';
+        var cssStringStatus = cssBase + '.step__status';
+
+        if (gradeStatus) {
+            cssStringStatus = cssBase + '.grade__value';
+        }
+
+        return $(cssStringTitle, currentView.element).text().trim() + ' ' +
+            $(cssStringStatus, currentView.element).text().trim();
     },
 
     /**
@@ -76,7 +166,7 @@ OpenAssessment.BaseView.prototype = {
         var view = this;
 
         $('.' + view.SLIDABLE_CONTROLS_CLASS, parentElement).each(function() {
-            $(this).on("click", function(event) {
+            $(this).on('click', function(event) {
                 event.preventDefault();
 
                 var $slidableControl = $(event.target).closest('.' + view.SLIDABLE_CONTROLS_CLASS);
@@ -100,6 +190,31 @@ OpenAssessment.BaseView.prototype = {
                 $container.removeClass('is--initially--collapsed ');
             });
         });
+    },
+
+    /**
+     *Install click handler for the LaTeX preview button.
+     *
+     * @param {element} parentElement JQuery selector for the container element.
+     */
+    bindLatexPreview: function(parentElement) {
+        // keep the preview as display none at first
+        parentElement.find('.submission__preview__item').hide();
+        parentElement.find('.submission__preview').click(
+            function(eventObject) {
+                eventObject.preventDefault();
+                var previewName = $(eventObject.target).data('input');
+                // extract typed-in response and replace newline with br
+                var previewText = parentElement.find('textarea[data-preview="' + previewName + '"]').val();
+                var previewContainer = parentElement.find('.preview_content[data-preview="' + previewName + '"]');
+                previewContainer.html(previewText.replace(/\r\n|\r|\n/g, '<br />'));
+
+                // Render in mathjax
+                previewContainer.parent().parent().parent().show();
+                // eslint-disable-next-line new-cap
+                MathJax.Hub.Queue(['Typeset', MathJax.Hub, previewContainer[0]]);
+            }
+        );
     },
 
     /**
@@ -132,6 +247,7 @@ OpenAssessment.BaseView.prototype = {
         this.selfView.load(usageID);
         this.gradeView.load(usageID);
         this.leaderboardView.load(usageID);
+
         /**
         this.messageView.load() is intentionally omitted.
         Because of the asynchronous loading, there is no way to tell (from the perspective of the
@@ -166,29 +282,29 @@ OpenAssessment.BaseView.prototype = {
         var container = null;
         if (type === 'save') {
             container = '.response__submission__actions';
-        }
-        else if (type === 'submit' || type === 'peer' || type === 'self' || type === 'student-training') {
+        } else if (type === 'submit' || type === 'peer' || type === 'self' || type === 'student-training') {
             container = '.step__actions';
-        }
-        else if (type === 'feedback_assess') {
+        } else if (type === 'feedback_assess') {
             container = '.submission__feedback__actions';
-        }
-        else if (type === 'upload') {
+        } else if (type === 'upload') {
             container = '.upload__error';
         }
 
         // If we don't have anywhere to put the message, just log it to the console
         if (container === null) {
-            if (message !== null) { console.log(message); }
-        }
-
-        else {
+            if (message !== null) {console.log(message);}
+        } else {
             // Insert the error message
-            $(container + " .message__content", element).html('<p>' + (message ? _.escape(message) : "") + '</p>');
+            $(container + ' .message__content', element).html('<p>' + (message ? _.escape(message) : '') + '</p>');
             // Toggle the error class
             $(container, element).toggleClass('has--error', message !== null);
             // Send focus to the error message
-            $(container + " > .message", element).focus();
+            $(container + ' > .message', element).focus();
+        }
+
+        if (message !== null) {
+            var contentTitle = $(container + ' .message__title').text();
+            this.srReadTexts([contentTitle, message]);
         }
     },
 
@@ -218,15 +334,14 @@ OpenAssessment.BaseView.prototype = {
      * if "enabled" is also supplied.
      * @param {string} message The message to show if navigating away with unsaved changes. Only needed
      * if "enabled" is true.
-     * @returns {boolean} Whether the warning is enabled (only if "enabled" argument is not supplied).
+     * @return {boolean} Whether the warning is enabled (only if "enabled" argument is not supplied).
      */
     unsavedWarningEnabled: function(enabled, key, message) {
         if (typeof enabled === 'undefined') {
             return (window.onbeforeunload !== null);
-        }
-        else {
+        } else {
             // To support multiple ORA XBlocks on the same page, store state by XBlock usage-id.
-            var usageID = $(this.element).data("usage-id");
+            var usageID = $(this.element).data('usage-id');
             if (enabled) {
                 if (typeof OpenAssessment.unsavedChanges[usageID] === 'undefined' ||
                     !OpenAssessment.unsavedChanges[usageID]) {
@@ -244,8 +359,7 @@ OpenAssessment.BaseView.prototype = {
                         }
                     }
                 };
-            }
-            else {
+            } else {
                 if (typeof OpenAssessment.unsavedChanges[usageID] !== 'undefined') {
                     delete OpenAssessment.unsavedChanges[usageID][key];
                     if ($.isEmptyObject(OpenAssessment.unsavedChanges[usageID])) {
@@ -265,7 +379,7 @@ OpenAssessment.BaseView.prototype = {
      * @param {string} className The css class to find the button
      * @param {boolean} enabled If specified enables or disables the button. If not specified,
      *     the state of the button is not changed, but the current enabled status is returned.
-     * @returns {boolean} whether or not the button is enabled
+     * @return {boolean} whether or not the button is enabled
      */
     buttonEnabled: function(className, enabled) {
         var $element = $(className, this.element);
@@ -295,6 +409,7 @@ OpenAssessment.BaseView.prototype = {
 
 /* XBlock JavaScript entry point for OpenAssessmentXBlock. */
 /* jshint unused:false */
+// eslint-disable-next-line no-unused-vars
 function OpenAssessmentBlock(runtime, element, data) {
     /**
     Render views within the base view on page load.
@@ -302,4 +417,24 @@ function OpenAssessmentBlock(runtime, element, data) {
     var server = new OpenAssessment.Server(runtime, element);
     var view = new OpenAssessment.BaseView(runtime, element, server, data);
     view.load();
+}
+
+/* XBlock JavaScript entry point for OpenAssessmentXBlock. */
+/* jshint unused:false */
+// eslint-disable-next-line no-unused-vars
+function CourseOpenResponsesListingBlock(runtime, element, data) {
+    var view = new OpenAssessment.CourseItemsListingView(runtime, element);
+    view.refreshGrids();
+}
+
+/* XBlock JavaScript entry point for OpenAssessmentXBlock. */
+/* jshint unused:false */
+// eslint-disable-next-line no-unused-vars
+function StaffAssessmentBlock(runtime, element, data) {
+    /**
+    Render auxiliary view which displays the staff grading area
+    **/
+    var server = new OpenAssessment.Server(runtime, element);
+    var view = new OpenAssessment.BaseView(runtime, element, server, data);
+    view.staffAreaView.installHandlers();
 }

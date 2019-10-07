@@ -2,11 +2,16 @@
 Tests for the management command that creates dummy submissions.
 """
 
-from submissions import api as sub_api
+from __future__ import absolute_import
+
+import six
+
+from django.test import TestCase
+
 from openassessment.assessment.api import peer as peer_api
 from openassessment.assessment.api import self as self_api
 from openassessment.management.commands import create_oa_submissions
-from django.test import TestCase
+from submissions import api as sub_api
 
 
 class CreateSubmissionsTest(TestCase):
@@ -28,7 +33,7 @@ class CreateSubmissionsTest(TestCase):
             self.assertEqual(len(submissions), 1)
 
             answer_dict = submissions[0]['answer']
-            self.assertIsInstance(answer_dict['text'], basestring)
+            self.assertIsInstance(answer_dict['text'], six.string_types)
             self.assertGreater(len(answer_dict['text']), 0)
 
             # Check that peer and self assessments were created

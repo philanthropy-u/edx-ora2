@@ -2,12 +2,17 @@
 Page objects for UI-level acceptance tests.
 """
 
+from __future__ import absolute_import
+
+from abc import abstractmethod
 import os
 
+from bok_choy.javascript import js_defined, requirejs
 from bok_choy.page_object import PageObject
-from bok_choy.promise import EmptyPromise, BrokenPromise
+from bok_choy.promise import BrokenPromise, EmptyPromise
 
 ORA_SANDBOX_URL = os.environ.get('ORA_SANDBOX_URL')
+ORA_SANDBOX_STUDIO_URL = ORA_SANDBOX_URL.replace("@", "@studio-")
 
 
 class PageConfigurationError(Exception):
@@ -37,6 +42,107 @@ class BaseAssessmentPage(PageObject):
             base=ORA_SANDBOX_URL,
             loc=self._problem_location
         )
+
+    def get_sr_html(self):
+        return self.q(css='.sr.reader-feedback').html
+
+    def confirm_feedback_text(self, text):
+        def is_text_in_feedback():
+            return text in self.get_sr_html()[0]
+
+        self.wait_for(is_text_in_feedback, 'Waiting for %s, in %s' % (text, self.q(css='.sr.reader-feedback').html[0]))
+
+
+class StudioPage(PageObject):
+    """
+    Base class for Studio page objects.
+    """
+    url_path = ""
+
+    def __init__(self, browser, course_id):
+        """
+        Configure a page object for a studio page.
+        """
+        super(StudioPage, self).__init__(browser)
+        self.base_url = ORA_SANDBOX_STUDIO_URL
+        self.course_id = course_id
+
+    @abstractmethod
+    def is_browser_on_page(self):
+        """
+        Verifies browser is on the correct page.
+        """
+        pass
+
+    @property
+    def url(self):
+        return "/".join([self.base_url, self.url_path, self.course_id])
+
+
+@requirejs('js/factories/settings')
+class StudioSettingsPage(StudioPage):
+    """
+    Course Schedule and Details Settings page.
+    """
+    url_path = "settings/details"
+    COURSE_END_DATE_CSS = "#course-end-date"
+
+    def is_browser_on_page(self):
+        return self.q(css='body.view-settings').visible
+
+    def get_element(self, css_selector):
+        """
+        Get element using given css selector
+        """
+        self.wait_for_element_presence(
+            css_selector,
+            'Element matching "{}" selector is present'.format(css_selector)
+        )
+        results = self.q(css=css_selector)
+        return results[0] if results else None
+
+    @js_defined('window.jQuery')
+    def save_changes(self):
+        """
+        Clicks save button
+        """
+        btn_css = u'div#page-notification button.action-save'
+        self.browser.execute_script(u"$('{}').focus().click()".format(btn_css))
+        self.wait_for_ajax()
+        self.wait_for_element_visibility(
+            '#alert-confirmation-title',
+            'Save confirmation message is visible'
+        )
+        # After visibility an ajax call is in process, waiting for that to complete
+        self.wait_for_ajax()
+
+    def set_course_end_date_value(self, end_date):
+        """
+        Sets course end date of course
+        """
+        self.wait_for_input_fields()
+        course_end_date = self.get_element(self.COURSE_END_DATE_CSS)
+        course_end_date.clear()
+        if end_date:
+            course_end_date.send_keys(end_date)
+        self.un_focus_input_field()
+        self.save_changes()
+
+    def un_focus_input_field(self):
+        """
+        Makes an input field un-focus by
+        clicking outside of it.
+        """
+        self.get_element('.title-2').click()
+
+    def wait_for_input_fields(self):
+        """
+        Wait for input fields to be loaded
+        """
+        EmptyPromise(
+            lambda: self.q(css='#course-organization').attrs('value')[0],
+            "Waiting for input fields to be loaded"
+        ).fulfill()
 
 
 class MultipleAssessmentPage(BaseAssessmentPage):
@@ -76,7 +182,6 @@ class OpenAssessmentPage(BaseAssessmentPage):
         """
         return ".vert-{vertical_index}".format(vertical_index=self.vertical_index)
 
-
     def submit(self, button_css=".action--submit"):
         """
         Click the submit button on the page.
@@ -85,7 +190,7 @@ class OpenAssessmentPage(BaseAssessmentPage):
         """
         submit_button_selector = self._bounded_selector(button_css)
         EmptyPromise(
-            lambda: False == any(self.q(css=submit_button_selector).attrs('disabled')),
+            lambda: not any(self.q(css=submit_button_selector).attrs('disabled')),
             "Submit button is enabled."
         ).fulfill()
 
@@ -150,6 +255,38 @@ class SubmissionPage(OpenAssessmentPage):
         self.wait_for_element_visibility(".submission__answer__upload", "File select button is present")
         self.q(css=".submission__answer__upload").results[0].send_keys(file_path_name)
 
+    def add_file_description(self, file_num, description):
+        """
+        Submit a description for some file.
+
+        Args:
+          file_num (integer): file number
+          description (string): file description
+        """
+        textarea_element = self._bounded_selector("textarea.file__description__%d" % file_num)
+        self.wait_for_element_visibility(textarea_element, "Textarea is present")
+        self.q(css=textarea_element).fill(description)
+
+    @property
+    def upload_file_button_is_enabled(self):
+        """
+        Check if 'Upload files' button is enabled
+
+        Returns:
+            bool
+        """
+        return self.q(css="button.file__upload")[0].is_enabled()
+
+    @property
+    def upload_file_button_is_disabled(self):
+        """
+        Check if 'Upload files' button is disabled
+
+        Returns:
+            bool
+        """
+        return self.q(css="button.file__upload").attrs('disabled') == ['true']
+
     def upload_file(self):
         """
         Upload the selected file
@@ -188,14 +325,15 @@ class SubmissionPage(OpenAssessmentPage):
         return self.q(css="div.upload__error > div.message--error").visible
 
     @property
-    def has_file_uploaded(self):
+    def have_files_uploaded(self):
         """
-        Check whether file is successfully uploaded
+        Check whether files were successfully uploaded
 
         Returns:
             bool
         """
-        return self.q(css=".submission__custom__upload").visible
+        self.wait_for_element_visibility('.submission__custom__upload', 'Uploaded files block is presented')
+        return self.q(css=".submission__answer__files").visible
 
 
 class AssessmentMixin(object):
@@ -232,6 +370,7 @@ class AssessmentMixin(object):
         def criterion_selected():
             for criterion_num, option_num in enumerate(options_selected):
                 sel = selector(criterion_num, option_num)
+                self.wait_for_element_visibility(self._bounded_selector(sel), "Criterion option visible")
                 if not self.q(css=self._bounded_selector(sel))[0].is_selected():
                     return False
             return True
@@ -244,7 +383,7 @@ class AssessmentMixin(object):
         attempts = 0
         while not criterion_selected() and attempts < 5:
             select_criterion()
-            attempts+=1
+            attempts += 1
 
         self.submit_assessment()
         return self
@@ -310,14 +449,6 @@ class AssessmentPage(OpenAssessmentPage, AssessmentMixin):
             assessment_type=self._assessment_type
         )
         return self.q(css=css_class).is_present()
-
-    @property
-    def is_on_top(self):
-        # TODO: On top behavior needs to be better defined. It is defined here more accurately as "near-top".
-        # pos = self.browser.get_window_position()
-        # return pos['y'] < 100
-        # self.wait_for_element_visibility(".chapter.is-open", "Chapter heading is on visible", timeout=10)
-        return self.q(css=".chapter.is-open").visible
 
     @property
     def response_text(self):
@@ -526,32 +657,29 @@ class GradePage(OpenAssessmentPage):
             pass
         return score_candidates[0] if len(score_candidates) > 0 else None
 
-    def grade_entry(self, question, column):
+    def grade_entry(self, question):
         """
-        Returns a tuple of source and value information for a specific grade source.
+        Returns a tuple of the text of all answer spans for a given question
 
         Args:
             question: the 0-based question for which to get grade information.
-            column: the 0-based column of data within a question. Each column corresponds
-                to a source of data (for example, staff, peer, or self).
 
-        Returns: the tuple of source and value information for the requested grade
+        Returns: a tuple containing all text elements.
 
         """
         self.wait_for_element_visibility(
-            self._bounded_selector('.question--{} .answer .answer__source__value'.format(question + 1)),
-            "Grade entry was present",
+            self._bounded_selector('.question--{} .answer'.format(question + 1)),
+            "Answers not present",
             2
         )
-        source = self.q(
-            css=self._bounded_selector('.question--{} .answer .answer__source__value'.format(question + 1))
-        )[column]
 
-        value = self.q(
-            css=self._bounded_selector('.question--{} .answer .answer__value__value'.format(question + 1))
-        )[column]
+        selector_str = ".question--{} .answer div span".format(question + 1)
+        span_text = self.q(
+            css=self._bounded_selector(selector_str)
+        )
 
-        return source.text.strip(), value.text.strip()
+        result = tuple(span_entry.text.strip() for span_entry in span_text if span_entry.text != '')
+        return result
 
     def feedback_entry(self, question, column):
         """
@@ -610,6 +738,19 @@ class StaffAreaPage(OpenAssessmentPage, AssessmentMixin):
     def is_browser_on_page(self):
         return self.q(css=".openassessment__staff-area").is_present()
 
+    def is_element_visible(self, selector):
+        """
+        Checks if element with given selector is present
+        """
+        element = self.q(css=self._bounded_selector(selector))
+        return element.is_present()
+
+    def is_staff_override_available(self):
+        """
+        Checks if staff override option is available
+        """
+        return self.is_element_visible(".staff-info__staff-override")
+
     @property
     def selected_button_names(self):
         """
@@ -664,14 +805,20 @@ class StaffAreaPage(OpenAssessmentPage, AssessmentMixin):
         self.q(css=student_input_css).fill(username)
         submit_button = self.q(css=self._bounded_selector(".action--submit-username"))
         submit_button.first.click()
-        self.wait_for_element_visibility(self._bounded_selector(".staff-info__student__report"), "Student report is present")
+        self.wait_for_element_visibility(
+            self._bounded_selector(".staff-info__student__report"),
+            "Student report is present"
+        )
 
     def expand_staff_grading_section(self):
         """
         Clicks the staff grade control to expand staff grading section for use in staff required workflows.
         """
         self.q(css=self._bounded_selector(".staff__grade__show-form")).first.click()
-        self.wait_for_element_visibility(".staff-full-grade__assessment__rubric__question--0", "staff grading is present")
+        self.wait_for_element_visibility(
+            ".staff-full-grade__assessment__rubric__question--0",
+            "staff grading is present"
+        )
 
     @property
     def available_checked_out_numbers(self):
@@ -687,7 +834,8 @@ class StaffAreaPage(OpenAssessmentPage, AssessmentMixin):
 
     def verify_available_checked_out_numbers(self, expected_value):
         """
-        Waits until the expected value for available and checked out numbers appears. If it does not appear, fails the test.
+        Waits until the expected value for available and checked out numbers appears. If it does not appear, fails the
+        test.
 
         expected_value should be a tuple as described in the available_checked_out_numbers property above.
         """
@@ -832,7 +980,9 @@ class StaffAreaPage(OpenAssessmentPage, AssessmentMixin):
 
         Returns: the text present in "Overall Feedback"
         """
-        return self.q(css=self._bounded_selector(".staff-info__{} .student__answer__display__content".format(section))).text[0]
+        return self.q(
+            css=self._bounded_selector(".staff-info__{} .student__answer__display__content".format(section))
+        ).text[0]
 
     def _get_table_text(self, selector):
         """

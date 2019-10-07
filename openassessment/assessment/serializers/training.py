@@ -1,11 +1,15 @@
 """
 Serializers for the training assessment type.
 """
+from __future__ import absolute_import
+
 from django.core.cache import cache
-from django.db import transaction, IntegrityError
-from openassessment.assessment.models import TrainingExample
+from django.db import IntegrityError, transaction
+
 from openassessment.assessment.data_conversion import update_training_example_answer_format
-from .base import rubric_from_dict, RubricSerializer
+from openassessment.assessment.models import TrainingExample
+
+from .base import RubricSerializer, rubric_from_dict
 
 
 class InvalidTrainingExample(Exception):

@@ -3,14 +3,17 @@
 """
 Tests for message handlers in Open Assessment XBlock.
 """
-import copy
+from __future__ import absolute_import
 
+import copy
+import datetime as dt
+
+import ddt
 import mock
 import pytz
-import ddt
 
-import datetime as dt
 from openassessment.xblock.openassessmentblock import OpenAssessmentBlock
+
 from .base import XBlockHandlerTestCase, scenario
 
 

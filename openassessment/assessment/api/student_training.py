@@ -6,20 +6,20 @@ Public interface for student training:
     they gave to to the instructor's assessment.
 
 """
-import logging
-from django.utils.translation import ugettext as _
-from django.db import DatabaseError
-from submissions import api as sub_api
-from openassessment.assessment.models import StudentTrainingWorkflow, InvalidRubricSelection
-from openassessment.assessment.serializers import (
-    deserialize_training_examples, serialize_training_example,
-    validate_training_example_format,
-    InvalidTrainingExample, InvalidRubric
-)
-from openassessment.assessment.errors import (
-    StudentTrainingRequestError, StudentTrainingInternalError
-)
+from __future__ import absolute_import
 
+import logging
+
+import six
+
+from django.db import DatabaseError
+from django.utils.translation import ugettext as _
+
+from openassessment.assessment.errors import StudentTrainingInternalError, StudentTrainingRequestError
+from openassessment.assessment.models import InvalidRubricSelection, StudentTrainingWorkflow
+from openassessment.assessment.serializers import (InvalidRubric, InvalidTrainingExample, deserialize_training_examples,
+                                                   serialize_training_example, validate_training_example_format)
+from submissions import api as sub_api
 
 logger = logging.getLogger(__name__)
 
@@ -169,8 +169,8 @@ def validate_training_examples(rubric, examples):
     # Construct a list of valid options for each criterion
     try:
         criteria_options = {
-            unicode(criterion['name']): [
-                unicode(option['name'])
+            six.text_type(criterion['name']): [
+                six.text_type(option['name'])
                 for option in criterion['options']
             ]
             for criterion in rubric['criteria']
@@ -184,7 +184,7 @@ def validate_training_examples(rubric, examples):
     # then it doesn't make sense to do student training.
     criteria_without_options = [
         criterion_name
-        for criterion_name, criterion_option_list in criteria_options.iteritems()
+        for criterion_name, criterion_option_list in six.iteritems(criteria_options)
         if len(criterion_option_list) == 0
     ]
     if len(set(criteria_options) - set(criteria_without_options)) == 0:
@@ -210,7 +210,7 @@ def validate_training_examples(rubric, examples):
         else:
             # Check each selected option in the example (one per criterion)
             options_selected = example_dict['options_selected']
-            for criterion_name, option_name in options_selected.iteritems():
+            for criterion_name, option_name in six.iteritems(options_selected):
                 if criterion_name in criteria_options:
                     valid_options = criteria_options[criterion_name]
                     if option_name not in valid_options:
@@ -235,7 +235,7 @@ def validate_training_examples(rubric, examples):
 
             # Check for missing criteria
             # Ignore options
-            all_example_criteria = set(options_selected.keys() + criteria_without_options)
+            all_example_criteria = set(list(options_selected.keys()) + criteria_without_options)
             for missing_criterion in set(criteria_options.keys()) - all_example_criteria:
                 msg = _(
                     u"Example {example_number} is missing an option "

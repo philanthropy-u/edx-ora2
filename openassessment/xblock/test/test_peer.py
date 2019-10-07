@@ -2,14 +2,16 @@
 """
 Tests for peer assessment handlers in Open Assessment XBlock.
 """
-from collections import namedtuple
+from __future__ import absolute_import
 
+from collections import namedtuple
 import copy
-import json
-import mock
 import datetime as dt
-import pytz
+import json
+
 import ddt
+import mock
+import pytz
 
 from openassessment.assessment.api import peer as peer_api
 from openassessment.workflow import api as workflow_api
@@ -309,7 +311,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'must_grade': 5,
             'review_num': 1,
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_unavailable.html', expected_context
@@ -325,7 +329,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'must_grade': 5,
             'review_num': 1,
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_closed.html', expected_context
@@ -341,7 +347,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'must_grade': 5,
             'review_num': 1,
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_unavailable.html', expected_context
@@ -360,7 +368,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'review_num': 1,
             'submit_button_text': 'submit your assessment & move to response #2',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_waiting.html',
@@ -397,10 +407,12 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'review_num': 1,
             'peer_submission': create_submission_dict(submission, xblock.prompts),
             'file_upload_type': None,
-            'peer_file_url': '',
+            'peer_file_urls': [],
             'submit_button_text': 'submit your assessment & move to response #2',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_assessment.html',
@@ -420,7 +432,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'review_num': 1,
             'submit_button_text': 'submit your assessment & move to response #2',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
 
         self._assert_path_and_context(
@@ -444,7 +458,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'review_num': 1,
             'submit_button_text': 'submit your assessment & move to response #2',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_closed.html',
@@ -480,7 +496,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'review_num': 1,
             'submit_button_text': 'submit your assessment & move to response #2',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_closed.html',
@@ -508,7 +526,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'must_grade': 5,
             'review_num': 1,
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
 
         self._assert_path_and_context(
@@ -541,7 +561,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'rubric_criteria': xblock.rubric_criteria,
             'submit_button_text': 'Submit your assessment & review another response',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_turbo_mode_waiting.html',
@@ -567,12 +589,14 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'peer_due': dt.datetime(2000, 1, 1).replace(tzinfo=pytz.utc),
             'peer_submission': create_submission_dict(submission, xblock.prompts),
             'file_upload_type': None,
-            'peer_file_url': '',
+            'peer_file_urls': [],
             'review_num': 1,
             'rubric_criteria': xblock.rubric_criteria,
             'submit_button_text': 'Submit your assessment & review another response',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_turbo_mode.html',
@@ -594,7 +618,9 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             'rubric_criteria': xblock.rubric_criteria,
             'submit_button_text': 'Submit your assessment & review another response',
             'allow_latex': False,
-            'time_zone': pytz.utc,
+            'prompts_type': 'text',
+            'user_timezone': pytz.utc,
+            'user_language': 'en'
         }
         self._assert_path_and_context(
             xblock, 'openassessmentblock/peer/oa_peer_unavailable.html',
@@ -633,7 +659,7 @@ class TestPeerAssessmentRender(XBlockHandlerTestCase):
             xblock.get_workflow_info = mock.Mock(return_value=workflow_info)
 
         # Simulate that we've either finished or not finished required grading
-        patched_module = 'openassessment.xblock.peer_assessment_mixin.peer_api'
+        patched_module = 'openassessment.assessment.api.peer'
         with mock.patch(patched_module + '.has_finished_required_evaluating') as mock_finished:
             mock_finished.return_value = (was_graded_enough, 1)
             path, context = xblock.peer_path_and_context(continue_grading)
@@ -763,13 +789,13 @@ class TestPeerAssessHandler(XBlockHandlerTestCase):
             expect_failure=True
         )
 
-    @mock.patch('openassessment.xblock.peer_assessment_mixin.peer_api')
+    @mock.patch('openassessment.assessment.api.peer')
     @scenario('data/peer_assessment_scenario.xml', user_id='Bob')
     def test_peer_api_request_error(self, xblock, mock_api):
         mock_api.create_assessment.side_effect = peer_api.PeerAssessmentRequestError
         self._submit_peer_assessment(xblock, u"Sally", u"Bob", self.ASSESSMENT, expect_failure=True)
 
-    @mock.patch('openassessment.xblock.peer_assessment_mixin.peer_api')
+    @mock.patch('openassessment.assessment.api.peer')
     @scenario('data/peer_assessment_scenario.xml', user_id='Bob')
     def test_peer_api_internal_error(self, xblock, mock_api):
         mock_api.create_assessment.side_effect = peer_api.PeerAssessmentInternalError

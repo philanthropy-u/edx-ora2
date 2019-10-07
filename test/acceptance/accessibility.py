@@ -1,10 +1,13 @@
 """
 UI-level acceptance tests for OpenAssessment accessibility.
 """
+from __future__ import absolute_import
+
 import os
 import unittest
-from tests import OpenAssessmentTest, StaffAreaPage, FullWorkflowMixin, MultipleOpenAssessmentMixin
-from pages import MultipleAssessmentPage
+
+from .pages import MultipleAssessmentPage
+from .tests import FullWorkflowMixin, MultipleOpenAssessmentMixin, OpenAssessmentTest, StaffAreaPage
 
 
 class OpenAssessmentA11yTest(OpenAssessmentTest):

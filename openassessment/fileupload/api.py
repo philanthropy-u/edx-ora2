@@ -5,7 +5,10 @@ URLs to the new location.
 
 """
 
+from __future__ import absolute_import
+
 from . import backends
+
 
 def get_upload_url(key, content_type):
     """
@@ -13,8 +16,16 @@ def get_upload_url(key, content_type):
     """
     return backends.get_backend().get_upload_url(key, content_type)
 
+
 def get_download_url(key):
     """
     Returns the url at which the file that corresponds to the key can be downloaded.
     """
     return backends.get_backend().get_download_url(key)
+
+
+def remove_file(key):
+    """
+    Remove file from the storage
+    """
+    return backends.get_backend().remove_file(key)

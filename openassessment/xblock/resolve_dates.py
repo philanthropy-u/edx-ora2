@@ -1,9 +1,14 @@
 """
 Resolve unspecified dates and date strings to datetimes.
 """
+from __future__ import absolute_import
+
 import datetime as dt
-import pytz
+
 from dateutil.parser import parse as parse_date
+import pytz
+import six
+from six.moves import range, zip
 
 
 class InvalidDateFormat(Exception):
@@ -24,18 +29,6 @@ DISTANT_PAST = dt.datetime(dt.MINYEAR, 1, 1, tzinfo=pytz.utc)
 DISTANT_FUTURE = dt.datetime(dt.MAXYEAR, 1, 1, tzinfo=pytz.utc)
 
 
-def get_current_time_zone(user_service):
-    """
-    Returns the preferred time zone for the current user, if specified, or UTC if not
-
-    :param user_service: XblockUserService
-    """
-    user_preferences = user_service.get_current_user().opt_attrs.get('edx-platform.user_preferences')
-    if user_preferences is None:
-        return pytz.utc
-    return pytz.timezone(user_preferences.get('time_zone', 'utc'))
-
-
 def _parse_date(value, _):
     """
     Parse an ISO formatted datestring into a datetime object with timezone set to UTC.
@@ -54,7 +47,7 @@ def _parse_date(value, _):
     if isinstance(value, dt.datetime):
         return value.replace(tzinfo=pytz.utc)
 
-    elif isinstance(value, basestring):
+    elif isinstance(value, six.string_types):
         try:
             return parse_date(value).replace(tzinfo=pytz.utc)
         except ValueError:
@@ -237,7 +230,7 @@ def resolve_dates(start, end, date_ranges, _):
         prev_end = step_end
 
     # Combine the resolved dates back into a list of tuples
-    resolved_ranges = zip(resolved_starts, resolved_ends)
+    resolved_ranges = list(zip(resolved_starts, resolved_ends))
 
     # Now that we have resolved both start and end dates, we can safely compare them
     for resolved_start, resolved_end in resolved_ranges:

@@ -3,18 +3,17 @@
 Tests for assessment serializers.
 """
 
+from __future__ import absolute_import
+
+import copy
 import json
 import os.path
-import copy
 
+from openassessment.assessment.models import Assessment, AssessmentFeedback, AssessmentPart
+from openassessment.assessment.serializers import (AssessmentFeedbackSerializer, InvalidRubric, full_assessment_dict,
+                                                   rubric_from_dict)
 from openassessment.test_utils import CacheResetTest
-from openassessment.assessment.models import (
-    Assessment, AssessmentPart, AssessmentFeedback
-)
-from openassessment.assessment.serializers import (
-    rubric_from_dict, full_assessment_dict,
-    AssessmentFeedbackSerializer, InvalidRubric
-)
+
 from .constants import RUBRIC
 
 

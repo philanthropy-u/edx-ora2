@@ -9,40 +9,43 @@
 <header class="step__header ui-slidable__control">
     <h4 class="step__title">
         {% block button %}
-        <button class="ui-slidable" aria-expanded="true" id="oa_training_{{ xblock_id }}" aria-controls="oa_training_{{ xblock_id }}_content">
+        <button class="ui-slidable" aria-expanded="true" id="oa_training_{{ xblock_id }}" aria-controls="oa_training_{{ xblock_id }}_content" aria-describedby="oa_step_status oa_step_deadline">
         {% endblock %}
         <span class="step__counter"></span>
             <span class="wrapper--copy">
                 <span class="step__label">{% trans "Learn to Assess Responses" %}</span>
-                {% if training_start %}
-                    <span class="step__deadline">
-                        {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "available August 13th, 2014 (in 5 days and 45 minutes)" #}
-                        {% blocktrans with start_date=training_start|timezone:time_zone|date:"N j, Y H:i e" time_until=training_start|timeuntil %}available <span class="date">{{ start_date }} (in {{ time_until }})</span>{% endblocktrans %}
-                    </span>
-                {% elif training_due %}
-                    <span class="step__deadline">
-                        {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "due August 13th, 2014 (in 5 days and 45 minutes)" #}
-                        {% blocktrans with due_date=training_due|timezone:time_zone|date:"N j, Y H:i e" time_until=training_due|timeuntil %}due <span class="date">{{ due_date }} (in {{ time_until }})</span>{% endblocktrans %}
-                    </span>
-                </span>
-                {% endif %}
             </span>
         </button>
-
-        {% block title %}
-            <span class="step__status">
-              <span class="step__status__value">
-                  <span class="copy">
-                      {%  with training_num_current_string=training_num_current|stringformat:"s" training_num_available_string=training_num_available|stringformat:"s" %}
-                      {% blocktrans with current_progress_num='<span class="step__status__number--current">'|safe|add:training_num_current_string|add:'</span>'|safe training_available_num='<span class="step__status__value--required">'|safe|add:training_num_available_string|add:'</span>'|safe %}
-                          In Progress ({{ current_progress_num }} of {{ training_available_num }})
-                      {% endblocktrans %}
-                      {% endwith %}
-                  </span>
-              </span>
-            </span>
-        {% endblock %}
     </h4>
+    {% block title %}
+        <span class="step__status">
+          <span id="oa_step_status" class="step__status__value">
+              <span class="copy">
+                  {%  with training_num_current_string=training_num_current|stringformat:"s" training_num_available_string=training_num_available|stringformat:"s" %}
+                  {% blocktrans with current_progress_num='<span class="step__status__number--current">'|safe|add:training_num_current_string|add:'</span>'|safe training_available_num='<span class="step__status__value--required">'|safe|add:training_num_available_string|add:'</span>'|safe %}
+                      In Progress ({{ current_progress_num }} of {{ training_available_num }})
+                  {% endblocktrans %}
+                  {% endwith %}
+              </span>
+          </span>
+        </span>
+    {% endblock %}
+    {% if training_start %}
+        <span class="step__deadline">
+            {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "available August 13th, 2014 (in 5 days and 45 minutes)" #}
+            {% blocktrans with start_date=training_start|timezone:"UTC"|date:"c" time_until=training_start|timeuntil %}
+            <span id="oa_step_deadline" class="date ora-datetime" data-datetime="{{ start_date }}" data-string="available {date} (in {{ time_until }})" data-timezone="{{ user_timezone }}" data-language="{{ user_language }}"></span>
+            {% endblocktrans %}
+        </span>
+    {% elif training_due %}
+        <span class="step__deadline">
+            {# Translators: This string displays a date to the user, then tells them the time until that date.  Example: "due August 13th, 2014 (in 5 days and 45 minutes)" #}
+            {% blocktrans with due_date=training_due|timezone:"UTC"|date:"c" time_until=training_due|timeuntil %}
+            <span id="oa_step_deadline" class="date ora-datetime" data-datetime="{{ due_date }}" data-string="due {date} (in {{ time_until }})" data-timezone="{{ user_timezone }}" data-language="{{ user_language }}"></span>
+            {% endblocktrans %}
+        </span>
+    </span>
+    {% endif %}
 </header>
 
 {% block body %}
@@ -68,7 +71,7 @@
             <div class="step__content">
                 <article class="student-training__display">
 
-                    {% trans "The response to the question above:" as translated_label %}
+                    {% trans "The response to the prompt above:" as translated_label %}
                     {% include "openassessmentblock/oa_submission_answer.html" with answer=training_essay.answer answer_text_label=translated_label %}
 
                 </article>
@@ -85,18 +88,18 @@
                                         <button class="ui-slidable" aria-expanded="true" id="oa_training_{{ xblock_id }}_criterion--{{ criterion.order_num }}" aria-controls="oa_training_{{ xblock_id }}_content_criterion--{{  criterion.order_num }}">
                                             <span class="icon fa fa-caret-right" aria-hidden="true"></span>
                                             <span id="training__assessment__rubric__prompt--{{ criterion.order_num }}__{{ xblock_id }}" class="question__title__copy">{{ criterion.prompt }}</span>
-                                            <span class="label--required sr">* ({% trans "Required" %})</span>
+                                            <span class="label--required sr">({% trans "Required" %})</span>
                                         </button>
                                     </div>
                                     <div class="ui-slidable__content" aria-labelledby="oa_training_{{ xblock_id }}_criterion--{{ criterion.order_num }}" id="oa_training_{{ xblock_id }}_content_criterion--{{  criterion.order_num }}">
-                                        <div class="step__message message message--correct is--hidden">
+                                        <div id="training__assessment__rubric__correct__message--{{ criterion.order_num }}__{{ xblock_id }}" class="step__message message message--correct is--hidden">
                                             <h5 class="message__title">{% trans "Selected Options Agree" %}</h5>
 
                                             <div class="message__content">
                                                 <p>{% trans "The option you selected is the option that the instructor selected." %}</p>
                                             </div>
                                         </div>
-                                        <div class="step__message message message--incorrect is--hidden">
+                                        <div id="training__assessment__rubric__incorrect__message--{{ criterion.order_num }}__{{ xblock_id }}" class="step__message message message--incorrect is--hidden">
                                             <h5 class="message__title">{% trans "Selected Options Differ" %}</h5>
 
                                             <div class="message__content">

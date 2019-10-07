@@ -1,10 +1,15 @@
 """
 Auto-auth page (used to automatically log in during testing).
 """
+from __future__ import absolute_import
 
+import json
 import os
 import re
-import urllib
+
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 from bok_choy.page_object import PageObject
 
@@ -54,13 +59,15 @@ class AutoAuthPage(PageObject):
         if roles is not None:
             self._params['roles'] = roles
 
+        self.data = {}
+
     @property
     def url(self):
         """
         Construct the URL.
         """
         url = ORA_SANDBOX_URL + "/auto_auth"
-        query_str = urllib.urlencode(self._params)
+        query_str = six.moves.urllib.parse.urlencode(self._params)
 
         if query_str:
             url += "?" + query_str
@@ -68,24 +75,17 @@ class AutoAuthPage(PageObject):
         return url
 
     def is_browser_on_page(self):
-        message = self.q(css='BODY').text[0]
-        match = re.search(r'Logged in user ([^$]+) with password ([^$]+) and user_id ([^$]+)$', message)
-        return True if match else False
+        self.data = json.loads(self.q(css='BODY').text[0])
+        return self.data['created_status'] == "Logged in"
 
     def get_user_id(self):
         """
         Finds and returns the user_id
         """
-        message = self.q(css='BODY').text[0].strip()
-        match = re.search(r' user_id ([^$]+)$', message)
-        return match.groups()[0] if match else None
+        return self.data['user_id']
 
     def get_username_and_email(self):
         """
         Finds and returns the username and email address of the current user.
         """
-        message = self.q(css='BODY').text[0].strip()
-        match = re.search(r'Logged in user (\S+) \(.*\) with password (\S+)', message)
-        if not match:
-            return None
-        return match.group(1), match.group(2)
+        return self.data['username'], self.data['email']

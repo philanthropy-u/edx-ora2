@@ -9,12 +9,14 @@
 {% endblock %}
 
 {% block button %}
-    <button class="ui-slidable" aria-expanded="false" id="oa_response_{{ xblock_id }}" aria-controls="oa_response_{{ xblock_id }}_content">
+    <button class="ui-slidable" aria-expanded="true" id="oa_response_{{ xblock_id }}" aria-controls="oa_response_{{ xblock_id }}_content" aria-labeledby="oa_step_title_response">
+        <span class="icon fa fa-caret-right" aria-hidden="false"/>
+    </button>
 {% endblock %}
 
 {% block title %}
     <span class="step__status">
-        <span class="step__status__value">
+        <span id="oa_step_status_response" class="step__status__value">
             <span class="icon fa fa-exclamation-triangle" aria-hidden="true"></span>
             <span class="copy">{% trans "Cancelled" %}</span>
         </span>
@@ -32,12 +34,12 @@
                     {% trans "Your submission was cancelled. " %}
                     <p>
                         {% if workflow_cancellation.cancelled_by %}
-                            {% blocktrans with removed_datetime=workflow_cancellation.cancelled_at|timezone:time_zone|date:"N j, Y H:i e" removed_by_username=workflow_cancellation.cancelled_by %}
+                            {% blocktrans with removed_datetime=workflow_cancellation.cancelled_at|timezone:"UTC"|date:"Y-m-d H:i e" removed_by_username=workflow_cancellation.cancelled_by %}
                                 Your submission has been cancelled by {{ removed_by_username }} on {{ removed_datetime }}
                             {% endblocktrans %}
                         {% else %}
-                            {% blocktrans with removed_datetime=workflow_cancellation.cancelled_at|timezone:time_zone|date:"N j, Y H:i e" %}
-                                Your submission was cancelled on {{ removed_datetime }}
+                            {% blocktrans with removed_datetime=workflow_cancellation.cancelled_at|timezone:"UTC"|date:"Y-m-d H:i e" %}
+                               Your submission was cancelled on {{ removed_datetime }}
                             {% endblocktrans %}
                         {% endif %}
                     </p>
