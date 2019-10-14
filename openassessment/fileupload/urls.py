@@ -1,6 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from openassessment.fileupload.views_filesystem import filesystem_storage
 
-
-urlpatterns = patterns('openassessment.fileupload.views_filesystem',
-    url(r'^(?P<key>.+)/$', 'filesystem_storage', name='openassessment-filesystem-storage'),
-)
+urlpatterns =[
+    url(r'^(?P<key>.+)/$', filesystem_storage, name='openassessment-filesystem-storage'),
+]
