@@ -1,5 +1,5 @@
-import hashlib
 import logging
+from pytz import utc
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
@@ -7,10 +7,8 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from openassessment.workflow.api import get_users_who_not_assessed
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.content.course_structures.models import CourseStructure
-from pytz import utc
 from openedx.features.assessment.helpers import autoscore_ora
-from common.djangoapps.philu_commands.helpers import generate_course_structure
+from philu_commands.helpers import generate_course_structure
 
 logger = logging.getLogger(__name__)
 
