@@ -1,5 +1,5 @@
-import hashlib
 import logging
+from pytz import utc
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
@@ -7,9 +7,8 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from openassessment.workflow.api import get_users_who_not_assessed
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.content.course_structures.models import CourseStructure
-from pytz import utc
 from openedx.features.assessment.helpers import autoscore_ora
+from philu_commands.helpers import generate_course_structure
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +33,11 @@ class Command(BaseCommand):
             course_id = overview.id
             course_name = overview.display_name
 
-            try:
-                course_struct = CourseStructure.objects.get(
-                    course_id=course_id
-                ).structure
-            except CourseStructure.DoesNotExist:
-                logger.error("Course doesn't have a proper structure.")
-                raise
+            course_struct = generate_course_structure(course_id)['structure']
+
+            if not course_struct:
+                logger.error('Course doesn\'t have a proper structure.')
+                continue
 
             ora_blocks = []
             for k, v in course_struct['blocks'].iteritems():
