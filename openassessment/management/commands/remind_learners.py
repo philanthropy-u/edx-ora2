@@ -60,7 +60,7 @@ class Command(BaseCommand):
                         ))
                         continue
 
-                    full_name = '{} {}'.format(learner.first_name, learner.last_name)
+                    full_name = '{} {}'.format(learner.first_name.encode('utf-8'), learner.last_name.encode('utf-8'))
 
                     # usage_key to get location of ora2 xblock in the course
                     usage_key = UsageKey.from_string(student_item['item_id']).map_into_course(course_key)
