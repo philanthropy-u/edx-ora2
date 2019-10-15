@@ -361,8 +361,7 @@ class OpenAssessmentBlock(
             "show_staff_area": self.is_course_staff and not self.in_studio_preview,
         }
         template = get_template("openassessmentblock/oa_base.html")
-        context = Context(context_dict)
-        fragment = Fragment(template.render(context))
+        fragment = Fragment(template.render(context_dict))
 
         i18n_service = self.runtime.service(self, 'i18n')
         if hasattr(i18n_service, 'get_language_bidi') and i18n_service.get_language_bidi():
@@ -679,8 +678,7 @@ class OpenAssessmentBlock(
             context_dict = {}
 
         template = get_template(path)
-        context = Context(context_dict)
-        return Response(template.render(context), content_type='application/html', charset='UTF-8')
+        return Response(template.render(context_dict), content_type='application/html', charset='UTF-8')
 
     def add_xml_to_node(self, node):
         """
@@ -698,7 +696,7 @@ class OpenAssessmentBlock(
         Returns:
             Response: A response object with an HTML body.
         """
-        context = Context({'error_msg': error_msg})
+        context = {'error_msg': error_msg}
         template = get_template('openassessmentblock/oa_error.html')
         return Response(template.render(context), content_type='application/html', charset='UTF-8')
 
