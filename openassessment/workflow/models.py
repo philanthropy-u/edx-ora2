@@ -153,7 +153,7 @@ class AssessmentWorkflow(TimeStampedModel, StatusModel):
             item_id=submission_dict['student_item']['item_id']
         )
         workflow_steps = [
-            AssessmentWorkflowStep(
+            AssessmentWorkflowStep.objects.create(
                 workflow=workflow, name=step, order_num=i
             )
             for i, step in enumerate(step_names)
