@@ -1,5 +1,8 @@
 import logging
+import json
 
+from django.http import HttpResponse
+from django.core import serializers
 from webob import Response
 from xblock.core import XBlock
 
@@ -9,6 +12,9 @@ from openassessment.assessment.errors import (
 )
 from openassessment.workflow.errors import AssessmentWorkflowError
 from openassessment.xblock.defaults import DEFAULT_RUBRIC_FEEDBACK_TEXT
+from openassessment.mobile_assessment.models import AssessmentTemplate
+
+
 from .data_conversion import create_rubric_dict
 from .resolve_dates import DISTANT_FUTURE, get_current_time_zone
 from .data_conversion import clean_criterion_feedback, create_submission_dict, verify_assessment_parameters
@@ -146,6 +152,17 @@ class PeerAssessmentMixin(object):
             context_dict['rubric_feedback_default_text'] = DEFAULT_RUBRIC_FEEDBACK_TEXT
 
         return self.render_assessment(path, context_dict)
+
+    @XBlock.handler
+    def get_html_templates(self, data, suffix=''):
+        """
+
+        Returns:
+             Return the list of html templates.
+        """
+        html_templates_values = serializers.serialize('json', AssessmentTemplate.objects.all())
+        # return json.loads(html_templates_values)
+        return Response(html_templates_values)
 
     def peer_path_and_context(self, continue_grading):
         """
