@@ -156,12 +156,10 @@ class PeerAssessmentMixin(object):
     @XBlock.handler
     def get_html_templates(self, data, suffix=''):
         """
-
         Returns:
              Return the list of html templates.
         """
         html_templates_values = serializers.serialize('json', AssessmentTemplate.objects.all())
-        # return json.loads(html_templates_values)
         return Response(html_templates_values)
 
     def peer_path_and_context(self, continue_grading):
