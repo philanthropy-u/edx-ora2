@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 
-class AssessmentTemplate(models.Model):
+class PromptHtmlTemplate(models.Model):
     """
     Model for Storing the HTML templates for ORA Peer Assessment
     """

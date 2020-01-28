@@ -5,4 +5,4 @@ from django.apps import AppConfig
 
 
 class MobileAssessmentConfig(AppConfig):
-    name = 'mobile_assessment'
+    name = 'table_prompts'

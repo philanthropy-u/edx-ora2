@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     'openassessment.fileupload',
     'openassessment.workflow',
     'openassessment.assessment',
-    'openassessment.mobile_assessment',
+    'openassessment.table_prompts',
 
 )
 

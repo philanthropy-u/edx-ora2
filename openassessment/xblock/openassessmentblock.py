@@ -28,6 +28,7 @@ from openassessment.xblock.lms_mixin import LmsCompatibilityMixin
 from openassessment.xblock.self_assessment_mixin import SelfAssessmentMixin
 from openassessment.xblock.submission_mixin import SubmissionMixin
 from openassessment.xblock.studio_mixin import StudioMixin
+from openassessment.table_prompts.ora_prompt_mixin import OraPromptMixin
 from openassessment.xblock.xml import parse_from_xml, serialize_content_to_xml
 from openassessment.xblock.staff_area_mixin import StaffAreaMixin
 from openassessment.xblock.workflow_mixin import WorkflowMixin
@@ -100,6 +101,7 @@ def load(path):
 class OpenAssessmentBlock(
     MessageMixin,
     SubmissionMixin,
+    OraPromptMixin,
     PeerAssessmentMixin,
     SelfAssessmentMixin,
     StaffAssessmentMixin,
