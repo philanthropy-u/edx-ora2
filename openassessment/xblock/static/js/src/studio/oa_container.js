@@ -61,7 +61,9 @@ Kwargs:
 OpenAssessment.Container = function(ContainerItem, kwargs) {
     this.containerElement = kwargs.containerElement;
     this.templateElement = kwargs.templateElement;
+    this.templateTablePromptElement = kwargs.templateTablePromptElement;
     this.addButtonElement = kwargs.addButtonElement;
+    this.addTableButtonElement = kwargs.addTableButtonElement;
     this.removeButtonClass = kwargs.removeButtonClass;
     this.containerItemClass = kwargs.containerItemClass;
     this.notifier = kwargs.notifier;
@@ -88,6 +90,7 @@ OpenAssessment.Container.prototype = {
         if (this.addRemoveEnabled) {
             // Install a click handler for the add button
             $(this.addButtonElement).click($.proxy(this.add, this));
+            $(this.addTableButtonElement).click($.proxy(this.addTable, this));
 
             // Find items already in the container and install click
             // handlers for the delete buttons.
@@ -151,7 +154,19 @@ OpenAssessment.Container.prototype = {
         handlerItem.addEventListeners();
         handlerItem.addHandler();
     },
-
+    /**
+     * Adds a new table type prompt.
+     * **/
+    addTable: function () {
+        var tablePrompt = $(this.templateTablePromptElement)
+            .children().first()
+            .clone()
+            .removeAttr('id')
+            .toggleClass('is--hidden', false)
+            .toggleClass(this.containerItemClass, true)
+            .appendTo($(this.containerElement));
+        $(tablePrompt).oraTableBuilder();
+    },
     /**
     Remove the item associated with an element.
     If the element is not itself an item, traverse up the

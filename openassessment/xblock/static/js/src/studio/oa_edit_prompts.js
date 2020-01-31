@@ -17,7 +17,9 @@ OpenAssessment.EditPromptsView = function(element, notifier) {
         OpenAssessment.Prompt, {
             containerElement: $("#openassessment_prompts_list", this.element).get(0),
             templateElement: $("#openassessment_prompt_template", this.element).get(0),
+            templateTablePromptElement: $("#openassessment_table_prompt_template", this.element).get(0),
             addButtonElement: $("#openassessment_prompts_add_prompt", this.element).get(0),
+            addTableButtonElement: $("#openassessment_prompts_add_table", this.element).get(0),
             removeButtonClass: "openassessment_prompt_remove_button",
             containerItemClass: "openassessment_prompt",
             notifier: notifier,
