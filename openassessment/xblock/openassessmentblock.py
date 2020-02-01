@@ -39,9 +39,7 @@ from openassessment.xblock.validation import validator
 from openassessment.xblock.resolve_dates import resolve_dates, parse_date_value, DISTANT_PAST, DISTANT_FUTURE
 from openassessment.xblock.data_conversion import create_prompts_list, create_rubric_dict, update_assessments_format
 
-
 logger = logging.getLogger(__name__)
-
 
 UI_MODELS = {
     "submission": {
@@ -373,6 +371,7 @@ class OpenAssessmentBlock(
 
         if settings.DEBUG:
             fragment.add_css_url(self.runtime.local_resource_url(self, css_url))
+            fragment.add_css_url(self.runtime.local_resource_url(self, 'static/css/table_builder.css'))
             self.add_javascript_files(fragment, "static/js/src/oa_shared.js")
             self.add_javascript_files(fragment, "static/js/src/oa_server.js")
             self.add_javascript_files(fragment, "static/js/src/lms")
@@ -380,6 +379,7 @@ class OpenAssessmentBlock(
         else:
             # TODO: load CSS and JavaScript as URLs once they can be served by the CDN
             fragment.add_css(load(css_url))
+            fragment.add_css(load('static/css/table_builder.css'))
             fragment.add_javascript(load("static/js/openassessment-lms.min.js"))
         js_context_dict = {
             "ALLOWED_IMAGE_MIME_TYPES": self.ALLOWED_IMAGE_MIME_TYPES,

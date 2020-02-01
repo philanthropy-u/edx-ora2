@@ -1,0 +1,229 @@
+.table-editor {
+    margin-bottom: 30px;
+}
+.table-editor button {
+    padding: 11px;
+    width: 160px;
+    background: #00AFAA;
+    color: white;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.table-editor input {
+    padding: 10px 0;
+    outline: none;
+    border: 1px solid #083954;
+}
+
+.table-editor h2,
+.table-editor h3 {
+    margin: 0;
+    line-height: 30px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #083954;
+}
+
+.table-editor h2 {
+    font-size: 18px;
+    color: #083954;
+}
+
+.table-editor h3 {
+    font-size: 16px;
+}
+
+.table-editor p {
+    margin: 0;
+    line-height: 22px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+
+.table-editor-cols,
+.table-editor-rows {
+    padding: 10px;
+    outline: none;
+    border: 1px solid #083954;
+}
+
+
+/* Checkbox */
+.ora-table-builder .checkbox-input {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    height: 30px;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.ora-table-builder .checkbox-input label {
+    margin-left: 35px;
+}
+
+.ora-table-builder .checkbox-input input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.ora-table-builder .checkbox-input .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 28px;
+    width: 28px;
+    background-color: white;
+    border: 1px solid #083954;
+}
+
+.ora-table-builder .checkbox-input:hover input~.checkmark {
+    background-color: #e3e3e3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.ora-table-builder .checkbox-input .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.ora-table-builder .checkbox-input input:checked~.checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.ora-table-builder .checkbox-input .checkmark:after {
+    left: 9px;
+    top: 2px;
+    width: 8px;
+    height: 17px;
+    border: 1px solid #083954;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+/* Radio box */
+.ora-table-builder .radio-input {
+    display: block;
+    position: relative;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.ora-table-builder .radio-input input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.ora-table-builder .radio-input .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 28px;
+    width: 28px;
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid #083954;
+}
+
+.ora-table-builder .radio-input .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.ora-table-builder .radio-input input:checked~.checkmark:after {
+    display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.ora-table-builder .radio-input .checkmark:after {
+    top: 5px;
+    left: 5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #083954;
+}
+
+/* Select Box */
+.ora-table-builder select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0;
+    background: white;
+    background-image: none;
+    border-radius: 0;
+}
+
+.ora-table-builder select::-ms-expand {
+    display: none;
+}
+
+.ora-table-builder .select {
+    position: relative;
+    display: flex;
+    width: 230px;
+    height: 40px;
+    line-height: 38px;
+    background: #2c3e50;
+    overflow: hidden;
+    border-radius: .25px;
+}
+
+.ora-table-builder select {
+    flex: 1;
+    padding: 10px;
+    color: #083954;
+    cursor: pointer;
+    border: 1px solid #083954;
+}
+
+.ora-table-builder .select::after {
+    content: '\25BC';
+    position: absolute;
+    border: 1px solid #083954;
+    top: 0;
+    right: 0;
+    padding: 0 20px;
+    background: white;
+    cursor: pointer;
+    pointer-events: none;
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
+}
+
+.ora-table-builder .select:hover::after {
+    color: #00AFAA;
+}
