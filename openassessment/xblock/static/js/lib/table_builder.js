@@ -115,6 +115,7 @@ $.fn.oraTableBuilder = function () {
             $(this.controls['div'].cloneNode()).attr({class: 'row'}),
             $(this.controls['div'].cloneNode()).attr({class: 'row'}),
             $(this.controls['div'].cloneNode()).attr({class: 'row'}),
+            $(this.controls['div'].cloneNode()).attr({class: 'row'}),
         ]
         var columns = [
             $(this.controls['div'].cloneNode()).attr({class: 'column'}),
@@ -139,6 +140,14 @@ $.fn.oraTableBuilder = function () {
 
         rows[2].append($(h2.clone().text('Add Custom Html Tags'))).hide();
         rows[3].append(columns).hide();
+
+
+        var renderButton = $(this.controls['button'].cloneNode()).text("Generate Table");
+        renderButton.click(function () {
+            __this.renderTable();
+        })
+
+        rows[4].append(renderButton);
 
         this.editor_form_rows = rows;
 
