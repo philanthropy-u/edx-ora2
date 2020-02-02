@@ -165,7 +165,15 @@ OpenAssessment.Container.prototype = {
             .toggleClass('is--hidden', false)
             .toggleClass(this.containerItemClass, true)
             .appendTo($(this.containerElement));
-        $(tablePrompt).oraTableBuilder();
+
+        var tableConfiguration={
+            change:function (table) {
+                var html = table.html();
+                tablePrompt.find('.openassessment_prompt_description').val(html);
+            }
+        }
+
+        var table=$(tablePrompt).oraTableBuilder(tableConfiguration);
     },
     /**
     Remove the item associated with an element.

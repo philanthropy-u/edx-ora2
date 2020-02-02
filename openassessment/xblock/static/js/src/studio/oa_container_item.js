@@ -92,7 +92,8 @@ OpenAssessment.Prompt.prototype = {
      **/
     getFieldValues: function() {
         var fields = {
-            description: this.description()
+            description: this.description(),
+            prompt_type: this.promptType()
         };
         return fields;
     },
@@ -110,6 +111,16 @@ OpenAssessment.Prompt.prototype = {
     description: function(text) {
         var sel = $('.openassessment_prompt_description', this.element);
         return OpenAssessment.Fields.stringField(sel, text);
+    },
+
+    /**
+     *  Get prompt type from current textarea.
+     *
+     * @returns {string}
+     */
+    promptType: function() {
+        var promptType = $('.openassessment_prompt_description', this.element).data('w-type');
+        return promptType || 'text';
     },
 
     addEventListeners: function() {},

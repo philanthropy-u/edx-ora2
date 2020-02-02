@@ -48,13 +48,17 @@
                                 <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
                                 <article class="submission__answer__part__prompt">
                                     <div class="submission__answer__part__prompt__copy">
-                                        {{ part.prompt.description|linebreaks }}
+                                        {% if part.prompt.prompt_type == 'html-control' %}
+                                            {{ part.prompt.description|safe }}
+                                        {% else %}
+                                            {{ part.prompt.description|linebreaks }}
+                                        {% endif %}
                                     </div>
                                 </article>
                                 <div class="field field--textarea submission__answer__part__text">
                                     <textarea
                                         id="submission__answer__part__text__{{ forloop.counter }}__{{ xblock_id }}"
-                                        class="submission__answer__part__text__value"
+                                        class="submission__answer__part__text__value {% if part.prompt.prompt_type == 'html-control' %} is--hidden {% endif %}"
                                         aria-labelledby="submission__answer__part__text__title__{{ forloop.counter }}__{{ xblock_id }}"
                                         aria-describedby="submission__answer__tip__{{ xblock_id }}"
                                         placeholder="{% trans "Enter your answer here" %}"

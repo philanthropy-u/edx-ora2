@@ -227,3 +227,7 @@
 .ora-table-builder .select:hover::after {
     color: #00AFAA;
 }
+
+.ora-table-builder .column{
+    display: inline-block;
+}

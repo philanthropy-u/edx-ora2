@@ -76,6 +76,7 @@ EDITOR_UPDATE_SCHEMA = Schema({
     Required('prompts'): [
         Schema({
             Required('description'): utf8_validator,
+            Required('prompt_type'): utf8_validator,
         })
     ],
     Required('title'): utf8_validator,

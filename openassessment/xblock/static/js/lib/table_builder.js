@@ -1,8 +1,12 @@
 "use strict"
 
-$.fn.oraTableBuilder = function () {
+$.fn.oraTableBuilder = function ($config) {
     var _this = this
-
+    var change_cb = function (table) {
+    }
+    if ($config && $config.change) {
+        change_cb = $config.change;
+    }
     function plugin() {
         this._this = _this;
         var __this = this;
@@ -24,7 +28,6 @@ $.fn.oraTableBuilder = function () {
             radio: $(document.createElement('input')).attr({type: 'radio'}),
             text: $(document.createElement('input')).attr({type: 'text'})
         };
-
         $(_this).find('script[data-w-name="input"]').each(function (index, template) {
             var template_meta = $(template).data();
             __this.controls[template_meta['wType']] = $($.parseHTML($(template).text()));
@@ -43,6 +46,7 @@ $.fn.oraTableBuilder = function () {
                     if (template_meta['wType'] === 'checkbox') {
                         _current_element.attr('data-checked', $(this).is(':checked'));
                     }
+                    change_cb(__this);
                 })
             })
         });
@@ -126,7 +130,7 @@ $.fn.oraTableBuilder = function () {
         columns[0].append(h5.clone().text('Rows')).append(this.editor_rows);
         columns[1].append(h5.clone().text('Columns')).append(this.editor_cols);
         columns[2].append(h5.clone().text('Columns')).append(this.contains_horizontal_headers, this.contains_vertical_headers, this.contains_caption);
-        columns[2].append(h5.clone().text('Input Type')).append(this.input_type_select);
+        columns[3].append(h5.clone().text('Input Type')).append(this.input_type_select);
         rows[0].append($(h2.clone().text('Create Table')));
         rows[1].append(columns);
 
@@ -145,6 +149,7 @@ $.fn.oraTableBuilder = function () {
         var renderButton = $(this.controls['button'].cloneNode()).text("Generate Table");
         renderButton.click(function () {
             __this.renderTable();
+            change_cb(__this);
         })
 
         rows[4].append(renderButton);
@@ -202,7 +207,8 @@ $.fn.oraTableBuilder = function () {
         $(this.row_input_type_select).change(function () {
             $($(table).find('tbody tr')[$(_this.row_select).val()]).find('td').each(function (index, td) {
                 $(td).empty().append($(_this.controls[$(_this.row_input_type_select).val()]).clone(true, true));
-            })
+            });
+            change_cb(_this);
         });
 
         $(rows_custom_input_types_div[2]).empty();
@@ -214,6 +220,7 @@ $.fn.oraTableBuilder = function () {
             $(table).find('tr').each(function (index, tr) {
                 $($(tr).find('td')[$(_this.col_select).val()]).empty().append($(_this.controls[$(_this.col_input_type_select).val()]).clone(true, true));
             });
+            change_cb(_this);
         });
 
         $(this.editor_form_rows[2]).show();
@@ -254,9 +261,14 @@ $.fn.oraTableBuilder = function () {
             $(table).find('td').each(function () {
                 $(this).empty();
                 $(this).append($(_this.controls[value]).clone(true, true));
-            })
+            });
+            change_cb(_this);
         })
         $(input_type_select).change();
+
+        $(table).on('blur keyup paste input', '[contenteditable]', function () {
+            change_cb(_this)
+        })
 
         return this;
     }
