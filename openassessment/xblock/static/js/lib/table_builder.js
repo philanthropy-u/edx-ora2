@@ -301,14 +301,18 @@ $.fn.oraTableBuilder = function ($config) {
 }
 
 
-$.fn.initORATableCheckbox = function (checkboxClass = 'checkbox-input') {
+$.fn.initORATableCheckbox = function (checkboxClass = 'checkbox-input',disabled=false) {
     var _this = $(this);
 
     function plugin() {
         _this.find('.' + checkboxClass).each(function (index, element) {
-            $($(element).find('input[type="checkbox"]')).prop('checked', $(element).data('checked')).change(function () {
+            var checkbox=$($(element).find('input[type="checkbox"]'));
+            checkbox.prop('checked', $(element).data('checked')).change(function () {
                 $(element).attr({'data-checked': $(this).is(':checked')});
             });
+            if (disabled){
+                checkbox.prop('disabled',true);
+            }
         })
     }
 

@@ -17,9 +17,15 @@
             </article>
             <div class="submission__answer__part__text">
                 <h5 class="submission__answer__part__text__title lbl-answer-text">{{ answer_text_label }}</h5>
-                <div class="submission__answer__part__text__value">
+                <div class="submission__answer__part__text__value" id="submission__answer__part__description__{{ forloop.counter }}_div">
                     {% if part.prompt.prompt_type == 'html-control' %}
                     {{ part.text|safe }}
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            var submission_div_id = "#submission__answer__part__description__{{ forloop.counter }}_div";
+                            $(submission_div_id).initORATableCheckbox('checkbox-input', true);
+                        });
+                    </script>
                     {% else %}
                     {{ part.text|linebreaks }}
                     {% endif %}
