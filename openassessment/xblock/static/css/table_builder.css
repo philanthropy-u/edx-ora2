@@ -55,7 +55,7 @@
 /* Checkbox */
 .ora-table-builder .checkbox-input {
     display: inline-block;
-    position: relative;
+    position: relative !important;
     cursor: pointer;
     height: 30px;
     font-size: 14px;
@@ -66,6 +66,7 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
+    overflow: visible !important;
 }
 
 .ora-table-builder .checkbox-input label {
@@ -121,8 +122,8 @@
 /* Radio box */
 .ora-table-builder .radio-input {
     display: block;
-    position: relative;
-    padding: 15px;
+    position: relative !important;
+    padding: 15px !important;
     cursor: pointer;
     font-size: 22px;
     -webkit-user-select: none;
@@ -132,6 +133,7 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
+    overflow: visible;
 }
 
 .ora-table-builder .radio-input input {
@@ -230,4 +232,14 @@
 
 .ora-table-builder .column{
     display: inline-block;
+}
+table.ora-prompt-table{
+    border: 1px solid black;
+}
+.ora-prompt-table tr{
+    border: 1px solid black;
+}
+.ora-prompt-table .text-input{
+    min-width: 100px;
+    min-height: 20px;
 }

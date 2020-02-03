@@ -44,14 +44,26 @@
                 <form class="response__submission">
                     <ul class="list list--fields response__submission__content">
                         {% for part in saved_response.answer.parts %}
-                            <li class="submission__answer__part">
+                            <li class="submission__answer__part" id="submission__answer__part__description__{{ forloop.counter }}_li">
                                 <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
                                 <article class="submission__answer__part__prompt">
-                                    <div class="submission__answer__part__prompt__copy">
+                                    <div class="submission__answer__part__prompt__copy" id="submission__answer__part__description__{{ forloop.counter }}">
                                         {% if part.prompt.prompt_type == 'html-control' %}
-                                            {{ part.prompt.description|safe }}
+                                        {{ part.prompt.description|safe }}
+                                        <script type="text/javascript">
+                                            $(document).ready(function () {
+                                                var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
+                                                var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
+                                                $(oa_block_id).initORATableCheckbox();
+                                                $(oa_block_id).on('input', 'table', function () {
+                                                    $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
+                                                    console.log($(oa_block_li_id).find('textarea').first().val())
+                                                });
+                                            });
+                                        </script>
+
                                         {% else %}
-                                            {{ part.prompt.description|linebreaks }}
+                                        {{ part.prompt.description|linebreaks }}
                                         {% endif %}
                                     </div>
                                 </article>
@@ -62,7 +74,7 @@
                                         aria-labelledby="submission__answer__part__text__title__{{ forloop.counter }}__{{ xblock_id }}"
                                         aria-describedby="submission__answer__tip__{{ xblock_id }}"
                                         placeholder="{% trans "Enter your answer here" %}"
-                                        maxlength="100000"
+                                        {% if part.prompt.prompt_type != 'html-control' %} maxlength="100000" {% endif %}
                                     >{{ part.text }}</textarea>
                                 </div>
                             </li>

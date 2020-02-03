@@ -1,4 +1,4 @@
-<div id="ora-table-builder" class="ora-table-builder" data-prompt="{{ prompt_uuid }}">
+<li id="ora-table-builder" class="openassessment_prompt ora-table-builder" data-prompt="{{ prompt_uuid }}">
     <script type="text/html"  data-w-name="input" data-w-type="checkbox">
         <label class="checkbox-input">
             <label></label>
@@ -13,5 +13,11 @@
         </label>
     </script>
 
+    <script type="text/html"  data-w-name="input" data-w-type="table_text_input" contenteditable="true">
+        <p class="text-input" contenteditable="true"></p>
+    </script>
+
+
+    <input type="hidden" class="openassessment_prompt_uuid" value="{{ prompt_uuid }}" />
     <textarea class="openassessment_prompt_description setting-input is--hidden" data-w-type="html-control"></textarea>
-</div>
+</li>

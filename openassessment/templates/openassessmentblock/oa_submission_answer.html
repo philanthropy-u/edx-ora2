@@ -8,13 +8,21 @@
             </div>
             <article class="submission__answer__part__prompt">
                 <div class="submission__answer__part__prompt__value">
-                    {{ part.prompt.description|linebreaks }}
+                    {% if part.prompt.prompt_type == 'html-control' %}
+                        {{ part.prompt.description|safe }}
+                    {% else %}
+                        {{ part.prompt.description|linebreaks }}
+                    {% endif %}
                 </div>
             </article>
             <div class="submission__answer__part__text">
                 <h5 class="submission__answer__part__text__title lbl-answer-text">{{ answer_text_label }}</h5>
                 <div class="submission__answer__part__text__value">
+                    {% if part.prompt.prompt_type == 'html-control' %}
+                    {{ part.text|safe }}
+                    {% else %}
                     {{ part.text|linebreaks }}
+                    {% endif %}
                 </div>
             </div>
         </li>

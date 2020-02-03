@@ -3,10 +3,14 @@
 $.fn.oraTableBuilder = function ($config) {
     var _this = this
     var change_cb = function (table) {
+        console.info("Please overrider change in configuration object");
     }
     if ($config && $config.change) {
         change_cb = $config.change;
+    } else {
+        $config.change = change_cb;
     }
+
     function plugin() {
         this._this = _this;
         var __this = this;
@@ -26,8 +30,10 @@ $.fn.oraTableBuilder = function ($config) {
             button: document.createElement('button'),
             checkbox: $(document.createElement('input')).attr({type: 'checkbox'}),
             radio: $(document.createElement('input')).attr({type: 'radio'}),
-            text: $(document.createElement('input')).attr({type: 'text'})
+            text: $(document.createElement('input')).attr({type: 'text'}),
+            table_text_input: $(document.createElement('input')).attr({type: 'text'})
         };
+
         $(_this).find('script[data-w-name="input"]').each(function (index, template) {
             var template_meta = $(template).data();
             __this.controls[template_meta['wType']] = $($.parseHTML($(template).text()));
@@ -46,14 +52,13 @@ $.fn.oraTableBuilder = function ($config) {
                     if (template_meta['wType'] === 'checkbox') {
                         _current_element.attr('data-checked', $(this).is(':checked'));
                     }
-                    change_cb(__this);
                 })
             })
         });
         this.inputTypes = [
-            'text',
-            'checkbox',
-            'radio'
+            {title: 'text', value: 'table_text_input'},
+            {title: 'checkbox', value: 'checkbox'},
+            {title: 'radio', value: 'radio'}
         ];
 
         this.input_type_select = this.controls['select'].cloneNode();
@@ -149,7 +154,6 @@ $.fn.oraTableBuilder = function ($config) {
         var renderButton = $(this.controls['button'].cloneNode()).text("Generate Table");
         renderButton.click(function () {
             __this.renderTable();
-            change_cb(__this);
         })
 
         rows[4].append(renderButton);
@@ -174,7 +178,7 @@ $.fn.oraTableBuilder = function ($config) {
             caption = this.controls['caption'].cloneNode(),
             tbody = this.controls['tbody'].cloneNode(),
             thead = this.controls['thead'].cloneNode();
-
+        $(table).addClass('ora-prompt-table ora-table-builder');
         var col_options = [], row_options = [];
         this.col_select = this.controls['select'].cloneNode();
         this.row_select = this.controls['select'].cloneNode();
@@ -275,9 +279,9 @@ $.fn.oraTableBuilder = function ($config) {
 
     plugin.prototype.populate_input_type_select = function (input_type_select) {
         var _this = this;
-        this.inputTypes.forEach(function (value, index) {
+        this.inputTypes.forEach(function (v_option, index) {
             var option = _this.controls['option'].cloneNode();
-            $(option).attr({value: value}).html(value);
+            $(option).attr({value: v_option.value}).html(v_option.title);
             $(input_type_select).append(option)
         });
     }
@@ -285,7 +289,7 @@ $.fn.oraTableBuilder = function ($config) {
     plugin.prototype.html = function () {
         return $(this.table_preview).html();
     }
-    plugin.prototype.setContentEditable = function (contenteditable) {
+    plugin.prototype.setHeaderContentEditable = function (contenteditable) {
         $(this.table_preview).find('th').each(function (index, th) {
             $(th).attr({contenteditable: contenteditable});
         })
@@ -294,4 +298,36 @@ $.fn.oraTableBuilder = function ($config) {
         })
     }
     return new plugin();
+}
+
+
+$.fn.initORATableCheckbox = function (checkboxClass = 'checkbox-input') {
+    var _this = $(this);
+
+    function plugin() {
+        _this.find('.' + checkboxClass).each(function (index, element) {
+            $($(element).find('input[type="checkbox"]')).prop('checked', $(element).data('checked')).change(function () {
+                $(element).attr({'data-checked': $(this).is(':checked')});
+            });
+        })
+    }
+
+    return new plugin();
+}
+
+$.fn.oaTable = function () {
+    var table = $(this);
+
+    function plugin(table) {
+        this.table = table
+    }
+
+    plugin.prototype.locked_html = function () {
+        var table = $(this.table.clone(true, true));
+        table.find('[contenteditable]').each(function (index, editable) {
+            $(editable).removeAttr('contenteditable');
+        })
+        return table.prop("outerHTML");
+    }
+    return new plugin(table);
 }
