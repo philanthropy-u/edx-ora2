@@ -65,7 +65,7 @@ $.fn.oraTableBuilder = function ($config) {
         this.populate_input_type_select(this.input_type_select);
 
         this.controls['th'].setAttribute('contenteditable', true);
-        this.controls['caption'].setAttribute('contenteditable', true).addClass('merged-cell');
+        $(this.controls['caption'].setAttribute('contenteditable', true)).addClass('merged-cell');
 
         this.table_editor = this.controls['div'].cloneNode();
         this.table_preview = this.controls['div'].cloneNode();

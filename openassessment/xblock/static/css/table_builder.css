@@ -173,7 +173,7 @@
     display: inline-block;
     position: relative !important;
     cursor: pointer;
-    height: 30px;
+    height: 30px !important;
     font-size: 14px;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -182,9 +182,9 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
-	overflow: visible;
+	overflow: visible !important;
 	vertical-align: middle;
-    width: 30px;
+    width: 30px !important;
 }
 
 .oa-table-container .checkbox-input label {
