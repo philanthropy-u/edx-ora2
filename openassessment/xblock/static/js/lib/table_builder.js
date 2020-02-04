@@ -65,7 +65,7 @@ $.fn.oraTableBuilder = function ($config) {
         this.populate_input_type_select(this.input_type_select);
 
         this.controls['th'].setAttribute('contenteditable', true);
-        this.controls['caption'].setAttribute('contenteditable', true);
+        this.controls['caption'].setAttribute('contenteditable', true).addClass('merged-cell');
 
         this.table_editor = this.controls['div'].cloneNode();
         this.table_preview = this.controls['div'].cloneNode();
@@ -258,7 +258,7 @@ $.fn.oraTableBuilder = function ($config) {
         }
         $(table).append(tbody).addClass('oa-table-default');
 
-        var oa_table_container=$(this.controls['div']).clone().addClass('oa-table-container').append(table)
+        var oa_table_container = $(this.controls['div']).clone().addClass('oa-table-container').append(table)
 
         $(this.table_preview).empty().append(oa_table_container);
 
@@ -304,17 +304,17 @@ $.fn.oraTableBuilder = function ($config) {
 }
 
 
-$.fn.initORATableCheckbox = function (checkboxClass = 'checkbox-input',disabled=false) {
+$.fn.initORATableCheckbox = function (checkboxClass = 'checkbox-input', disabled = false) {
     var _this = $(this);
 
     function plugin() {
         _this.find('.' + checkboxClass).each(function (index, element) {
-            var checkbox=$($(element).find('input[type="checkbox"]'));
+            var checkbox = $($(element).find('input[type="checkbox"]'));
             checkbox.prop('checked', $(element).data('checked')).change(function () {
                 $(element).attr({'data-checked': $(this).is(':checked')});
             });
-            if (disabled){
-                checkbox.prop('disabled',true);
+            if (disabled) {
+                checkbox.prop('disabled', true);
             }
         })
     }

@@ -72,7 +72,7 @@
     font-family: 'Montserrat';
 }
 
-.oa-table-container .merged-cell, caption {
+.oa-table-container .merged-cell, .oa-table-container caption {
 	background: #083954;
 	color: white;
 	font-weight: 600;
@@ -80,6 +80,7 @@
 	line-height: 24px;
 	text-transform: uppercase;
 	padding: 10px;
+    margin: auto;
 }
 
 .oa-table-container h2,

@@ -15,7 +15,7 @@
                     {% endif %}
                     <script type="text/javascript">
                         $(document).ready(function () {
-                            var question_div_id = "submission__question__part__description__{{ forloop.counter }}_div";
+                            var question_div_id = "#submission__question__part__description__{{ forloop.counter }}_div";
                             $(question_div_id).initORATableCheckbox('checkbox-input', true);
                             $(question_div_id).oaTable();
                         });
