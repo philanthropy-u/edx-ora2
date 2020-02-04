@@ -1,24 +1,79 @@
 .table-editor {
     margin-bottom: 30px;
-}
-.table-editor button {
-    padding: 11px;
-    width: 160px;
-    background: #00AFAA;
-    color: white;
-    border: none;
-    outline: none;
-    cursor: pointer;
+    padding: 15px;
 }
 
-.table-editor input {
-    padding: 10px 0;
-    outline: none;
-    border: 1px solid #083954;
+.table-editor .table-input-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
-.table-editor h2,
-.table-editor h3 {
+.table-editor .table-input-container,
+.table-editor .table-checkbox-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.table-editor .table-checkbox-container {
+    margin-bottom: 20px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.table-editor .input-field {
+    width: 120px;
+    margin: 0 30px 20px 0;
+}
+
+.table-editor .input-field input {
+    padding: 0.2em;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.table-editor .input-field label {
+    display: block;
+    margin: 0 0 5px 0;
+}
+
+.table-editor .checkbox-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.table-editor .checkbox-wrapper label {
+    margin-left: 10px;
+}
+
+.table-editor .custom-tags {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.table-editor .custom-tags .custom-tag-element {
+    margin: 0 30px 20px 0;
+}
+
+.table-editor .custom-tags .table-input-container {
+    margin-right: 50px;
+}
+
+.oa-table-container {
+    font-family: 'Montserrat';
+}
+
+.oa-table-container h2,
+.oa-table-container h3 {
     margin: 0;
     line-height: 30px;
     text-transform: uppercase;
@@ -26,34 +81,83 @@
     color: #083954;
 }
 
-.table-editor h2 {
+.oa-table-container h2 {
     font-size: 18px;
     color: #083954;
 }
 
-.table-editor h3 {
+.oa-table-container h3 {
     font-size: 16px;
 }
 
-.table-editor p {
+.oa-table-container p {
     margin: 0;
     line-height: 22px;
     font-size: 14px;
     font-weight: 500;
 }
 
+.oa-table-container .oa-table-primary,
+.oa-table-container .oa-table-default {
+    background: #F4F4F4;
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    overflow-x: auto;
+}
 
-
-.table-editor-cols,
-.table-editor-rows {
-    padding: 10px;
+.oa-table-container .oa-table-primary td,
+.oa-table-container .oa-table-primary th,
+.oa-table-container .oa-table-default td,
+.oa-table-container .oa-table-default th {
+    padding: 20px 10px;
+    text-align: center;
     outline: none;
+}
+
+.oa-table-container .oa-table-primary th {
+    background-color: #00AFAA;
+    color: white;
+    outline: none;
+}
+
+.oa-table-container .oa-table-primary th h3 {
+    color: white;
+}
+
+.oa-table-container .oa-table-primary td {
+    color: #083954;
+}
+
+.oa-table-container .oa-table-primary th:not(:last-child),
+.oa-table-container .oa-table-primary td:not(:last-child) {
+    border-right: 1px solid #083954;
+}
+
+.oa-table-container .oa-table-primary tr:nth-child(even) {
+    background: #DDDBDD;
+}
+
+.oa-table-container .oa-table-default th,
+.oa-table-container .oa-table-default td {
     border: 1px solid #083954;
 }
 
+.oa-table-container .oa-table-default th {
+    background-color: #00AFAA;
+    color: white;
+    outline: none;
+}
 
-/* Checkbox */
-.ora-table-builder .checkbox-input {
+.oa-table-container .oa-table-default th h3 {
+    color: white;
+}
+
+.oa-table-container .oa-table-default td {
+    color: #083954;
+}
+
+.oa-table-container .checkbox-input {
     display: inline-block;
     position: relative !important;
     cursor: pointer;
@@ -66,14 +170,14 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
-    overflow: visible !important;
+    overflow: visible;
 }
 
-.ora-table-builder .checkbox-input label {
+.oa-table-container .checkbox-input label {
     margin-left: 35px;
 }
 
-.ora-table-builder .checkbox-input input {
+.oa-table-container .checkbox-input input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -81,7 +185,7 @@
     width: 0;
 }
 
-.ora-table-builder .checkbox-input .checkmark {
+.oa-table-container .checkbox-input .checkmark {
     position: absolute;
     top: 0;
     left: 0;
@@ -91,24 +195,21 @@
     border: 1px solid #083954;
 }
 
-.ora-table-builder .checkbox-input:hover input~.checkmark {
+.oa-table-container .checkbox-input:hover input ~ .checkmark {
     background-color: #e3e3e3;
 }
 
-/* Create the checkmark/indicator (hidden when not checked) */
-.ora-table-builder .checkbox-input .checkmark:after {
+.oa-table-container .checkbox-input .checkmark:after {
     content: "";
     position: absolute;
     display: none;
 }
 
-/* Show the checkmark when checked */
-.ora-table-builder .checkbox-input input:checked~.checkmark:after {
+.oa-table-container .checkbox-input input:checked ~ .checkmark:after {
     display: block;
 }
 
-/* Style the checkmark/indicator */
-.ora-table-builder .checkbox-input .checkmark:after {
+.oa-table-container .checkbox-input .checkmark:after {
     left: 9px;
     top: 2px;
     width: 8px;
@@ -119,11 +220,10 @@
     transform: rotate(45deg);
 }
 
-/* Radio box */
-.ora-table-builder .radio-input {
+.oa-table-container .radio-input {
     display: block;
     position: relative !important;
-    padding: 15px !important;
+    padding: 15px;
     cursor: pointer;
     font-size: 22px;
     -webkit-user-select: none;
@@ -136,13 +236,13 @@
     overflow: visible;
 }
 
-.ora-table-builder .radio-input input {
+.oa-table-container .radio-input input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
 }
 
-.ora-table-builder .radio-input .checkmark {
+.oa-table-container .radio-input .checkmark {
     position: absolute;
     top: 0;
     left: 0;
@@ -153,19 +253,10 @@
     border: 1px solid #083954;
 }
 
-.ora-table-builder .radio-input .checkmark:after {
+.oa-table-container .radio-input .checkmark:after {
     content: "";
     position: absolute;
     display: none;
-}
-
-/* Show the indicator (dot/circle) when checked */
-.ora-table-builder .radio-input input:checked~.checkmark:after {
-    display: block;
-}
-
-/* Style the indicator (dot/circle) */
-.ora-table-builder .radio-input .checkmark:after {
     top: 5px;
     left: 5px;
     width: 18px;
@@ -174,72 +265,58 @@
     background: #083954;
 }
 
-/* Select Box */
-.ora-table-builder select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -ms-appearance: none;
-    appearance: none;
-    outline: 0;
-    box-shadow: none;
-    border: 0;
-    background: white;
-    background-image: none;
-    border-radius: 0;
+.oa-table-container .radio-input input:checked ~ .checkmark:after {
+    display: block;
 }
 
-.ora-table-builder select::-ms-expand {
-    display: none;
+@media screen and (max-width: 768px) {
+    .oa-table-container {
+        overflow-x: auto;
+    }
+
+    .oa-table-container .oa-table-primary td,
+    .oa-table-container .oa-table-primary th,
+    .oa-table-container .oa-table-default td,
+    .oa-table-container .oa-table-default th {
+        width: 120px;
+    }
 }
 
-.ora-table-builder .select {
-    position: relative;
+.table-editor .row {
     display: flex;
-    width: 230px;
-    height: 40px;
-    line-height: 38px;
-    background: #2c3e50;
-    overflow: hidden;
-    border-radius: .25px;
+    flex-direction: row;
+    margin-bottom: 10px;
 }
 
-.ora-table-builder select {
+.table-editor .row .column{
+    display: flex;
+    flex-direction: column;
+    margin-right: 15px;
+    justify-content: center;
+    align-items: normal;
     flex: 1;
-    padding: 10px;
-    color: #083954;
-    cursor: pointer;
-    border: 1px solid #083954;
 }
 
-.ora-table-builder .select::after {
-    content: '\25BC';
-    position: absolute;
-    border: 1px solid #083954;
-    top: 0;
-    right: 0;
-    padding: 0 20px;
-    background: white;
-    cursor: pointer;
-    pointer-events: none;
-    -webkit-transition: .25s all ease;
-    -o-transition: .25s all ease;
-    transition: .25s all ease;
-}
-
-.ora-table-builder .select:hover::after {
-    color: #00AFAA;
-}
-
-.ora-table-builder .column{
+.table-editor .button-primary {
+    transition: background-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 0 0 transparent;
     display: inline-block;
+    padding: 4px 20px 5px;
+    background-color: rgba(255, 255, 255, 0.3);
+    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    border: 1px solid #0075b4;
+    border-radius: 3px;
+    background-color: #0075b4;
+    color: #fff;
+    border-color: #005e90;
+    color: #fff;
+    width: 100%;
 }
-table.ora-prompt-table{
-    border: 1px solid black;
+
+.table-editor .row .column.checkbox-container{
+    margin: 0 0 0 15px;
 }
-.ora-prompt-table tr{
-    border: 1px solid black;
-}
-.ora-prompt-table .text-input{
-    min-width: 100px;
-    min-height: 20px;
+.table-preview{
+    padding: 15px;
 }

@@ -43,7 +43,7 @@ $.fn.oraTableBuilder = function ($config) {
                     $(this).parent().find('input').click();
                 });
 
-                if (template_meta['wType'] === 'checkbox') {
+                if (template_meta['wType'] === 'checkbox' || template_meta['wType'] === 'table-editor-checkbox') {
                     $(_current_element).find('input[type="checkbox"]').prop('checked', $(this).data('checked'));
                 }
 
@@ -83,14 +83,14 @@ $.fn.oraTableBuilder = function ($config) {
             class: 'overrider_global_row_input'
         });
 
-        this.contains_horizontal_headers = this.controls['checkbox'].clone(true, true);
+        this.contains_horizontal_headers = this.controls['table-editor-checkbox'].clone(true, true);
         this.contains_horizontal_headers.attr({
             name: 'contains_horizontal_headers',
 
             'data-label': 'Horizontal Headers',
             'data-checked': true,
         });
-        this.contains_vertical_headers = this.controls['checkbox'].clone(true, true);
+        this.contains_vertical_headers = this.controls['table-editor-checkbox'].clone(true, true);
         this.contains_vertical_headers.attr({
             name: 'contains_vertical_headers',
 
@@ -98,7 +98,7 @@ $.fn.oraTableBuilder = function ($config) {
             'data-checked': true,
         });
 
-        this.contains_caption = this.controls['checkbox'].clone(true, true);
+        this.contains_caption = this.controls['table-editor-checkbox'].clone(true, true);
         this.contains_caption.attr({
             name: 'contains_caption',
 
@@ -129,12 +129,12 @@ $.fn.oraTableBuilder = function ($config) {
         var columns = [
             $(this.controls['div'].cloneNode()).attr({class: 'column'}),
             $(this.controls['div'].cloneNode()).attr({class: 'column'}),
-            $(this.controls['div'].cloneNode()).attr({class: 'column'}),
+            $(this.controls['div'].cloneNode()).attr({class: 'column checkbox-container'}),
             $(this.controls['div'].cloneNode()).attr({class: 'column'}),
         ]
         columns[0].append(h5.clone().text('Rows')).append(this.editor_rows);
         columns[1].append(h5.clone().text('Columns')).append(this.editor_cols);
-        columns[2].append(h5.clone().text('Columns')).append(this.contains_horizontal_headers, this.contains_vertical_headers, this.contains_caption);
+        columns[2].append(h5.clone().text('Features')).append(this.contains_horizontal_headers, this.contains_vertical_headers, this.contains_caption);
         columns[3].append(h5.clone().text('Input Type')).append(this.input_type_select);
         rows[0].append($(h2.clone().text('Create Table')));
         rows[1].append(columns);
@@ -151,7 +151,7 @@ $.fn.oraTableBuilder = function ($config) {
         rows[3].append(columns).hide();
 
 
-        var renderButton = $(this.controls['button'].cloneNode()).text("Generate Table");
+        var renderButton = $(this.controls['button'].cloneNode()).text("Generate Table").addClass('button-primary');
         renderButton.click(function () {
             __this.renderTable();
         })
@@ -256,8 +256,11 @@ $.fn.oraTableBuilder = function ($config) {
             }
             $(tbody).append(_tr);
         }
-        $(table).append(tbody)
-        $(this.table_preview).empty().append(table);
+        $(table).append(tbody).addClass('oa-table-default');
+
+        var oa_table_container=$(this.controls['div']).clone().addClass('oa-table-container').append(table)
+
+        $(this.table_preview).empty().append(oa_table_container);
 
 
         $(input_type_select).change(function () {
