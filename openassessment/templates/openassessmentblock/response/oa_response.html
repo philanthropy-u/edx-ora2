@@ -55,6 +55,7 @@
                                                 var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
                                                 var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
                                                 $(oa_block_id).initORATableCheckbox();
+                                                $(oa_block_id).oaTable();
                                                 $(oa_block_id).on('input', 'table', function () {
                                                     $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
                                                     console.log($(oa_block_li_id).find('textarea').first().val())

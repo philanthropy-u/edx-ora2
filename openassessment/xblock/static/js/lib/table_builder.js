@@ -327,6 +327,8 @@ $.fn.oaTable = function () {
 
     function plugin(table) {
         this.table = table
+        $(table).find('th[contenteditable]').removeAttr('contenteditable');
+        $(table).find('caption[contenteditable]').removeAttr('contenteditable');
     }
 
     plugin.prototype.locked_html = function () {
