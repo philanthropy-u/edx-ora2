@@ -50,13 +50,22 @@
                                     <div class="submission__answer__part__prompt__copy" id="submission__answer__part__description__{{ forloop.counter }}">
                                         {% if part.prompt.prompt_type == 'html-control' %}
                                         {{ part.prompt.description|safe }}
+                                        <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
+                                            {{ part.text|safe }}
+                                        </div>
                                         <script type="text/javascript">
                                             $(document).ready(function () {
                                                 var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
                                                 var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
+                                                var oa_block_saved_id = "#submission__answer__part__saved__state__{{ forloop.counter }}";
+                                                var oa_table_td_list = $(oa_block_id).find('td');
+                                                $(oa_block_saved_id).find('td').each(function (index, element) {
+                                                    $(oa_table_td_list.get(index)).html($(element).html());
+                                                    $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
+                                                });
                                                 $(oa_block_id).initORATableCheckbox();
                                                 $(oa_block_id).oaTable();
-                                                $(oa_block_id).on('input', 'table', function () {
+                                                $(oa_block_id).on('input change', 'table', function (e) {
                                                     $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
                                                 });
                                             });
