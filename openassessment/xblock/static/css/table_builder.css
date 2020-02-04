@@ -72,6 +72,16 @@
     font-family: 'Montserrat';
 }
 
+.oa-table-container .merged-cell, caption {
+	background: #083954;
+	color: white;
+	font-weight: 600;
+	font-size: 16px;
+	line-height: 24px;
+	text-transform: uppercase;
+	padding: 10px;
+}
+
 .oa-table-container h2,
 .oa-table-container h3 {
     margin: 0;
@@ -112,7 +122,8 @@
 .oa-table-container .oa-table-default th {
     padding: 20px 10px;
     text-align: center;
-    outline: none;
+	outline: none;
+	vertical-align: middle;
 }
 
 .oa-table-container .oa-table-primary th {
@@ -170,7 +181,9 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
-    overflow: visible;
+	overflow: visible;
+	vertical-align: middle;
+    width: 30px;
 }
 
 .oa-table-container .checkbox-input label {
@@ -189,8 +202,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 28px;
-    width: 28px;
+    height: 30px;
+    width: 30px;
     background-color: white;
     border: 1px solid #083954;
 }
@@ -210,8 +223,8 @@
 }
 
 .oa-table-container .checkbox-input .checkmark:after {
-    left: 9px;
-    top: 2px;
+	left: 10px;
+    top: 4px;
     width: 8px;
     height: 17px;
     border: 1px solid #083954;
@@ -233,7 +246,8 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
-    overflow: visible;
+	overflow: visible;
+	margin: auto;
 }
 
 .oa-table-container .radio-input input {
@@ -246,8 +260,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 28px;
-    width: 28px;
+    height: 30px;
+    width: 30px;
     background-color: white;
     border-radius: 50%;
     border: 1px solid #083954;
@@ -269,7 +283,7 @@
     display: block;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 992px) {
     .oa-table-container {
         overflow-x: auto;
     }
