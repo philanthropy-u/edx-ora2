@@ -47,11 +47,14 @@
                             <li class="submission__answer__part" id="submission__answer__part__description__{{ forloop.counter }}_li">
                                 <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
                                 <article class="submission__answer__part__prompt">
-                                    <div class="submission__answer__part__prompt__copy" id="submission__answer__part__description__{{ forloop.counter }}">
+                                    <div class="submission__answer__part__prompt__copy">
                                         {% if part.prompt.prompt_type == 'html-control' %}
                                         {{ part.prompt.description|safe }}
                                         <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
                                             {{ part.text|safe }}
+                                        </div>
+                                        <div id="submission__answer__part__description__{{ forloop.counter }}">
+                                            {{ part.prompt.html_content|safe }}
                                         </div>
                                         <script type="text/javascript">
                                             $(document).ready(function () {

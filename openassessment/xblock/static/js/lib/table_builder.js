@@ -58,7 +58,7 @@ $.fn.oraTableBuilder = function ($config) {
         this.inputTypes = [
             {title: 'text', value: 'table_text_input'},
             {title: 'checkbox', value: 'checkbox'},
-            {title: 'radio', value: 'radio'}
+            // {title: 'radio', value: 'radio'} TODO uncomment to add radio button support.
         ];
 
         this.input_type_select = this.controls['select'].cloneNode();

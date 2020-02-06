@@ -17,8 +17,14 @@
             <li class="field comp-setting-entry openassessment_prompt_description_wrapper">
                 <div class="wrapper-comp-settings">
                     <textarea class="openassessment_prompt_description setting-input" maxlength="10000" data-w-type="{{w_type}}">{{ prompt_description }}</textarea>
+                    <textarea class="openassessment_prompt_html_content setting-input is--hidden" data-w-type="html-control">{{html_content}}</textarea>
                 </div>
             </li>
+            {% if w_type == 'html-control' %}
+            <li class="field comp-setting-entry openassessment_prompt_description_wrapper">
+                {{html_content|safe}}
+            </li>
+            {% endif %}
         </ul>
 
     </div>
