@@ -335,3 +335,14 @@
 .table-preview{
     padding: 15px;
 }
+
+hr.separator {
+    margin: 20px 15px;
+    border-bottom: 1px solid #E2E2E2 !important;
+    height: 0 !important;
+}
+
+.table-editor .table-editor-rows,
+.table-editor .table-editor-cols {
+    padding: 0 5px;
+}

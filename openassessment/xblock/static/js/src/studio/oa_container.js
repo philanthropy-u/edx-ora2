@@ -102,6 +102,7 @@ OpenAssessment.Container.prototype = {
             );
         } else {
             $(this.addButtonElement).addClass('is--disabled');
+            $(this.addTableButtonElement).addClass('is--disabled');
             $("." + this.removeButtonClass, this.containerElement).addClass('is--disabled');
         }
 
