@@ -73,13 +73,13 @@
 }
 
 .oa-table-container .merged-cell, .oa-table-container caption {
-	background: #083954;
-	color: white;
-	font-weight: 600;
-	font-size: 16px;
-	line-height: 24px;
-	text-transform: uppercase;
-	padding: 10px;
+    background: #083954;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    text-transform: uppercase;
+    padding: 10px;
     margin: auto;
 }
 
@@ -123,8 +123,8 @@
 .oa-table-container .oa-table-default th {
     padding: 20px 10px;
     text-align: center;
-	outline: none;
-	vertical-align: middle;
+    outline: none;
+    vertical-align: middle;
 }
 
 .oa-table-container .oa-table-primary th {
@@ -182,8 +182,8 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
-	overflow: visible !important;
-	vertical-align: middle;
+    overflow: visible !important;
+    vertical-align: middle;
     width: 30px !important;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .oa-table-container .checkbox-input .checkmark:after {
-	left: 10px;
+    left: 10px;
     top: 4px;
     width: 8px;
     height: 17px;
@@ -247,8 +247,8 @@
     width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
-	overflow: visible;
-	margin: auto;
+    overflow: visible;
+    margin: auto;
 }
 
 .oa-table-container .radio-input input {
@@ -303,7 +303,7 @@
     margin-bottom: 10px;
 }
 
-.table-editor .row .column{
+.table-editor .row .column {
     display: flex;
     flex-direction: column;
     margin-right: 15px;
@@ -329,10 +329,11 @@
     width: 100%;
 }
 
-.table-editor .row .column.checkbox-container{
+.table-editor .row .column.checkbox-container {
     margin: 0 0 0 15px;
 }
-.table-preview{
+
+.table-preview {
     padding: 15px;
 }
 
