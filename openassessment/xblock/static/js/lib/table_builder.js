@@ -304,7 +304,7 @@ $.fn.oraTableBuilder = function ($config) {
 }
 
 
-$.fn.initORATableCheckbox = function (checkboxClass = 'checkbox-input', disabled = false) {
+$.fn.initORATableCheckbox = function (checkboxClass, disabled) {
     var _this = $(this);
 
     function plugin() {

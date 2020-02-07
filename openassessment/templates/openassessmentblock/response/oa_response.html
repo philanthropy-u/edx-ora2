@@ -66,7 +66,7 @@
                                                     $(oa_table_td_list.get(index)).html($(element).html());
                                                     $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
                                                 });
-                                                $(oa_block_id).initORATableCheckbox();
+                                                $(oa_block_id).initORATableCheckbox('checkbox-input',false);
                                                 $(oa_block_id).oaTable();
                                                 $(oa_block_id).on('input change', 'table', function (e) {
                                                     $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
