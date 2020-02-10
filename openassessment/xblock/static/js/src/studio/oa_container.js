@@ -174,7 +174,7 @@ OpenAssessment.Container.prototype = {
             }
         }
 
-        var table=$(tablePrompt).oraTableBuilder(tableConfiguration);
+        var table = $(tablePrompt).oraTableBuilder(tableConfiguration);
 
         // Since we just added the new element to the container,
         // it should be the last one.
