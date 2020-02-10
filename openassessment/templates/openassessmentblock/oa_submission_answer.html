@@ -8,18 +8,7 @@
             </div>
             <article class="submission__answer__part__prompt">
                 <div class="submission__answer__part__prompt__value" id="submission__question__part__description__{{ forloop.counter }}_div">
-                    {% if part.prompt.prompt_type == 'html-control' %}
-                        {{ part.prompt.description|safe }}
-                    {% else %}
-                        {{ part.prompt.description|linebreaks }}
-                    {% endif %}
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            var question_div_id = "#submission__question__part__description__{{ forloop.counter }}_div";
-                            $(question_div_id).initORATableCheckbox('checkbox-input', true);
-                            $(question_div_id).oaTable();
-                        });
-                    </script>
+                    {{ part.prompt.description|linebreaks }}
                 </div>
             </article>
             <div class="submission__answer__part__text">
@@ -33,6 +22,7 @@
                         $(document).ready(function () {
                             var submission_div_id = "#submission__answer__part__description__{{ forloop.counter }}_div";
                             $(submission_div_id).initORATableCheckbox('checkbox-input', true);
+                            $(submission_div_id).oaTable();
                         });
                     </script>
                     {% else %}
