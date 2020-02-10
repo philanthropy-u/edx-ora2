@@ -167,8 +167,8 @@ OpenAssessment.Container.prototype = {
             .toggleClass(this.containerItemClass, true)
             .appendTo($(this.containerElement));
 
-        var tableConfiguration={
-            change:function (table) {
+        var tableConfiguration = {
+            change: function (table) {
                 var html = table.html();
                 tablePrompt.find('.openassessment_prompt_html_content').val(html);
             }

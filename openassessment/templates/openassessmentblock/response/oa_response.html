@@ -4,7 +4,7 @@
 {% block list_item %}
 <li class="openassessment__steps__step step--response is--in-progress is--showing ui-slidable__container"
     tabindex="-1">
-{% endblock %}
+    {% endblock %}
 
     <header class="step__header ui-slidable__control">
         <h4 class="step__title">
@@ -38,7 +38,8 @@
     </header>
 
     {% block body %}
-    <div class="ui-slidable__content" aria-labelledby="oa_response_{{ xblock_id }}" id="oa_response_{{ xblock_id }}_content">
+    <div class="ui-slidable__content" aria-labelledby="oa_response_{{ xblock_id }}"
+         id="oa_response_{{ xblock_id }}_content">
         <div class="wrapper--step__content">
             <div class="step__content">
                 <form class="response__submission">
@@ -49,33 +50,33 @@
                                 <article class="submission__answer__part__prompt">
                                     <div class="submission__answer__part__prompt__copy">
                                         {% if part.prompt.prompt_type == 'html-control' %}
-                                        {{ part.prompt.description|safe }}
-                                        <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
-                                            {{ part.text|safe }}
-                                        </div>
-                                        <div id="submission__answer__part__description__{{ forloop.counter }}">
-                                            {{ part.prompt.html_content|safe }}
-                                        </div>
-                                        <script type="text/javascript">
-                                            $(document).ready(function () {
-                                                var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
-                                                var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
-                                                var oa_block_saved_id = "#submission__answer__part__saved__state__{{ forloop.counter }}";
-                                                var oa_table_td_list = $(oa_block_id).find('td');
-                                                $(oa_block_saved_id).find('td').each(function (index, element) {
-                                                    $(oa_table_td_list.get(index)).html($(element).html());
-                                                    $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
+                                            {{ part.prompt.description|safe }}
+                                            <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
+                                                {{ part.text|safe }}
+                                            </div>
+                                            <div id="submission__answer__part__description__{{ forloop.counter }}">
+                                                {{ part.prompt.html_content|safe }}
+                                            </div>
+                                            <script type="text/javascript">
+                                                $(document).ready(function () {
+                                                    var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
+                                                    var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
+                                                    var oa_block_saved_id = "#submission__answer__part__saved__state__{{ forloop.counter }}";
+                                                    var oa_table_td_list = $(oa_block_id).find('td');
+                                                    $(oa_block_saved_id).find('td').each(function (index, element) {
+                                                        $(oa_table_td_list.get(index)).html($(element).html());
+                                                        $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
+                                                    });
+                                                    $(oa_block_id).initORATableCheckbox('checkbox-input',false);
+                                                    $(oa_block_id).oaTable();
+                                                    $(oa_block_id).on('input change', 'table', function (e) {
+                                                        $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
+                                                    });
                                                 });
-                                                $(oa_block_id).initORATableCheckbox('checkbox-input',false);
-                                                $(oa_block_id).oaTable();
-                                                $(oa_block_id).on('input change', 'table', function (e) {
-                                                    $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
-                                                });
-                                            });
-                                        </script>
+                                            </script>
 
                                         {% else %}
-                                        {{ part.prompt.description|linebreaks }}
+                                            {{ part.prompt.description|linebreaks }}
                                         {% endif %}
                                     </div>
                                 </article>
@@ -117,7 +118,7 @@
                         </div>
 
                         <ul class="list list--actions hide">
-                            <hr />
+                            <hr/>
                             <li class="list--actions__item save-submit-response">
                                 <div class="tbl-view">
                                     <div class="tbl-col">

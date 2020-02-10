@@ -91,12 +91,11 @@ OpenAssessment.Prompt.prototype = {
      }
      **/
     getFieldValues: function() {
-        var fields = {
+        return {
             description: this.description(),
             prompt_type: this.promptType(),
             html_content: this.getHtmlContent(),
         };
-        return fields;
     },
 
     /**
@@ -120,12 +119,11 @@ OpenAssessment.Prompt.prototype = {
      * @returns {string}
      */
     promptType: function() {
-        var promptType = $('.openassessment_prompt_description', this.element).data('w-type');
-        return promptType || 'text';
+        return $('.openassessment_prompt_description', this.element).data('w-type') || 'text';
     },
+
     getHtmlContent: function () {
-        var htmlContent = $('.openassessment_prompt_html_content', this.element).first().val();
-        return htmlContent;
+        return $('.openassessment_prompt_html_content', this.element).first().val();
     },
 
     addEventListeners: function() {},
