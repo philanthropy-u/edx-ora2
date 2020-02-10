@@ -61,13 +61,13 @@ Kwargs:
 OpenAssessment.Container = function(ContainerItem, kwargs) {
     this.containerElement = kwargs.containerElement;
     this.templateElement = kwargs.templateElement;
-    this.templateTablePromptElement = kwargs.templateTablePromptElement;
     this.addButtonElement = kwargs.addButtonElement;
-    this.addTableButtonElement = kwargs.addTableButtonElement;
     this.removeButtonClass = kwargs.removeButtonClass;
     this.containerItemClass = kwargs.containerItemClass;
     this.notifier = kwargs.notifier;
     this.addRemoveEnabled = (typeof kwargs.addRemoveEnabled === 'undefined') || kwargs.addRemoveEnabled;
+    this.templateTablePromptElement = kwargs.templateTablePromptElement;
+    this.addTableButtonElement = kwargs.addTableButtonElement;
 
     // Since every container item should be instantiated with
     // the notifier we were given, create a helper method
