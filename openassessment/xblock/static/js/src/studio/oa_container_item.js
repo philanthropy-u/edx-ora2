@@ -91,11 +91,10 @@ OpenAssessment.Prompt.prototype = {
      }
      **/
     getFieldValues: function() {
-        return {
-            description: this.description(),
-            prompt_type: this.promptType(),
-            html_content: this.getHtmlContent(),
+        var fields = {
+            description: this.description()
         };
+        return fields;
     },
 
     /**
@@ -111,19 +110,6 @@ OpenAssessment.Prompt.prototype = {
     description: function(text) {
         var sel = $('.openassessment_prompt_description', this.element);
         return OpenAssessment.Fields.stringField(sel, text);
-    },
-
-    /**
-     *  Get prompt type from current textarea.
-     *
-     * @returns {string}
-     */
-    promptType: function() {
-        return $('.openassessment_prompt_description', this.element).data('w-type') || 'text';
-    },
-
-    getHtmlContent: function () {
-        return $('.openassessment_prompt_html_content', this.element).first().val();
     },
 
     addEventListeners: function() {},
