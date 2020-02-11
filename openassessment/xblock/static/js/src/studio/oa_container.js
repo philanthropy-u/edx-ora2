@@ -155,6 +155,7 @@ OpenAssessment.Container.prototype = {
         handlerItem.addEventListeners();
         handlerItem.addHandler();
     },
+
     /**
     Remove the item associated with an element.
     If the element is not itself an item, traverse up the

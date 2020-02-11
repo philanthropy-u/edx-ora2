@@ -39,7 +39,9 @@ from openassessment.xblock.validation import validator
 from openassessment.xblock.resolve_dates import resolve_dates, parse_date_value, DISTANT_PAST, DISTANT_FUTURE
 from openassessment.xblock.data_conversion import create_prompts_list, create_rubric_dict, update_assessments_format
 
+
 logger = logging.getLogger(__name__)
+
 
 UI_MODELS = {
     "submission": {
