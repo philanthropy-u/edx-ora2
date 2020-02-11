@@ -2,8 +2,7 @@
 {% load i18n %}
 {% spaceless %}
 {% block list_item %}
-<li class="openassessment__steps__step step--response is--in-progress is--showing ui-slidable__container"
-    tabindex="-1">
+<li class="openassessment__steps__step step--response is--in-progress is--showing ui-slidable__container" tabindex="-1">
 {% endblock %}
 
     <header class="step__header ui-slidable__control">
@@ -38,27 +37,56 @@
     </header>
 
     {% block body %}
-    <div class="ui-slidable__content" aria-labelledby="oa_response_{{ xblock_id }}" id="oa_response_{{ xblock_id }}_content">
+    <div class="ui-slidable__content" aria-labelledby="oa_response_{{ xblock_id }}"
+         id="oa_response_{{ xblock_id }}_content">
         <div class="wrapper--step__content">
             <div class="step__content">
                 <form class="response__submission">
                     <ul class="list list--fields response__submission__content">
                         {% for part in saved_response.answer.parts %}
-                            <li class="submission__answer__part">
+                            <li class="submission__answer__part" id="submission__answer__part__description__{{ forloop.counter }}_li">
                                 <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
                                 <article class="submission__answer__part__prompt">
                                     <div class="submission__answer__part__prompt__copy">
-                                        {{ part.prompt.description|linebreaks }}
+                                        {% if part.prompt.prompt_type == 'html-control' %}
+                                            {{ part.prompt.description|safe }}
+                                            <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
+                                                {{ part.text|safe }}
+                                            </div>
+                                            <div id="submission__answer__part__description__{{ forloop.counter }}">
+                                                {{ part.prompt.html_content|safe }}
+                                            </div>
+                                            <script type="text/javascript">
+                                                $(document).ready(function () {
+                                                    var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
+                                                    var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
+                                                    var oa_block_saved_id = "#submission__answer__part__saved__state__{{ forloop.counter }}";
+                                                    var oa_table_td_list = $(oa_block_id).find('td');
+                                                    $(oa_block_saved_id).find('td').each(function (index, element) {
+                                                        $(oa_table_td_list.get(index)).html($(element).html());
+                                                        $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
+                                                    });
+                                                    $(oa_block_id).initORATableCheckbox('checkbox-input',false);
+                                                    $(oa_block_id).oaTable();
+                                                    $(oa_block_id).on('input change', 'table', function (e) {
+                                                        $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
+                                                    });
+                                                });
+                                            </script>
+
+                                        {% else %}
+                                            {{ part.prompt.description|linebreaks }}
+                                        {% endif %}
                                     </div>
                                 </article>
                                 <div class="field field--textarea submission__answer__part__text">
                                     <textarea
                                         id="submission__answer__part__text__{{ forloop.counter }}__{{ xblock_id }}"
-                                        class="submission__answer__part__text__value"
+                                        class="submission__answer__part__text__value {% if part.prompt.prompt_type == 'html-control' %} is--hidden {% endif %}"
                                         aria-labelledby="submission__answer__part__text__title__{{ forloop.counter }}__{{ xblock_id }}"
                                         aria-describedby="submission__answer__tip__{{ xblock_id }}"
                                         placeholder="{% trans "Enter your answer here" %}"
-                                        maxlength="100000"
+                                        {% if part.prompt.prompt_type != 'html-control' %} maxlength="100000" {% endif %}
                                     >{{ part.text }}</textarea>
                                 </div>
                             </li>
@@ -89,7 +117,7 @@
                         </div>
 
                         <ul class="list list--actions hide">
-                            <hr />
+                            <hr/>
                             <li class="list--actions__item save-submit-response">
                                 <div class="tbl-view">
                                     <div class="tbl-col">

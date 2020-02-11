@@ -4,7 +4,7 @@ Schema for validating and sanitizing data received from the JavaScript client.
 
 import dateutil
 from pytz import utc
-from voluptuous import Schema, Required, All, Any, Range, In, Invalid
+from voluptuous import Schema, Required, All, Any, Range, In, Invalid, Optional
 
 
 def utf8_validator(value):
@@ -76,6 +76,8 @@ EDITOR_UPDATE_SCHEMA = Schema({
     Required('prompts'): [
         Schema({
             Required('description'): utf8_validator,
+            Required('prompt_type'): utf8_validator,
+            Optional('html_content'): utf8_validator,
         })
     ],
     Required('title'): utf8_validator,

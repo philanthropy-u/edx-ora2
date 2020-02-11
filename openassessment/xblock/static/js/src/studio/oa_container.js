@@ -66,6 +66,8 @@ OpenAssessment.Container = function(ContainerItem, kwargs) {
     this.containerItemClass = kwargs.containerItemClass;
     this.notifier = kwargs.notifier;
     this.addRemoveEnabled = (typeof kwargs.addRemoveEnabled === 'undefined') || kwargs.addRemoveEnabled;
+    this.templateTablePromptElement = kwargs.templateTablePromptElement;
+    this.addTableButtonElement = kwargs.addTableButtonElement;
 
     // Since every container item should be instantiated with
     // the notifier we were given, create a helper method
@@ -88,6 +90,7 @@ OpenAssessment.Container.prototype = {
         if (this.addRemoveEnabled) {
             // Install a click handler for the add button
             $(this.addButtonElement).click($.proxy(this.add, this));
+            $(this.addTableButtonElement).click($.proxy(this.addTable, this));
 
             // Find items already in the container and install click
             // handlers for the delete buttons.
@@ -99,6 +102,7 @@ OpenAssessment.Container.prototype = {
             );
         } else {
             $(this.addButtonElement).addClass('is--disabled');
+            $(this.addTableButtonElement).addClass('is--disabled');
             $("." + this.removeButtonClass, this.containerElement).addClass('is--disabled');
         }
 
