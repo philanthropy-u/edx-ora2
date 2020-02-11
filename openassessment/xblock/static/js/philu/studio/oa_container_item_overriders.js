@@ -10,7 +10,6 @@
      }
  **/
 OpenAssessment.Prompt.prototype.getFieldValues = function () {
-    console.log('OpenAssessment.Prompt.prototype.getFieldValues')
     return {
         description: this.description(),
         prompt_type: this.promptType(),
@@ -24,7 +23,6 @@ OpenAssessment.Prompt.prototype.getFieldValues = function () {
  * @returns {string}
  */
 OpenAssessment.Prompt.prototype.promptType = function () {
-    console.log('OpenAssessment.Prompt.prototype.promptType')
     return $('.openassessment_prompt_description', this.element).data('w-type') || 'text';
 }
 /**
@@ -33,6 +31,5 @@ OpenAssessment.Prompt.prototype.promptType = function () {
  * @returns {jQuery|string|undefined}
  */
 OpenAssessment.Prompt.prototype.getHtmlContent = function () {
-    console.log('OpenAssessment.Prompt.prototype.getHtmlContent')
     return $('.openassessment_prompt_html_content', this.element).first().val();
 }
