@@ -63,14 +63,23 @@
                                                     var oa_block_saved_id = "#submission__answer__part__saved__state__{{ forloop.counter }}";
                                                     var oa_table_td_list = $(oa_block_id).find('td');
                                                     $(oa_block_saved_id).find('td').each(function (index, element) {
-                                                        $(oa_table_td_list.get(index)).html($(element).html());
-                                                        $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
+                                                        var text_input=$(oa_table_td_list.get(index)).find('.text-input');
+                                                        var data = text_input.data();
+                                                        if(data){
+                                                            var hidden_place_holder = data['hiddenPlaceHolder'],
+                                                                input_control_type = data['inputControlType'];
+                                                            text_input.find(hidden_place_holder).text($(element).find(hidden_place_holder).text());
+                                                            text_input.find(input_control_type).val($(element).find(hidden_place_holder).text());
+                                                        }
+                                                        else{
+                                                            $(oa_table_td_list.get(index)).html($(element).html());
+                                                        }
                                                     });
                                                     $(oa_block_id).initORATableCheckbox('checkbox-input',false);
                                                     $(oa_block_id).oaTable();
                                                     $(oa_block_id).on('input change', 'table', function (e) {
                                                         $(oa_block_li_id)
-                                                            .find('textarea')
+                                                            .find('textarea.submission__answer__part__text__value')
                                                             .first()
                                                             .val($(this).oaTable().locked_html())
                                                             .trigger('change');

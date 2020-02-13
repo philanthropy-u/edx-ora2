@@ -16,7 +16,11 @@
     </script>
 
     <script type="text/html"  data-w-name="input" data-w-type="table_text_input" contenteditable="true">
-        <p class="text-input" contenteditable="true"></p>
+        <div class="text-input" data-input-control="true" data-input-control-type="textarea" data-hidden-place-holder=".oa-html-content-text-place-holder">
+            <textarea
+                    onkeyup="(function (element) {$(element).parent().find('p').first().text($(element).val());})(this)"/>
+            <p class="oa-html-content-text-place-holder" style="display: none"></p>
+        </div>
     </script>
     <script type="text/html"  data-w-name="input" data-w-type="table-editor-checkbox">
         <div class="checkbox-wrapper">
