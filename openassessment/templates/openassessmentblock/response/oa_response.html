@@ -69,7 +69,11 @@
                                                     $(oa_block_id).initORATableCheckbox('checkbox-input',false);
                                                     $(oa_block_id).oaTable();
                                                     $(oa_block_id).on('input change', 'table', function (e) {
-                                                        $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
+                                                        $(oa_block_li_id)
+                                                            .find('textarea')
+                                                            .first()
+                                                            .val($(this).oaTable().locked_html())
+                                                            .trigger('change');
                                                     });
                                                 });
                                             </script>
