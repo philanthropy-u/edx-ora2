@@ -606,10 +606,6 @@ class OpenAssessmentBlock(
 
         if value is None:
             self.prompt = None
-        elif len(value) == 1:
-            # For backwards compatibility. To be removed after all code
-            # is migrated to use prompts property instead of prompt field.
-            self.prompt = value[0]['description']
         else:
             self.prompt = json.dumps(value)
 
