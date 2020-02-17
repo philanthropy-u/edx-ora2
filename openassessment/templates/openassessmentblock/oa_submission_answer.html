@@ -13,14 +13,14 @@
             </article>
             <div class="submission__answer__part__text">
                 <h5 class="submission__answer__part__text__title lbl-answer-text">{{ answer_text_label }}</h5>
-                <div class="submission__answer__part__text__value" id="submission__answer__part__description__{{ forloop.counter }}_div">
+                <div class="submission__answer__part__text__value" data-section-id="submission__answer__part__description__{{ forloop.counter }}_div">
                     {% if part.prompt.prompt_type == 'html-control' %}
                     <div class="oa-table-container">
                         {{ part.text|safe }}
                     </div>
                     <script type="text/javascript">
                         $(document).ready(function () {
-                            var submission_div_id = "#submission__answer__part__description__{{ forloop.counter }}_div";
+                            var submission_div_id = "[data-section-id='submission__answer__part__description__{{ forloop.counter }}_div']";
                             $(submission_div_id).initORATableCheckbox('checkbox-input', true);
                             $(submission_div_id).oaTable();
                         });
