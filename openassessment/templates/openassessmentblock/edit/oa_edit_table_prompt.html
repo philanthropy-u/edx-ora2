@@ -1,36 +1,8 @@
 {% load i18n %}
 {% spaceless %}
 <li id="ora-table-builder" class="openassessment_prompt ora-table-builder" data-prompt="{{ prompt_uuid }}">
-    <script type="text/html"  data-w-name="input" data-w-type="checkbox">
-        <label class="checkbox-input">
-            <label></label>
-            <input type="checkbox">
-            <span class="checkmark"></span>
-        </label>
-    </script>
-    <script type="text/html"  data-w-name="input" data-w-type="radio">
-        <label class="radio-input">
-            <input type="radio">
-            <span class="checkmark"></span>
-        </label>
-    </script>
 
-    <script type="text/html"  data-w-name="input" data-w-type="table_text_input" contenteditable="true">
-        <div class="text-input" data-input-control="true" data-input-control-type="textarea" data-hidden-place-holder=".oa-html-content-text-place-holder">
-            <textarea
-                    onkeyup="(function (element) {$(element).parent().find('p').first().text($(element).val());})(this)"/>
-            <p class="oa-html-content-text-place-holder" style="display: none"></p>
-        </div>
-    </script>
-    <script type="text/html"  data-w-name="input" data-w-type="table-editor-checkbox">
-        <div class="checkbox-wrapper">
-            <input type="checkbox">
-            <label class="" name="contains_vertical_headers" data-label="Vertical Headers" data-checked="true">
-                Horizontal Headers
-            </label>
-        </div>
-    </script>
-
+    {% include "openassessmentblock/edit/partial/widget_templates.html"  %}
     <div class="openassessment_container_header openassessment_prompt_header view-outline">
         <div class="openassessment_container_header_title_box openassessment_prompt_header_title_box">
             <h6 class="openassessment_container_header_title openassessment_prompt_header_title">{% trans "Prompt" %}</h6>

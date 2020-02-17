@@ -378,6 +378,7 @@ class OpenAssessmentBlock(
             self.add_javascript_files(fragment, "static/js/src/oa_server.js")
             self.add_javascript_files(fragment, "static/js/src/lms")
             self.add_javascript_files(fragment, "static/js/philu/lib/table_builder.js")
+            self.add_javascript_files(fragment, "static/js/philu/lib/helpers.js")
         else:
             # TODO: load CSS and JavaScript as URLs once they can be served by the CDN
             fragment.add_css(load(css_url))
