@@ -405,7 +405,7 @@ $.fn.openassessmentEditableTableHeaders = function ($config) {
             function _onDoubleClick(e) {
                 var _element = this;
                 e.preventDefault();
-                $(_element).unbind('dblclick');
+                $(_element).off('dblclick');
                 var $textarea = $('<textarea class="openassessment-header-textarea"></textarea>').html($(_element).html());
                 $(element).empty().append($textarea);
                 $textarea.focus();
@@ -417,15 +417,17 @@ $.fn.openassessmentEditableTableHeaders = function ($config) {
                     updatedTable.clone(true,true);
                     update_cb(updatedTable);
                     setTimeout(function () {
-                        $(element).dblclick(_onDoubleClick);
+                        $(element).off('dblclick').dblclick(_onDoubleClick);
                     }, 50);
                 }
 
-                $textarea.focusout(focusout);
+                setTimeout(function () {
+                    $textarea.off('focusout').focusout(focusout);
+                },100);
 
             }
 
-            $(element).dblclick(_onDoubleClick);
+            $(element).off('dblclick').dblclick(_onDoubleClick);
         })
     }
 
