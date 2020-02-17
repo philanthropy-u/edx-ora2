@@ -15,7 +15,8 @@ var oa_helpers = {
 $.fn.oraTableBuilder = function ($config) {
     var CHECKBOX_SELECTOR = 'input[type="checkbox"]', CONTENTENDITABLE_SELECTOR = '[contenteditable]',
         CUSTOM_TH_INPUT_CONTROL_SELECTOR = "th>[data-input-control=true]",
-        CUSTOM_CAPTION_INPUT_CONTROL_SELECTOR = "caption>[data-input-control=true]",CUSTOM_INPUT_CONTROL_SELECTOR='[data-input-control=true]';
+        CUSTOM_CAPTION_INPUT_CONTROL_SELECTOR = "caption>[data-input-control=true]",
+        CUSTOM_INPUT_CONTROL_SELECTOR = '[data-input-control=true]';
     var _this = this;
     var change_cb = function (table) {
         console.info("Please overrider change in configuration object");
@@ -250,17 +251,17 @@ $.fn.oraTableBuilder = function ($config) {
 
 
         if (contains_caption) {
-            caption.append(table_text_input.clone(true,true))
+            caption.append(table_text_input.clone(true, true))
             $(table).append(caption);
         }
 
         if (contains_horizontal_headers) {
             var header_tr = tr.clone();
             if (contains_vertical_headers) {
-                $(header_tr).append(th.clone(true,true));
+                $(header_tr).append(th.clone(true, true));
             }
             for (var c = 0; c < cols; c++) {
-                $(header_tr).append(th.clone(true,true));
+                $(header_tr).append(th.clone(true, true));
             }
             $(thead).append(header_tr);
             $(table).append(thead);
@@ -269,7 +270,7 @@ $.fn.oraTableBuilder = function ($config) {
         for (var r = 0; r < rows; r++) {
             var _tr = tr.clone();
             if (contains_vertical_headers) {
-                $(_tr).append(th.clone(true,true));
+                $(_tr).append(th.clone(true, true));
             }
             for (var c = 0; c < cols; c++) {
                 $(_tr).append(td.clone());
@@ -314,7 +315,7 @@ $.fn.oraTableBuilder = function ($config) {
     }
 
     plugin.prototype.html = function () {
-        var _table_preview = this.table_preview.clone(true,true);
+        var _table_preview = this.table_preview.clone(true, true);
 
         function lockField(selector) {
             _table_preview.find(selector).each(function (index, element) {
@@ -388,4 +389,45 @@ $.fn.oaTable = function () {
     }
 
     return new plugin(table);
+}
+
+$.fn.openassessmentEditableTableHeaders = function ($config) {
+    var table = $(this);
+    var update_cb = function (table) {
+        console.info("Please overrider change in configuration object");
+    }
+    update_cb = ($config && $config.update) ? $config.update : update_cb;
+    var $container = $(this);
+
+    function plugin() {
+        this.$container = $container;
+        this.$container.find('th,caption').each(function (index, element) {
+            function _onDoubleClick(e) {
+                var _element = this;
+                e.preventDefault();
+                $(_element).unbind('dblclick');
+                var $textarea = $('<textarea class="openassessment-header-textarea"></textarea>').html($(_element).html());
+                $(element).empty().append($textarea);
+                $textarea.focus();
+
+                function focusout() {
+                    $(_element).html($(this).val());
+                    $textarea.remove();
+                    var updatedTable=table.clone(true,true);
+                    updatedTable.clone(true,true);
+                    update_cb(updatedTable);
+                    setTimeout(function () {
+                        $(element).dblclick(_onDoubleClick);
+                    }, 50);
+                }
+
+                $textarea.focusout(focusout);
+
+            }
+
+            $(element).dblclick(_onDoubleClick);
+        })
+    }
+
+    return new plugin();
 }

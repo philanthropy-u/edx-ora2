@@ -20,12 +20,25 @@
             <li class="field comp-setting-entry openassessment_prompt_description_wrapper">
                 <div class="wrapper-comp-settings">
                     <textarea class="openassessment_prompt_description setting-input" maxlength="10000" data-w-type="{{w_type}}">{{ prompt_description }}</textarea>
-                    <textarea class="openassessment_prompt_html_content setting-input is--hidden" data-w-type="html-control">{{html_content}}</textarea>
+                    <textarea id="html-content-textarea-{{ counter }}" class="openassessment_prompt_html_content setting-input is--hidden" data-w-type="html-control">{{html_content}}</textarea>
                 </div>
             </li>
             {% if w_type == 'html-control' %}
-            <li class="field comp-setting-entry openassessment_prompt_description_wrapper">
+            <li class="field comp-setting-entry openassessment_prompt_description_wrapper enable-header-editing">
                 {{html_content|safe}}
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        var config = {
+                            update: function (table) {
+                                var targerTextArea = $('#html-content-textarea-{{ counter }}'),
+                                    updated_html = table.html();
+                                table.find('script').remove();
+                                targerTextArea.html(updated_html);
+                            }
+                        };
+                        $('.enable-header-editing').openassessmentEditableTableHeaders(config);
+                    });
+                </script>
             </li>
             {% endif %}
         </ul>
