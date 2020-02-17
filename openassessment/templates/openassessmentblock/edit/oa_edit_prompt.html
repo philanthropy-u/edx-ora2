@@ -33,7 +33,7 @@
                                 var targerTextArea = $('#html-content-textarea-{{ counter }}'),
                                     updated_html = table.html();
                                 table.find('script').remove();
-                                targerTextArea.html(updated_html);
+                                targerTextArea.val(updated_html);
                             }
                         };
                         $('.enable-header-editing').openassessmentEditableTableHeaders(config);
