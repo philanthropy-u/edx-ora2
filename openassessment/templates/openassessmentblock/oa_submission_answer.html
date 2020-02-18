@@ -2,7 +2,8 @@
 {% load i18n %}
 <ol class="submission__answer__display__content">
     {% for part in answer.parts %}
-        <li class="submission__answer__part">
+    <li class="submission__answer__part" data-oa-submitted-part="true" data-prompt-type="{{ part.prompt.prompt_type }}"
+        data-loop-counter="{{ forloop.counter }}">
             <div class="submission__answer__part__text">
                 <h5 class="submission__answer__part__text__title">{% trans "The question for this section" %}</h5>
             </div>
@@ -18,13 +19,6 @@
                     <div class="oa-table-container">
                         {{ part.text|safe }}
                     </div>
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            var submission_div_id = "[data-section-id='submission__answer__part__description__{{ forloop.counter }}_div']";
-                            $(submission_div_id).initORATableCheckbox('checkbox-input', true);
-                            $(submission_div_id).oaTable();
-                        });
-                    </script>
                     {% else %}
                     {{ part.text|linebreaks }}
                     {% endif %}

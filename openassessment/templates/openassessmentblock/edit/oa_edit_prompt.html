@@ -1,6 +1,7 @@
 {% load i18n %}
 {% spaceless %}
-<li class="openassessment_prompt" data-prompt="{{ prompt_uuid }}">
+<li class="openassessment_prompt" data-prompt="{{ prompt_uuid }}" data-prompt-type="{{ w_type }}"
+    data-loop-counter="{{ counter }}">
 
     <div class="openassessment_container_header openassessment_prompt_header view-outline">
         <div class="openassessment_container_header_title_box openassessment_prompt_header_title_box">
@@ -28,15 +29,7 @@
                 {{html_content|safe}}
                 <script type="text/javascript">
                     $(document).ready(function () {
-                        var config = {
-                            update: function (table) {
-                                var targerTextArea = $('#html-content-textarea-{{ counter }}'),
-                                    updated_html = table.html();
-                                table.find('script').remove();
-                                targerTextArea.val(updated_html);
-                            }
-                        };
-                        $('.enable-header-editing').openassessmentEditableTableHeaders(config);
+
                     });
                 </script>
             </li>
