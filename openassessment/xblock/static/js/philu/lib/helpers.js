@@ -1,4 +1,8 @@
 (function () {
+    /**
+     *
+     * @type {{EVENTS: {DOMNODEINSERTED: string, KEYUP: string}, SELECTORS: {SUBMISSION_ANSWER_PART_TEXTAREA: string, SUBMISSION_ANSWER_PART: string, SUBMITTED_ANSWER_PART: string, HTML_TYPE_PROMPT: string, OPENASSESSMENT_STEPS: string, TEXT_INPUT_TEXTAREA: string, XBLOCK_STUDIO_EDITOR: string}}}
+     */
     var CONSTANTS = {
         EVENTS: {
             KEYUP: 'keyup',
@@ -15,6 +19,9 @@
         }
     }, oa_table_builder_init_helpers = {
         oa_response_init: function (event) {
+            /**
+             * initializing table builder events on response page.
+             */
             event.preventDefault();
             if (!$(event.target).is('li')) {
                 return;
@@ -55,6 +62,9 @@
             })
         },
         oa_submitted_response_init: function (event) {
+            /**
+             * initializing submitted table response for submitted assessments.
+             */
             if (!$(event.target).is('li')) {
                 return;
             }
@@ -66,6 +76,9 @@
             });
         },
         oa_prompt_edit_init: function () {
+            /**
+             * initializing edit prompt view.
+             */
             $(this).find(CONSTANTS.SELECTORS.HTML_TYPE_PROMPT).each(function (index, prompt) {
                 var config = {
                     update: function (table) {
@@ -80,11 +93,13 @@
             });
         },
         oa_text_input_field_init: function () {
+            /**
+             * updated table html on input in textarea of input type custom field.
+             */
             var element = $(this);
             $(element).next().text($(element).val());
         }
     };
-
     $(document).on(CONSTANTS.EVENTS.KEYUP, CONSTANTS.SELECTORS.TEXT_INPUT_TEXTAREA, oa_table_builder_init_helpers.oa_text_input_field_init);
 
     $(document).on(CONSTANTS.EVENTS.DOMNODEINSERTED, CONSTANTS.SELECTORS.OPENASSESSMENT_STEPS, oa_table_builder_init_helpers.oa_response_init);
