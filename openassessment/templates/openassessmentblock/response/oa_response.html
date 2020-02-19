@@ -51,7 +51,9 @@
                                 <article class="submission__answer__part__prompt">
                                     <div class="submission__answer__part__prompt__copy">
                                         {% if part.prompt.prompt_type == 'html-control' %}
+                                        <div class="submission__answer__part__prompt__copy">
                                             {{ part.prompt.description|safe }}
+                                        </div>
                                             <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
                                                 {{ part.text|safe }}
                                             </div>

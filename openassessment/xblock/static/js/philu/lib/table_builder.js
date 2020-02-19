@@ -406,7 +406,7 @@ $.fn.openassessmentEditableTableHeaders = function ($config) {
                 var _element = this;
                 e.preventDefault();
                 $(_element).off('dblclick');
-                var $textarea = $('<textarea class="openassessment-header-textarea"></textarea>').html($(_element).html());
+                var $textarea = $('<textarea class="openassessment-header-textarea"></textarea>').html($(_element).text());
                 $(element).empty().append($textarea);
                 $textarea.focus();
 
