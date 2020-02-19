@@ -4,9 +4,19 @@
  *  to ORA. there are few html data variables as well which we needs to understand before start integration of this plugin.
  *  data-w-type="html-control" will be added to the textarea of prompt to hold widget type of hte prompt.
  * */
-
+var oa_helpers = {
+    lockInputField: function (element) {
+        var data = $(element).data();
+        var hiddenPlaceHolder = data['hiddenPlaceHolder'], inputControlType = data['inputControlType'];
+        $(element).find(hiddenPlaceHolder).show();
+        $(element).find(inputControlType).remove();
+    }
+}
 $.fn.oraTableBuilder = function ($config) {
-    var CHECKBOX_SELECTOR = 'input[type="checkbox"]', CONTENTENDITABLE_SELECTOR = '[contenteditable]';
+    var CHECKBOX_SELECTOR = 'input[type="checkbox"]', CONTENTENDITABLE_SELECTOR = '[contenteditable]',
+        CUSTOM_TH_INPUT_CONTROL_SELECTOR = "th>[data-input-control=true]",
+        CUSTOM_CAPTION_INPUT_CONTROL_SELECTOR = "caption>[data-input-control=true]",
+        CUSTOM_INPUT_CONTROL_SELECTOR = '[data-input-control=true]';
     var _this = this;
     var change_cb = function (table) {
         console.info("Please overrider change in configuration object");
@@ -32,7 +42,7 @@ $.fn.oraTableBuilder = function ($config) {
             select: $('<select></select>'),
             option: $('<option></option>'),
             label: $('<label></label>'),
-            caption: $('<caption></caption>'),
+            caption: $('<caption class="merged-cell"></caption>'),
             button: $('<button></button>'),
             checkbox: $('<input type="checkbox" />'),
             radio: $('<input type="radio" />'),
@@ -69,9 +79,6 @@ $.fn.oraTableBuilder = function ($config) {
 
         this.input_type_select = this.controls['select'].clone();
         this.populate_input_type_select(this.input_type_select);
-
-        this.controls['th'].attr('contenteditable', true);
-        $(this.controls['caption'].attr('contenteditable', true)).addClass('merged-cell');
 
         this.table_editor = this.controls['div'].clone();
         this.table_preview = this.controls['div'].clone();
@@ -179,11 +186,13 @@ $.fn.oraTableBuilder = function ($config) {
             contains_caption = this.contains_caption.find(CHECKBOX_SELECTOR).is(':checked');
         var input_type_select = this.input_type_select;
         var table = this.controls['table'].clone(), tr = this.controls['tr'].clone(),
+            table_text_input = this.controls['table_text_input'].clone(),
             td = this.controls['td'].clone(),
             th = this.controls['th'].clone(),
-            caption = this.controls['caption'].clone(),
+            caption = this.controls['caption'].clone().append(table_text_input),
             tbody = this.controls['tbody'].clone(),
             thead = this.controls['thead'].clone();
+        th.append(table_text_input);
         var CUSTOM_INPUT_TYPE_HEADER_ROW_INDEX = 2, CUSTOM_INPUT_TYPE_CONTROL_ROW_INDEX = 3,
             CUSTOM_INPUT_ROW_FIRST_COLUMN = 0, CUSTOM_INPUT_ROW_SECOND_COLUMN = 1,
             CUSTOM_INPUT_ROW_THIRD_COLUMN = 2, CUSTOM_INPUT_ROW_FOURTH_COLUMN = 3;
@@ -242,16 +251,17 @@ $.fn.oraTableBuilder = function ($config) {
 
 
         if (contains_caption) {
+            caption.append(table_text_input.clone(true, true))
             $(table).append(caption);
         }
 
         if (contains_horizontal_headers) {
             var header_tr = tr.clone();
             if (contains_vertical_headers) {
-                $(header_tr).append(th.clone());
+                $(header_tr).append(th.clone(true, true));
             }
             for (var c = 0; c < cols; c++) {
-                $(header_tr).append(th.clone());
+                $(header_tr).append(th.clone(true, true));
             }
             $(thead).append(header_tr);
             $(table).append(thead);
@@ -260,7 +270,7 @@ $.fn.oraTableBuilder = function ($config) {
         for (var r = 0; r < rows; r++) {
             var _tr = tr.clone();
             if (contains_vertical_headers) {
-                $(_tr).append(th.clone());
+                $(_tr).append(th.clone(true, true));
             }
             for (var c = 0; c < cols; c++) {
                 $(_tr).append(td.clone());
@@ -284,7 +294,7 @@ $.fn.oraTableBuilder = function ($config) {
         })
         $(input_type_select).change();
 
-        $(table).on('blur keyup paste input', CONTENTENDITABLE_SELECTOR, function () {
+        $(table).on('blur keyup paste input', CUSTOM_INPUT_CONTROL_SELECTOR, function () {
             change_cb(_this)
         })
 
@@ -305,7 +315,18 @@ $.fn.oraTableBuilder = function ($config) {
     }
 
     plugin.prototype.html = function () {
-        return $(this.table_preview).html();
+        var _table_preview = this.table_preview.clone(true, true);
+
+        function lockField(selector) {
+            _table_preview.find(selector).each(function (index, element) {
+                oa_helpers.lockInputField(element);
+            });
+        }
+
+        [CUSTOM_TH_INPUT_CONTROL_SELECTOR, CUSTOM_CAPTION_INPUT_CONTROL_SELECTOR].forEach(function (selector) {
+            lockField(selector);
+        });
+        return $(_table_preview).html();
     }
 
     plugin.prototype.setHeaderContentEditable = function (contenteditable) {
@@ -344,7 +365,8 @@ $.fn.initORATableCheckbox = function (checkboxClass, disabled) {
 
 $.fn.oaTable = function () {
     var CONTENTENDITABLE_SELECTOR = '[contenteditable]', CONTENTEDITABLE_TH_SELECTOR = 'th[contenteditable]',
-        CONTENTEDITABLE_CAPTION_SELECTOR = 'caption[contenteditable]';
+        CONTENTEDITABLE_CAPTION_SELECTOR = 'caption[contenteditable]',
+        CUSTOM_INPUT_CONTROL_SELECTOR = "[data-input-control=true]";
     var table = $(this);
 
     function plugin(table) {
@@ -359,9 +381,55 @@ $.fn.oaTable = function () {
         table.find(CONTENTENDITABLE_SELECTOR).each(function (index, editable) {
             $(editable).removeAttr('contenteditable');
         });
+        table.find(CUSTOM_INPUT_CONTROL_SELECTOR).each(function (index, element) {
+            oa_helpers.lockInputField(element);
+        });
 
         return table.prop("outerHTML");
     }
 
     return new plugin(table);
+}
+
+$.fn.openassessmentEditableTableHeaders = function ($config) {
+    var table = $(this);
+    var update_cb = function (table) {
+        console.info("Please overrider change in configuration object");
+    }
+    update_cb = ($config && $config.update) ? $config.update : update_cb;
+    var $container = $(this);
+
+    function plugin() {
+        this.$container = $container;
+        this.$container.find('th,caption').each(function (index, element) {
+            function _onDoubleClick(e) {
+                var _element = this;
+                e.preventDefault();
+                $(_element).off('dblclick');
+                var $textarea = $('<textarea class="openassessment-header-textarea"></textarea>').html($(_element).text());
+                $(element).empty().append($textarea);
+                $textarea.focus();
+
+                function focusout() {
+                    $(_element).html($(this).val());
+                    $textarea.remove();
+                    var updatedTable=table.clone(true,true);
+                    updatedTable.clone(true,true);
+                    update_cb(updatedTable);
+                    setTimeout(function () {
+                        $(element).off('dblclick').dblclick(_onDoubleClick);
+                    }, 50);
+                }
+
+                setTimeout(function () {
+                    $textarea.off('focusout').focusout(focusout);
+                },100);
+
+            }
+
+            $(element).off('dblclick').dblclick(_onDoubleClick);
+        })
+    }
+
+    return new plugin();
 }

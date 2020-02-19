@@ -44,36 +44,22 @@
                 <form class="response__submission">
                     <ul class="list list--fields response__submission__content">
                         {% for part in saved_response.answer.parts %}
-                            <li class="submission__answer__part" id="submission__answer__part__description__{{ forloop.counter }}_li">
+                        <li class="submission__answer__part" data-prompt-type="{{ part.prompt.prompt_type }}"
+                            data-loop-counter="{{ forloop.counter }}"
+                            id="submission__answer__part__description__{{ forloop.counter }}_li">
                                 <h5 class="submission__answer__part__text__title">{% trans "Prompt for this section" %}</h5>
                                 <article class="submission__answer__part__prompt">
                                     <div class="submission__answer__part__prompt__copy">
                                         {% if part.prompt.prompt_type == 'html-control' %}
+                                        <div class="submission__answer__part__prompt__copy">
                                             {{ part.prompt.description|safe }}
+                                        </div>
                                             <div class="is--hidden" id="submission__answer__part__saved__state__{{ forloop.counter }}">
                                                 {{ part.text|safe }}
                                             </div>
                                             <div id="submission__answer__part__description__{{ forloop.counter }}">
                                                 {{ part.prompt.html_content|safe }}
                                             </div>
-                                            <script type="text/javascript">
-                                                $(document).ready(function () {
-                                                    var oa_block_id = "#submission__answer__part__description__{{ forloop.counter }}";
-                                                    var oa_block_li_id = "#submission__answer__part__description__{{ forloop.counter }}_li";
-                                                    var oa_block_saved_id = "#submission__answer__part__saved__state__{{ forloop.counter }}";
-                                                    var oa_table_td_list = $(oa_block_id).find('td');
-                                                    $(oa_block_saved_id).find('td').each(function (index, element) {
-                                                        $(oa_table_td_list.get(index)).html($(element).html());
-                                                        $(oa_table_td_list.get(index)).find('.text-input').attr({contenteditable: true});
-                                                    });
-                                                    $(oa_block_id).initORATableCheckbox('checkbox-input',false);
-                                                    $(oa_block_id).oaTable();
-                                                    $(oa_block_id).on('input change', 'table', function (e) {
-                                                        $(oa_block_li_id).find('textarea').first().val($(this).oaTable().locked_html());
-                                                    });
-                                                });
-                                            </script>
-
                                         {% else %}
                                             {{ part.prompt.description|linebreaks }}
                                         {% endif %}

@@ -378,6 +378,7 @@ class OpenAssessmentBlock(
             self.add_javascript_files(fragment, "static/js/src/oa_server.js")
             self.add_javascript_files(fragment, "static/js/src/lms")
             self.add_javascript_files(fragment, "static/js/philu/lib/table_builder.js")
+            self.add_javascript_files(fragment, "static/js/philu/lib/helpers.js")
         else:
             # TODO: load CSS and JavaScript as URLs once they can be served by the CDN
             fragment.add_css(load(css_url))
@@ -606,10 +607,6 @@ class OpenAssessmentBlock(
 
         if value is None:
             self.prompt = None
-        elif len(value) == 1:
-            # For backwards compatibility. To be removed after all code
-            # is migrated to use prompts property instead of prompt field.
-            self.prompt = value[0]['description']
         else:
             self.prompt = json.dumps(value)
 

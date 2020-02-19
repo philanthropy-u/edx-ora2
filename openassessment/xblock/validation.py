@@ -375,6 +375,9 @@ def validator(oa_block, _, strict_post_release=True):
         success, msg = validate_dates(oa_block.start, oa_block.due, submission_dates + assessment_dates, _)
         if not success:
             return False, msg
+        success, msg = validate_prompts(rubric_dict['prompts'], _)
+        if not success:
+            return False, msg
 
         # Leaderboard
         if leaderboard_show < 0 or leaderboard_show > MAX_TOP_SUBMISSIONS:
@@ -413,4 +416,22 @@ def validate_submission(submission, prompts, _):
         if type(submission_part) != unicode:
             return False, message
 
+    return True, u''
+
+
+def validate_prompts(prompts, _):
+    """
+    Validate prompts dict.
+
+    Args:
+        prompts (list of dict): The prompts from the problem definition.
+        _ (function): The service function used to get the appropriate i18n text.
+
+    Returns:
+        tuple (is_valid, msg) where
+            is_valid is a boolean indicating whether the list of prompts is semantically valid
+            and msg describes any validation errors found.
+    """
+    if not prompts:
+        return False, _(u"There should be at least one prompt added.")
     return True, u''
