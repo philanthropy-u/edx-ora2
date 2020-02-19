@@ -1,13 +1,26 @@
 (function () {
-
-    var oa_table_builder_init_helpers = {
+    var CONSTANTS = {
+        EVENTS: {
+            KEYUP: 'keyup',
+            DOMNODEINSERTED: 'DOMNodeInserted'
+        },
+        SELECTORS: {
+            OPENASSESSMENT_STEPS: 'li.openassessment__steps__step',
+            TEXT_INPUT_TEXTAREA: '.text-input textarea',
+            XBLOCK_STUDIO_EDITOR: '.xblock.xblock-studio_view.xblock-studio_view-openassessment',
+            SUBMISSION_ANSWER_PART: 'li.submission__answer__part[data-prompt-type="html-control"]',
+            SUBMISSION_ANSWER_PART_TEXTAREA: 'textarea.submission__answer__part__text__value',
+            SUBMITTED_ANSWER_PART:'li.submission__answer__part[data-prompt-type="html-control"][data-oa-submitted-part="true"]',
+            HTML_TYPE_PROMPT:'[data-prompt-type="html-control"]'
+        }
+    }, oa_table_builder_init_helpers = {
         oa_response_init: function (event) {
+            event.preventDefault();
             if (!$(event.target).is('li')) {
                 return;
             }
 
-            event.preventDefault();
-            $(this).find('li.submission__answer__part[data-prompt-type="html-control"]').each(function (index, oa_block_li) {
+            $(this).find(CONSTANTS.SELECTORS.SUBMISSION_ANSWER_PART).each(function (index, oa_block_li) {
 
                 var loop_counter = $(oa_block_li).data('loop-counter'),
                     oa_block_id = "#submission__answer__part__description__" + loop_counter,
@@ -16,7 +29,7 @@
                     oa_block_saved = $(oa_block_li).find(oa_block_saved_id);
                 var oa_table_td_list = $(oa_block).find('td');
                 var textarea = $(oa_block_li)
-                    .find('textarea.submission__answer__part__text__value')
+                    .find(CONSTANTS.SELECTORS.SUBMISSION_ANSWER_PART_TEXTAREA)
                     .first();
                 $(oa_block_saved).find('td').each(function (index, element) {
                     var text_input = $(oa_table_td_list.get(index)).find('.text-input');
@@ -45,7 +58,7 @@
             if (!$(event.target).is('li')) {
                 return;
             }
-            $(this).find('li.submission__answer__part[data-prompt-type="html-control"][data-oa-submitted-part="true"]').each(function (index, oa_block_submitted_li) {
+            $(this).find(CONSTANTS.SELECTORS.SUBMITTED_ANSWER_PART).each(function (index, oa_block_submitted_li) {
                 var loop_counter = $(oa_block_submitted_li).data('loop-counter'),
                     submission_div_id = "[data-section-id='submission__answer__part__description__" + loop_counter + "_div']";
                 $(oa_block_submitted_li).find(submission_div_id).initORATableCheckbox('checkbox-input', true);
@@ -53,7 +66,7 @@
             });
         },
         oa_prompt_edit_init: function () {
-            $(this).find('[data-prompt-type="html-control"]').each(function (index, prompt) {
+            $(this).find(CONSTANTS.SELECTORS.HTML_TYPE_PROMPT).each(function (index, prompt) {
                 var config = {
                     update: function (table) {
                         var loop_counter = $(prompt).data('loop-counter'),
@@ -70,13 +83,13 @@
             var element = $(this);
             $(element).next().text($(element).val());
         }
-    }
+    };
 
-    $(document).on("keyup", ".text-input textarea", oa_table_builder_init_helpers.oa_text_input_field_init);
+    $(document).on(CONSTANTS.EVENTS.KEYUP, CONSTANTS.SELECTORS.TEXT_INPUT_TEXTAREA, oa_table_builder_init_helpers.oa_text_input_field_init);
 
-    $(document).on('DOMNodeInserted', 'li.openassessment__steps__step', oa_table_builder_init_helpers.oa_response_init);
+    $(document).on(CONSTANTS.EVENTS.DOMNODEINSERTED, CONSTANTS.SELECTORS.OPENASSESSMENT_STEPS, oa_table_builder_init_helpers.oa_response_init);
 
-    $(document).on('DOMNodeInserted', 'li.openassessment__steps__step', oa_table_builder_init_helpers.oa_submitted_response_init)
+    $(document).on(CONSTANTS.EVENTS.DOMNODEINSERTED, CONSTANTS.SELECTORS.OPENASSESSMENT_STEPS, oa_table_builder_init_helpers.oa_submitted_response_init)
 
-    $(document).on('DOMNodeInserted', '.xblock.xblock-studio_view.xblock-studio_view-openassessment', oa_table_builder_init_helpers.oa_prompt_edit_init);
+    $(document).on(CONSTANTS.EVENTS.DOMNODEINSERTED, CONSTANTS.SELECTORS.XBLOCK_STUDIO_EDITOR, oa_table_builder_init_helpers.oa_prompt_edit_init);
 })();
