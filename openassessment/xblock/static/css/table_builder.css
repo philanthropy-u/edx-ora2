@@ -87,8 +87,8 @@
 
 .oa-table-container .merged-cell textarea,
 .oa-table-container .merged-cell p {
-	width: 100%;
-	height: 100%;
+	width: 100% !important;
+	height: 100% !important;
     background: #083954;
 	color: white;
 	font-weight: 600;
@@ -125,11 +125,10 @@
 	padding: 20px 10px !important;
 	outline: none;
 	resize: none;
-	width: 100%;
+	width: 100% !important;
 	background: none !important;
 	min-height: 0 !important;
-	height: 100%;
-	width: 100%;
+	height: 100% !important;
 	text-align: center;
 }
 
@@ -154,7 +153,7 @@
 
 .oa-table-container .oa-table-primary,
 .oa-table-container .oa-table-default {
-    background: #F4F4F4;
+    background: white;
     border-collapse: collapse;
     width: 100%;
     table-layout: fixed;
@@ -190,16 +189,21 @@
 
 .oa-table-container .oa-table-primary th:not(:last-child),
 .oa-table-container .oa-table-primary td:not(:last-child) {
-    border-right: 1px solid #083954;
+    border-right: 1px solid rgba(0,0,0,.2);
 }
 
 .oa-table-container .oa-table-primary tr:nth-child(even) {
     background: #DDDBDD;
 }
 
+.oa-table-container .oa-table-primary th,
+.oa-table-container .oa-table-primary td {
+    border: 1px solid rgba(0,0,0,.2);
+}
+
 .oa-table-container .oa-table-default th,
 .oa-table-container .oa-table-default td {
-    border: 1px solid #083954;
+    border: 1px solid rgba(0,0,0,.2);
 }
 
 .oa-table-container .oa-table-default th {
@@ -222,7 +226,7 @@
     overflow: visible !important;
     vertical-align: middle;
 	width: 30px !important;
-	margin: 25px 10px !important;
+	margin: 28px 10px !important;
 }
 
 .oa-table-container .checkbox-input label {
@@ -244,7 +248,7 @@
     height: 30px;
     width: 30px;
     background-color: white;
-    border: 1px solid #083954;
+    border: 1px solid rgba(0,0,0,.2);
 }
 
 .oa-table-container .checkbox-input:hover input ~ .checkmark {
@@ -303,7 +307,7 @@
     width: 30px;
     background-color: white;
     border-radius: 50%;
-    border: 1px solid #083954;
+    border: 1px solid rgba(0,0,0,.2);
 }
 
 .oa-table-container .radio-input .checkmark:after {
@@ -387,5 +391,5 @@ hr.separator {
 }
 
 .no-display {
-	display: none;
+	display: none !important;
 }
