@@ -194,8 +194,14 @@ class WorkflowMixin(object):
             item_id=student_item['item_id'],
             steps=self._create_step_list(),
         )
+
+        users = workflow_api.get_users_who_not_assessed(
+            course_id=student_item['course_id'],
+            item_id=student_item['item_id']
+        )
+
         num_submissions = sum(item['count'] for item in status_counts)
-        return status_counts, num_submissions
+        return status_counts, num_submissions, users
 
     def _create_step_list(self):
         """

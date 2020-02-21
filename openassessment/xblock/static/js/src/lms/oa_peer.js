@@ -44,6 +44,10 @@ OpenAssessment.PeerView.prototype = {
                 view.baseView.announceStatusChangeToSRandFocus(stepID, usageID, false, view, focusID);
                 view.announceStatus = false;
                 view.dateFactory.apply();
+                if (typeof usageID !== 'undefined' && $(stepID, view.element).hasClass("is--showing")) {
+                    $("[id='oa_peer_" + usageID + "']", view.element).focus();
+                }
+                // $( "input[type='radio']" ).checkboxradio();
             }
         ).fail(function() {
             view.baseView.showLoadError('peer-assessment');
@@ -76,6 +80,10 @@ OpenAssessment.PeerView.prototype = {
                 view.installHandlers(true);
 
                 view.baseView.announceStatusChangeToSRandFocus(stepID, usageID, false, view, focusID);
+                if (typeof usageID !== 'undefined') {
+                    $("[id='oa_peer_" + usageID + "']", view.element).focus();
+                }
+                // $( "input[type='radio']" ).checkboxradio();
             }
         ).fail(function() {
             view.baseView.showLoadError('peer-assessment');

@@ -4,11 +4,14 @@
       <div class="answer__source">
           {% if assessment.points != None %}
               <span class="answer__source__value answer__source__value-with-points">
-                  {% blocktrans with assessment_title=assessment.title count points=assessment.points %}
+                  {% if show_grades %}
+                            {%blocktrans with assessment_title=assessment.title count points=assessment.points %}
                       {{ assessment_title }} - {{ points }} point
                   {% plural %}
                       {{ assessment_title }} - {{ points }} points
-                  {% endblocktrans %}
+                  {% endblocktrans %}{% else %}
+                            {{ assessment.title }}
+                        {% endif %}
               </span>
           {% else %}
               <span class="answer__source__value">{{ assessment.title }}</span>

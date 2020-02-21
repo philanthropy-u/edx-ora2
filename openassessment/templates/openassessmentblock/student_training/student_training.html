@@ -123,8 +123,7 @@
                                                 <div class="wrapper--metadata"
                                                      id="training__assessment__rubric__meta--{{ criterion.order_num }}__{{ option.order_num }}__{{ xblock_id }}">
                                                     <span class="answer__tip">{{ option.explanation }}</span>
-                                                    <span class="answer__points">{{option.points}} <span class="answer__points__label">{% trans "points" %}</span></span>
-                                                </div>
+                                                    </div>
                                             </div>
                                         {% endfor %}
                                         </div>
@@ -146,7 +145,7 @@
                 <ul class="list list--actions">
                     <li class="list--actions__item">
                         <button type="submit" class="student-training--001__assessment__submit action action--submit" disabled>
-                            {% trans "Compare your selections with the instructor's selections" %}
+                            {% trans "SUBMIT" %}
                         </button>
                     </li>
                 </ul>

@@ -37,4 +37,4 @@ urlpatterns = [
 # http://django-debug-toolbar.readthedocs.org/en/1.0/installation.html#explicit-setup
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+    urlpatterns += url(r'^__debug__/', include(debug_toolbar.urls))

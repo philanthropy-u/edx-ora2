@@ -392,6 +392,21 @@ OpenAssessment.BaseView.prototype = {
             return enabled;
         }
     },
+
+    /**
+     * Display/Hide the element with the given class name.
+     * @param {string} className The css class to find the button
+     * @param {boolean} displayed If specified displayed or hide the element, If not specified,
+     * @returns {boolean} whether or not the element is displayed
+     */
+    elementDisplayed: function (className, displayed) {
+        var $element = $(className, this.element);
+        if (displayed) {
+            $element.removeClass('hide');
+        } else {
+            $element.addClass('hide');
+        }
+    }
 };
 
 /* XBlock JavaScript entry point for OpenAssessmentXBlock. */

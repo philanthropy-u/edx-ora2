@@ -8,6 +8,7 @@ import logging
 
 import six
 
+from django.contrib.auth.models import User
 from django.db import DatabaseError
 
 from openassessment.assessment.errors import PeerAssessmentError, PeerAssessmentInternalError
@@ -15,6 +16,7 @@ from submissions import api as sub_api
 
 from .errors import (AssessmentWorkflowError, AssessmentWorkflowInternalError, AssessmentWorkflowNotFoundError,
                      AssessmentWorkflowRequestError)
+from submissions.models import StudentItem, Submission
 from .models import AssessmentWorkflow, AssessmentWorkflowCancellation
 from .serializers import AssessmentWorkflowCancellationSerializer, AssessmentWorkflowSerializer
 
@@ -276,6 +278,37 @@ def update_from_assessments(submission_uuid, assessment_requirements, override_s
         err_msg = u"Could not update assessment workflow: {}".format(err)
         logger.exception(err_msg)
         raise AssessmentWorkflowInternalError(err_msg)
+
+
+def get_users_who_not_assessed(course_id, item_id):
+    """
+    Get details of user in waiting state
+
+    Keyword Arguments:
+        course_id (unicode): The ID of the course.
+        item_id (unicode): The ID of the item in the course.
+
+    Returns:
+        list of users dicts with fields id, username, email
+    """
+
+    submission_id_list = AssessmentWorkflow.objects.filter(
+        status=AssessmentWorkflow.STATUSES[0],
+        course_id=course_id,
+        item_id=item_id
+    ).values_list('submission_uuid', flat=True)
+
+    student_anon_ids = Submission.objects.select_related('student_item').filter(
+        uuid__in=submission_id_list).values_list("student_item__student_id", flat=True)
+
+    users = [
+        {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        } for user in User.objects.filter(anonymoususerid__anonymous_user_id__in=student_anon_ids)
+    ]
+    return users
 
 
 def get_status_counts(course_id, item_id, steps):

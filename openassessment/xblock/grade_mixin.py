@@ -12,6 +12,16 @@ from openassessment.assessment.errors import PeerAssessmentError, SelfAssessment
 from xblock.core import XBlock
 
 from .data_conversion import create_submission_dict
+from openassessment.assessment.api import ai as ai_api
+from openassessment.assessment.api import peer as peer_api
+from openassessment.assessment.api import self as self_api
+from openassessment.assessment.api import staff as staff_api
+from openassessment.assessment.errors import SelfAssessmentError, PeerAssessmentError
+from lms.djangoapps.philu_api.helpers import get_course_custom_settings
+from submissions import api as sub_api
+
+
+from data_conversion import create_submission_dict
 
 
 class GradeMixin(object):
@@ -70,6 +80,13 @@ class GradeMixin(object):
                 path = 'openassessmentblock/grade/oa_grade_not_started.html'
             else:  # status is 'self' or 'peer', which implies that the workflow is incomplete
                 path, context = self.render_grade_incomplete(workflow)
+
+            # check if user is eligible to view grades
+            current_user_role = self.xmodule_runtime.get_user_role()
+            course_custom_settings = get_course_custom_settings(self.course_id)
+            context['show_grades'] = course_custom_settings.show_grades or \
+                                           current_user_role in ["staff", 'instructor']
+
         except (sub_api.SubmissionError, PeerAssessmentError, SelfAssessmentError):
             return self.render_error(self._(u"An unexpected error occurred."))
         else:

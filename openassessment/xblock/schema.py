@@ -99,6 +99,8 @@ EDITOR_UPDATE_SCHEMA = Schema({
     Required('prompts'): [
         Schema({
             Required('description'): utf8_validator,
+            Required('prompt_type'): utf8_validator,
+            Optional('html_content'): utf8_validator,
         })
     ],
     Required('prompts_type', default='text'): Any(All(utf8_validator, In(PROMPTS_TYPES)), None),

@@ -27,6 +27,10 @@ from openassessment.xblock.message_mixin import MessageMixin
 from openassessment.xblock.peer_assessment_mixin import PeerAssessmentMixin
 from openassessment.xblock.resolve_dates import DISTANT_FUTURE, DISTANT_PAST, parse_date_value, resolve_dates
 from openassessment.xblock.self_assessment_mixin import SelfAssessmentMixin
+from openassessment.xblock.submission_mixin import SubmissionMixin
+from openassessment.xblock.studio_mixin import StudioMixin
+from openassessment.table_prompts.ora_prompt_mixin import OraPromptMixin
+from openassessment.xblock.xml import parse_from_xml, serialize_content_to_xml
 from openassessment.xblock.staff_area_mixin import StaffAreaMixin
 from openassessment.xblock.staff_assessment_mixin import StaffAssessmentMixin
 from openassessment.xblock.student_training_mixin import StudentTrainingMixin
@@ -613,9 +617,12 @@ class OpenAssessmentBlock(MessageMixin,
 
             for js in additional_js:  # pylint: disable=invalid-name
                 self.add_javascript_files(fragment, js)
+            fragment.add_css_url(self.runtime.local_resource_url(self, 'static/css/table_builder.css'))
             self.add_javascript_files(fragment, "static/js/src/oa_shared.js")
             self.add_javascript_files(fragment, "static/js/src/oa_server.js")
             self.add_javascript_files(fragment, "static/js/src/lms")
+            self.add_javascript_files(fragment, "static/js/philu/lib/table_builder.js")
+            self.add_javascript_files(fragment, "static/js/philu/lib/helpers.js")
         else:
             # TODO: load CSS and JavaScript as URLs once they can be served by the CDN
             for css in additional_css:
@@ -623,6 +630,7 @@ class OpenAssessmentBlock(MessageMixin,
             fragment.add_css(load(css_url))
 
             # minified additional_js should be already included in 'make javascript'
+            fragment.add_css(load('static/css/table_builder.css'))
             fragment.add_javascript(load("static/js/openassessment-lms.min.js"))
         js_context_dict = {
             "ALLOWED_IMAGE_MIME_TYPES": self.ALLOWED_IMAGE_MIME_TYPES,
@@ -846,10 +854,6 @@ class OpenAssessmentBlock(MessageMixin,
 
         if value is None:
             self.prompt = None
-        elif len(value) == 1:
-            # For backwards compatibility. To be removed after all code
-            # is migrated to use prompts property instead of prompt field.
-            self.prompt = value[0]['description']
         else:
             self.prompt = json.dumps(value)
 

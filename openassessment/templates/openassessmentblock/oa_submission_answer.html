@@ -3,12 +3,13 @@
 {% load oa_extras %}
 <ol class="submission__answer__display__content">
     {% for part in answer.parts %}
-        <li class="submission__answer__part">
+    <li class="submission__answer__part" data-oa-submitted-part="true" data-prompt-type="{{ part.prompt.prompt_type }}"
+        data-loop-counter="{{ forloop.counter }}">
             <div class="submission__answer__part__text">
                 <h5 class="submission__answer__part__text__title">{% trans "The question for this section" %}</h5>
             </div>
             <article class="submission__answer__part__prompt">
-                <div class="submission__answer__part__prompt__value">
+                <div class="submission__answer__part__prompt__value" id="submission__question__part__description__{{ forloop.counter }}_div">
                     {% if prompts_type == 'html' %}
                         {{ part.prompt.description|safe }}
                     {% else %}
@@ -18,9 +19,15 @@
             </article>
             {% if part.text %}
             <div class="submission__answer__part__text">
-                <h5 class="submission__answer__part__text__title">{{ answer_text_label }}</h5>
-                <div class="submission__answer__part__text__value">
+                <h5 class="submission__answer__part__text__title lbl-answer-text">{{ answer_text_label }}</h5>
+                <div class="submission__answer__part__text__value" data-section-id="submission__answer__part__description__{{ forloop.counter }}_div">
+                    {% if part.prompt.prompt_type == 'html-control' %}
+                    <div class="oa-table-container">
+                        {{ part.text|safe }}
+                    </div>
+                    {% else %}
                     {{ part.text|escape|link_and_linebreak }}
+                    {% endif %}
                 </div>
             </div>
             {% endif %}

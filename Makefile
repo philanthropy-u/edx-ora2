@@ -66,6 +66,9 @@ update-npm-requirements: ## update NPM requrements
 	npm update --silent
 	cp ./node_modules/backgrid/lib/backgrid*.js $(STATIC_JS)/lib/backgrid/
 	cp ./node_modules/backgrid/lib/backgrid*.css $(STATIC_CSS)/lib/backgrid/
+javascript:
+	node_modules/.bin/uglifyjs $(STATIC_JS)/philu/lib/table_builder.js $(STATIC_JS)/src/oa_shared.js $(STATIC_JS)/src/*.js $(STATIC_JS)/src/lms/*.js $(STATIC_JS)/philu/lib/helpers.js > "$(STATIC_JS)/openassessment-lms.min.js"
+	node_modules/.bin/uglifyjs $(STATIC_JS)/philu/lib/table_builder.js $(STATIC_JS)/src/oa_shared.js $(STATIC_JS)/src/*.js $(STATIC_JS)/src/studio/*.js $(STATIC_JS)/philu/studio/*.js $(STATIC_JS)/philu/lib/helpers.js > "$(STATIC_JS)/openassessment-studio.min.js"
 
 javascript: update-npm-requirements ## Minify JavaScript source files
 	node_modules/.bin/uglifyjs $(STATIC_JS)/src/oa_shared.js $(STATIC_JS)/src/*.js $(STATIC_JS)/src/lms/*.js $(STATIC_JS)/lib/backgrid/backgrid.min.js > "$(STATIC_JS)/openassessment-lms.min.js"

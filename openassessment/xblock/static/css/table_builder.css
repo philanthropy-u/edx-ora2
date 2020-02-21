@@ -1,0 +1,395 @@
+.table-editor {
+    margin-bottom: 30px;
+    padding: 15px;
+}
+
+.table-editor .table-input-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.table-editor .table-input-container,
+.table-editor .table-checkbox-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.table-editor .table-checkbox-container {
+    margin-bottom: 20px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.table-editor .input-field {
+    width: 120px;
+    margin: 0 30px 20px 0;
+}
+
+.table-editor .input-field input {
+    padding: 0.2em;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.table-editor .input-field label {
+    display: block;
+    margin: 0 0 5px 0;
+}
+
+.table-editor .checkbox-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.table-editor .checkbox-wrapper label {
+    margin-left: 10px;
+}
+
+.table-editor .custom-tags {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.table-editor .custom-tags .custom-tag-element {
+    margin: 0 30px 20px 0;
+}
+
+.table-editor .custom-tags .table-input-container {
+    margin-right: 50px;
+}
+
+.oa-table-container {
+    font-family: 'Montserrat';
+}
+
+.oa-table-container .merged-cell,
+.oa-table-container caption {
+    background: #083954;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    text-transform: uppercase;
+	margin: auto;
+	text-align: center;
+	padding: 10px;
+}
+
+.oa-table-container .merged-cell textarea,
+.oa-table-container .merged-cell p {
+	width: 100% !important;
+	height: 100% !important;
+    background: #083954;
+	color: white;
+	font-weight: 600;
+    font-size: 16px;
+	outline: none;
+	text-align: center;
+	resize: none;
+    text-transform: uppercase;
+	border: none;
+	padding: 10px;
+}
+
+.oa-table-container h2,
+.oa-table-container h3 {
+    margin: 0;
+    line-height: 30px;
+    text-transform: uppercase;
+    font-weight: 600;
+	color: #083954;
+	padding: 0;
+}
+
+.oa-table-container h2 {
+    font-size: 18px;
+}
+
+.oa-table-container h3 {
+    font-size: 16px;
+}
+
+.oa-table-container td textarea,
+.oa-table-container th textarea  {
+	border: none !important;
+	padding: 20px 10px !important;
+	outline: none;
+	resize: none;
+	width: 100% !important;
+	background: none !important;
+	min-height: 0 !important;
+	height: 100% !important;
+	text-align: center;
+}
+
+.oa-table-container td textarea {
+	padding: 28px 5px 10px !important;
+	color: #083954;
+}
+
+.oa-table-container th textarea {
+	color: white;
+	text-transform: uppercase;
+}
+
+.oa-table-container p {
+	margin: 0 !important;
+	padding: 0 !important;
+    line-height: 22px;
+    font-size: 14px;
+	font-weight: 500;
+	text-align: center;
+}
+
+.oa-table-container .oa-table-primary,
+.oa-table-container .oa-table-default {
+    background: white;
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    overflow-x: auto;
+}
+
+.oa-table-container .oa-table-primary td,
+.oa-table-container .oa-table-default td {
+	padding: 0;
+	text-align: center;
+	vertical-align: middle;
+	color: #083954;
+}
+
+.oa-table-container .oa-table-primary th,
+.oa-table-container .oa-table-primary th p,
+.oa-table-container .oa-table-default th,
+.oa-table-container .oa-table-default th p {
+	color: white;
+	font-weight: 600;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 16px;
+	outline: none;
+	vertical-align: middle;
+	padding: 28px 10px;
+	background-color: #00AFAA;
+	word-wrap: break-word;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+}
+
+.oa-table-container .oa-table-primary th:not(:last-child),
+.oa-table-container .oa-table-primary td:not(:last-child) {
+    border-right: 1px solid rgba(0,0,0,.2);
+}
+
+.oa-table-container .oa-table-primary tr:nth-child(even) {
+    background: #DDDBDD;
+}
+
+.oa-table-container .oa-table-primary th,
+.oa-table-container .oa-table-primary td {
+    border: 1px solid rgba(0,0,0,.2);
+}
+
+.oa-table-container .oa-table-default th,
+.oa-table-container .oa-table-default td {
+    border: 1px solid rgba(0,0,0,.2);
+}
+
+.oa-table-container .oa-table-default th {
+    background-color: #00AFAA;
+}
+
+.oa-table-container .checkbox-input {
+    display: inline-block;
+    position: relative !important;
+    cursor: pointer;
+    height: 30px !important;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    overflow: visible !important;
+    vertical-align: middle;
+	width: 30px !important;
+	margin: 28px 10px !important;
+}
+
+.oa-table-container .checkbox-input label {
+    margin-left: 35px;
+}
+
+.oa-table-container .checkbox-input input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.oa-table-container .checkbox-input .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 30px;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.2);
+}
+
+.oa-table-container .checkbox-input:hover input ~ .checkmark {
+    background-color: #e3e3e3;
+}
+
+.oa-table-container .checkbox-input .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.oa-table-container .checkbox-input input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.oa-table-container .checkbox-input .checkmark:after {
+    left: 10px;
+    top: 4px;
+    width: 8px;
+    height: 17px;
+    border: 1px solid #083954;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.oa-table-container .radio-input {
+    display: block;
+    position: relative !important;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    overflow: visible;
+    margin: auto;
+}
+
+.oa-table-container .radio-input input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.oa-table-container .radio-input .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 30px;
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.2);
+}
+
+.oa-table-container .radio-input .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    top: 5px;
+    left: 5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #083954;
+}
+
+.oa-table-container .radio-input input:checked ~ .checkmark:after {
+    display: block;
+}
+
+@media screen and (max-width: 992px) {
+    .oa-table-container {
+        overflow-x: auto;
+    }
+
+    .oa-table-container .oa-table-primary td,
+    .oa-table-container .oa-table-primary th,
+    .oa-table-container .oa-table-default td,
+    .oa-table-container .oa-table-default th {
+        width: 120px;
+    }
+}
+
+.table-editor .row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.table-editor .row .column {
+    display: flex;
+    flex-direction: column;
+    margin-right: 15px;
+    justify-content: center;
+    align-items: normal;
+    flex: 1;
+}
+
+.table-editor .button-primary {
+    transition: background-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 0 0 transparent;
+    display: inline-block;
+    padding: 4px 20px 5px;
+    background-color: rgba(255, 255, 255, 0.3);
+    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    border: 1px solid #0075b4;
+    border-radius: 3px;
+    background-color: #0075b4;
+    color: #fff;
+    border-color: #005e90;
+    color: #fff;
+    width: 100%;
+}
+
+.table-editor .row .column.checkbox-container {
+    margin: 0 0 0 15px;
+}
+
+.table-preview {
+    padding: 15px;
+}
+
+hr.separator {
+    margin: 20px 15px;
+    border-bottom: 1px solid #E2E2E2 !important;
+    height: 0 !important;
+}
+
+.table-editor .table-editor-rows,
+.table-editor .table-editor-cols {
+    padding: 0 5px;
+}
+
+.no-display {
+	display: none !important;
+}

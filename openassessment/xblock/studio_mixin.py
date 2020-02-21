@@ -87,6 +87,7 @@ class StudioMixin(object):
             self.add_javascript_files(fragment, "static/js/src/oa_shared.js")
             self.add_javascript_files(fragment, "static/js/src/oa_server.js")
             self.add_javascript_files(fragment, "static/js/src/studio")
+            self.add_javascript_files(fragment, "static/js/philu/studio")
         else:
             # TODO: switch to add_javascript_url once XBlock resources are loaded from the CDN
             js_bytes = pkg_resources.resource_string(__name__, "static/js/openassessment-studio.min.js")
