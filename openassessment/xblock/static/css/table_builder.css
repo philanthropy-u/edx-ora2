@@ -72,19 +72,8 @@
     font-family: 'Montserrat';
 }
 
+.oa-table-container caption,
 .oa-table-container .merged-cell,
-.oa-table-container caption {
-    background: #083954;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    text-transform: uppercase;
-	margin: auto;
-	text-align: center;
-	padding: 10px;
-}
-
 .oa-table-container .merged-cell textarea,
 .oa-table-container .merged-cell p {
 	width: 100% !important;
@@ -99,6 +88,16 @@
     text-transform: uppercase;
 	border: none;
 	padding: 10px;
+	margin: 0 !important;
+}
+
+@media screen and (max-width: 768px) {
+	.oa-table-container caption,
+	.oa-table-container .merged-cell,
+	.oa-table-container .merged-cell textarea,
+	.oa-table-container .merged-cell p {
+		font-size: 14px;
+	}
 }
 
 .oa-table-container h2,
@@ -122,7 +121,6 @@
 .oa-table-container td textarea,
 .oa-table-container th textarea  {
 	border: none !important;
-	padding: 20px 10px !important;
 	outline: none;
 	resize: none;
 	width: 100% !important;
@@ -130,16 +128,37 @@
 	min-height: 0 !important;
 	height: 100% !important;
 	text-align: center;
-}
-
-.oa-table-container td textarea {
-	padding: 28px 5px 10px !important;
-	color: #083954;
+	max-height: none !important;
 }
 
 .oa-table-container th textarea {
 	color: white;
 	text-transform: uppercase;
+	padding: 20px 10px !important;
+}
+
+.oa-table-container td textarea,
+.oa-table-container td p {
+	padding: 20px 10px !important;
+	color: #083954;
+	word-wrap: break-word;
+}
+
+@media screen and (max-width: 992px) {
+	.oa-table-container td textarea,
+	.oa-table-container td p {
+		padding: 10px !important;
+		font-size: 14px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.oa-table-container td textarea,
+	.oa-table-container td p {
+		padding: 5px !important;
+		font-size: 12px;
+		line-height: 1.6;
+	}
 }
 
 .oa-table-container p {
@@ -154,7 +173,8 @@
 .oa-table-container .oa-table-primary,
 .oa-table-container .oa-table-default {
     background: white;
-    border-collapse: collapse;
+	border-collapse: collapse;
+	border-spacing: 0;
     width: 100%;
     table-layout: fixed;
     overflow-x: auto;
@@ -179,12 +199,32 @@
 	font-size: 16px;
 	outline: none;
 	vertical-align: middle;
-	padding: 28px 10px;
+	padding: 20px 10px;
 	background-color: #00AFAA;
 	word-wrap: break-word;
 	-webkit-hyphens: auto;
 	-ms-hyphens: auto;
 	hyphens: auto;
+}
+
+@media screen and (max-width: 992px) {
+	.oa-table-container .oa-table-primary th,
+	.oa-table-container .oa-table-primary th p,
+	.oa-table-container .oa-table-default th,
+	.oa-table-container .oa-table-default th p {
+		font-size: 14px;
+		padding: 10px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.oa-table-container .oa-table-primary th,
+	.oa-table-container .oa-table-primary th p,
+	.oa-table-container .oa-table-default th,
+	.oa-table-container .oa-table-default th p {
+		font-size: 12px;
+		padding: 10px 5px;
+	}
 }
 
 .oa-table-container .oa-table-primary th:not(:last-child),
@@ -226,7 +266,18 @@
     overflow: visible !important;
     vertical-align: middle;
 	width: 30px !important;
-	margin: 28px 10px !important;
+	margin: 27px 10px !important;
+}
+@media screen and (max-width: 992px) {
+	.oa-table-container .checkbox-input {
+		margin: 17px !important;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.oa-table-container .checkbox-input {
+		transform: scale(0.7);
+	}
 }
 
 .oa-table-container .checkbox-input label {
